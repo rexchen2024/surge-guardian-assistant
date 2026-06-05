@@ -1,5 +1,7 @@
 # Autonomy Model
 
+[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/autonomy.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/autonomy.zh-CN.md)
+
 Surge Hermes Guardian uses layered autonomy.
 
 ## Automatic
@@ -25,4 +27,3 @@ Surge Hermes Guardian uses layered autonomy.
 - MITM, Rewrite, Scripting, Replica, or capture changes
 - certificate, DNS record, server, or account changes
 - broad deletion of temporary rules
-

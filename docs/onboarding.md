@@ -1,5 +1,7 @@
 # Onboarding
 
+[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/onboarding.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/onboarding.zh-CN.md)
+
 This guide assumes Surge for macOS and Hermes are already installed.
 
 ## 1. Clone
@@ -51,4 +53,3 @@ The guardian does not require Telegram specifically.
 - Use `doctor` for a manual sanitized status check.
 - Use `redact-check` or `scripts/check` before committing changes.
 - Keep `.env`, logs, state, profiles, and real infrastructure identifiers out of Git.
-

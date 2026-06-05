@@ -111,7 +111,7 @@ scripts/check
 
 更多文档：
 
-- [新手上手](docs/onboarding.md)
-- [自治模型](docs/autonomy.md)
-- [隐私说明](docs/privacy.md)
-- [同步流程](docs/sync-workflow.md)
+- [新手上手](docs/onboarding.zh-CN.md)
+- [自治模型](docs/autonomy.zh-CN.md)
+- [隐私说明](docs/privacy.zh-CN.md)
+- [同步流程](docs/sync-workflow.zh-CN.md)
