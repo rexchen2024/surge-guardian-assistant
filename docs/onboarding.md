@@ -1,34 +1,54 @@
 # Onboarding
 
-## Install
+This guide assumes Surge for macOS and Hermes are already installed.
+
+## 1. Clone
 
 ```bash
-git clone <private-repo-url>
+git clone <repo-url>
 cd surge-hermes-guardian
+```
+
+## 2. Run Setup
+
+```bash
 scripts/surge-hermes-guardian setup --print-hermes-command
 ```
 
-The setup flow writes `.env`. It does not edit Surge profiles.
+Setup discovers:
 
-## First Checks
+- `surge-cli`
+- Surge log directory
+- profile candidates
+- runtime policy candidates
+
+It writes `.env` in the repository root. It does not edit Surge profiles.
+
+## 3. Verify Locally
 
 ```bash
 scripts/surge-hermes-guardian doctor
 scripts/surge-hermes-guardian tick
 ```
 
-If `tick` prints `{"wakeAgent": false}`, the guardian is healthy and quiet.
+Healthy `tick` output is:
 
-## Hermes
+```json
+{"wakeAgent": false}
+```
 
-Use the command printed by setup to create a one-minute Hermes cron job. The job
-should run the script from this repository and use the prompt in
-`hermes/job-prompts/guardian.md`.
+## 4. Install Hermes Cron
 
-## Common Mistakes
+Review the command printed by setup, then run it. The recommended schedule is
+once per minute.
 
-- Do not commit `.env`.
-- Do not paste real subscription URLs into issues or docs.
-- Do not turn temporary rules into permanent profile edits without reviewing why they were needed.
-- Do not use a weak model for the analysis job if you expect autonomous reasoning.
+Hermes handles delivery according to the user's existing Hermes configuration.
+If no delivery target is configured, set up a Hermes-supported platform first.
+The guardian does not require Telegram specifically.
+
+## 5. Operate
+
+- Use `doctor` for a manual sanitized status check.
+- Use `redact-check` or `scripts/check` before committing changes.
+- Keep `.env`, logs, state, profiles, and real infrastructure identifiers out of Git.
 

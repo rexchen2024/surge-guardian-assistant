@@ -1,35 +1,57 @@
 # Surge Hermes Guardian
 
-[English](README.md) | [简体中文](README.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/README.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/README.zh-CN.md)
 
-Surge Hermes Guardian is a lightweight autonomous guardian for Surge on macOS.
-It is designed to run from Hermes cron every minute, stay silent when healthy,
-and wake a model only when the local deterministic checks find something worth
+Surge Hermes Guardian is a lightweight autonomous operations agent for people
+who already run [Surge](https://nssurge.com/) on macOS and use Hermes for
+scheduled agent work. It watches Surge continuously through Hermes cron, handles
+safe fixes by itself, and wakes a model only when the evidence deserves
 analysis.
 
-The operating rule is simple: keep Surge healthy, reduce recurring errors, and
-avoid bothering the user unless the issue is fixed and worth mentioning or is
-too risky to handle automatically.
+The goal is not to produce more alerts. The goal is to keep Surge healthy,
+reduce repeated network errors, learn from recurring patterns, and notify the
+user only when something was meaningfully handled or when a risky decision needs
+confirmation.
 
-## What It Does
+## Why Use It
 
-- Reads new Surge log lines and `surge-cli --raw dump event`.
-- Classifies external resource, DNS, policy, runtime, and repeated DIRECT failures.
-- Runs low-risk remediation automatically:
-  - `external-resource update all`
-  - `flush dns`
-  - policy retests
-  - temporary runtime rules with later review/removal
-- Uses `{"wakeAgent": false}` to skip Hermes/model work for normal runs.
-- Emits a compact incident package when Hermes should analyze or notify.
-- Keeps private domains, IPs, profile paths, policy names, and state in local `.env` and state files only.
+- **Fast to start**: run one setup command, review the generated Hermes command,
+  and schedule the guardian.
+- **Quiet by default**: healthy runs return `{"wakeAgent": false}`, so Hermes
+  skips the model and sends nothing.
+- **Autonomous where safe**: the guardian can update external resources, flush
+  DNS, retest policies, and add narrow temporary runtime rules.
+- **Model-assisted when needed**: non-silent incidents wake Hermes, which uses
+  the user's configured model and delivery channel.
+- **Privacy-first**: real domains, IPs, profile paths, policy names, logs, and
+  state stay in local `.env` and local state files.
 
-## Quick Start
+## Recommended Setup
+
+Prerequisites:
+
+- Surge for macOS is installed and running.
+- Hermes is installed and its gateway/cron system works.
+- Hermes already has a delivery target if you want notifications. This can be
+  Telegram, Discord, Matrix, Weixin, Feishu, Signal, or another platform your
+  Hermes installation supports. The guardian does not require a specific social
+  channel.
+
+Install:
 
 ```bash
-git clone <private-repo-url>
+git clone <repo-url>
 cd surge-hermes-guardian
 scripts/surge-hermes-guardian setup --print-hermes-command
+```
+
+The setup wizard discovers `surge-cli`, Surge logs, profile candidates, and
+runtime policy candidates, then writes a local `.env`. It does not edit Surge
+profiles.
+
+Next, run a local check:
+
+```bash
 scripts/surge-hermes-guardian doctor
 scripts/surge-hermes-guardian tick
 ```
@@ -40,36 +62,34 @@ Healthy `tick` output is:
 {"wakeAgent": false}
 ```
 
+Finally, review and run the Hermes cron command printed by setup. The
+recommended schedule is once per minute.
+
 ## Commands
 
-- `setup`: interactive first-run setup. Discovers `surge-cli`, logs, profiles, and policy candidates, then writes `.env`.
+- `setup`: interactive first-run setup; writes local `.env` only.
 - `tick`: one lightweight guardian run for Hermes cron.
-- `doctor`: manual sanitized diagnostic summary.
+- `doctor`: sanitized manual diagnostic summary.
 - `redact-check`: repository scan before commit or GitHub push.
 
-## Hermes Deployment
+## How Hermes Is Used
 
-The recommended deployment is a Hermes cron job every minute:
+The guardian script handles deterministic work locally. When there is nothing
+important, it returns `{"wakeAgent": false}` and Hermes does not call a model.
 
-```bash
-scripts/surge-hermes-guardian setup --print-hermes-command
-```
-
-Review the printed command, then run it. The job should use the repository root
-as `workdir` and `scripts/surge-hermes-guardian` as the script.
-
-When `tick` prints `{"wakeAgent": false}`, Hermes skips the model entirely. Any
-other output wakes Hermes and the job prompt tells the model how to decide
-whether to stay silent, report a handled issue, or ask for user confirmation.
+When the script emits an incident package, Hermes wakes the configured model and
+uses `hermes/job-prompts/guardian.md` to decide whether to stay silent, report
+that an issue was handled, or ask the user to confirm a risky action. Delivery is
+handled by Hermes according to the user's current Hermes configuration.
 
 ## Autonomy Boundary
 
 Automatically allowed:
 
-- external resource update
+- external resource updates
 - DNS flush
 - policy and group retests
-- temporary runtime rules
+- narrow temporary runtime rules
 - repeated-error counters and suppression
 - later review/removal of temporary rules
 
@@ -77,13 +97,13 @@ Requires user confirmation:
 
 - writing permanent profiles
 - editing `.conf` or `.sgmodule`
-- restarting or stopping Surge
+- restarting, stopping, reloading, or switching Surge profiles
 - long-term policy-group changes
-- MITM, Rewrite, Scripting, Replica changes
+- MITM, Rewrite, Scripting, Replica, or capture changes
 - certificate, DNS record, server, or account changes
 - broad temp-rule deletion
 
-## Privacy
+## Privacy And Publishing
 
 Never commit:
 
@@ -100,3 +120,10 @@ Run this before every commit:
 ```bash
 scripts/check
 ```
+
+More docs:
+
+- [Onboarding](docs/onboarding.md)
+- [Autonomy model](docs/autonomy.md)
+- [Privacy notes](docs/privacy.md)
+- [Sync workflow](docs/sync-workflow.md)
