@@ -15,4 +15,4 @@ Before publishing:
 - Replace real domains and IPs with examples.
 - Review screenshots and terminal logs before sharing.
 - Prefer summarized results over raw dumps.
-
+- Run `scripts/surge-hermes-guardian redact-check` before every commit.

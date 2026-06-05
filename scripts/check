@@ -1,0 +1,11 @@
+#!/bin/bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
+
+bash -n scripts/surge-hermes-guardian scripts/surge-health-check.sh scripts/surge-realtime-guardian.sh
+python3 -m compileall guardian tests >/dev/null
+python3 -m unittest discover -s tests
+scripts/surge-hermes-guardian redact-check
+

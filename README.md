@@ -1,62 +1,100 @@
-# Surge Hermes Healthcheck
+# Surge Hermes Guardian
 
-Silent-on-success Surge health checks designed for Hermes cron jobs.
+Surge Hermes Guardian is a lightweight autonomous guardian for Surge on macOS.
+It is designed to run from Hermes cron every minute, stay silent when healthy,
+and wake a model only when the local deterministic checks find something worth
+analysis.
 
-The project keeps the monitoring rule simple: normal runs produce no alert; only actionable failures print output for Hermes or another scheduler to send onward.
+The operating rule is simple: keep Surge healthy, reduce recurring errors, and
+avoid bothering the user unless the issue is fixed and worth mentioning or is
+too risky to handle automatically.
 
-## What It Checks
+## What It Does
 
-- Surge profile syntax with `surge-cli --check`
-- Runtime policy availability through `surge-cli --raw dump policy`
-- Policy connectivity through `surge-cli --raw test-policy`
-- Public DNS for the configured domain and IP
-- Port 80 reachability for certificate renewal
-- TLS certificate SAN and expiry window
-- Optional realtime Surge log/event monitoring with low-risk automatic cleanup
+- Reads new Surge log lines and `surge-cli --raw dump event`.
+- Classifies external resource, DNS, policy, runtime, and repeated DIRECT failures.
+- Runs low-risk remediation automatically:
+  - `external-resource update all`
+  - `flush dns`
+  - policy retests
+  - temporary runtime rules with later review/removal
+- Uses `{"wakeAgent": false}` to skip Hermes/model work for normal runs.
+- Emits a compact incident package when Hermes should analyze or notify.
+- Keeps private domains, IPs, profile paths, policy names, and state in local `.env` and state files only.
 
-## Setup
-
-1. Copy the example config:
-
-```bash
-cp config/example.env .env
-```
-
-2. Edit `.env` with your real profile paths, domain, IP, and policy names.
-
-3. Run a one-off check:
+## Quick Start
 
 ```bash
-scripts/surge-health-check.sh
+git clone <private-repo-url>
+cd surge-hermes-guardian
+scripts/surge-hermes-guardian setup --print-hermes-command
+scripts/surge-hermes-guardian doctor
+scripts/surge-hermes-guardian tick
 ```
 
-No output means healthy.
+Healthy `tick` output is:
 
-## Hermes Usage
+```json
+{"wakeAgent": false}
+```
 
-Use the scripts from a Hermes cron job or any scheduler. Keep the job output-based: if the script exits cleanly and prints nothing, do not notify.
+## Commands
 
-For a daily check:
+- `setup`: interactive first-run setup. Discovers `surge-cli`, logs, profiles, and policy candidates, then writes `.env`.
+- `tick`: one lightweight guardian run for Hermes cron.
+- `doctor`: manual sanitized diagnostic summary.
+- `redact-check`: repository scan before commit or GitHub push.
+
+## Hermes Deployment
+
+The recommended deployment is a Hermes cron job every minute:
 
 ```bash
-/path/to/surge-hermes-healthcheck/scripts/surge-health-check.sh
+scripts/surge-hermes-guardian setup --print-hermes-command
 ```
 
-For realtime monitoring:
+Review the printed command, then run it. The job should use the repository root
+as `workdir` and `scripts/surge-hermes-guardian` as the script.
 
-```bash
-/path/to/surge-hermes-healthcheck/scripts/surge-realtime-guardian.sh
-```
+When `tick` prints `{"wakeAgent": false}`, Hermes skips the model entirely. Any
+other output wakes Hermes and the job prompt tells the model how to decide
+whether to stay silent, report a handled issue, or ask for user confirmation.
 
-The realtime guardian prints `{"wakeAgent": false}` when it has nothing worth escalating. Your scheduler can treat that as silent.
+## Autonomy Boundary
+
+Automatically allowed:
+
+- external resource update
+- DNS flush
+- policy and group retests
+- temporary runtime rules
+- repeated-error counters and suppression
+- later review/removal of temporary rules
+
+Requires user confirmation:
+
+- writing permanent profiles
+- editing `.conf` or `.sgmodule`
+- restarting or stopping Surge
+- long-term policy-group changes
+- MITM, Rewrite, Scripting, Replica changes
+- certificate, DNS record, server, or account changes
+- broad temp-rule deletion
 
 ## Privacy
 
-Do not commit `.env`, state files, Surge profiles, logs, subscription URLs, node credentials, cookies, request bodies, or raw `surge-cli` dumps.
+Never commit:
 
-Public examples should use documentation IPs such as `203.0.113.10` and placeholder domains such as `edge.example.com`.
+- `.env`
+- state or log files
+- Surge profiles
+- subscription URLs
+- node credentials
+- real domains or IPs
+- notification targets
 
-## Project Boundary
+Run this before every commit:
 
-This repository is for lightweight local checks and reversible runtime mitigation. It is not a second routing table. Keep ACL4SSR or your active Surge profile as the routing source of truth, and use temporary rules only when real failures appear before upstream rules catch up.
-
+```bash
+scripts/check
+```
