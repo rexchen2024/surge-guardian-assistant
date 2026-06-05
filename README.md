@@ -1,5 +1,7 @@
 # Surge Hermes Guardian
 
+[English](README.md) | [简体中文](README.zh-CN.md)
+
 Surge Hermes Guardian is a lightweight autonomous guardian for Surge on macOS.
 It is designed to run from Hermes cron every minute, stay silent when healthy,
 and wake a model only when the local deterministic checks find something worth
