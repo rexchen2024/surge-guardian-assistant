@@ -69,11 +69,11 @@ class GuardianParsingTest(unittest.TestCase):
         version_line = next(line for line in pyproject.read_text().splitlines() if line.startswith("version = "))
         self.assertEqual(guardian.__version__, version_line.split('"')[1])
 
-    def test_hermes_cron_command_uses_display_name_and_skill_flag(self):
+    def test_hermes_cron_command_uses_display_name_without_missing_skill_flag(self):
         root = Path(__file__).resolve().parent.parent
         command = build_hermes_cron_command(root)
         self.assertIn("Surge 守护助手", command)
-        self.assertIn("--skill", command)
+        self.assertNotIn("--skill", command)
         self.assertNotIn("--skills", command)
 
     def test_auto_update_defaults_on(self):

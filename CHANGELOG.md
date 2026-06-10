@@ -8,7 +8,7 @@ First complete release.
 
 - Quiet monitoring for Surge logs, events, policies, and external resources.
 - Healthy runs emit only `{"wakeAgent": false}` to avoid unnecessary AI calls and notifications.
-- Runtime checks and low-risk self-healing through Surge's official Agent Skill / `surge-cli`.
+- Runtime checks and low-risk self-healing through Surge's official runtime capabilities and `surge-cli`.
 - Automatic retry for failed external resources and Surge DNS cache flush after repeated DNS problems.
 - Policy retests before notification to reduce noise from temporary failures.
 - Narrow temporary runtime rules for repeated DIRECT failures, with periodic cleanup.

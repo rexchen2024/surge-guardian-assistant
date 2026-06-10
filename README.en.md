@@ -5,7 +5,7 @@
 
 [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-TW.md)
 
-A quiet monitoring and self-healing assistant for Surge users. It uses Surge's official Agent Skill / `surge-cli` runtime capabilities to check logs, events, policies, and external resources. Healthy checks stay silent; incidents are handled with low-risk actions first; only important cases are handed to Hermes, Codex, or chat delivery.
+A quiet monitoring and self-healing assistant for Surge users. It uses Surge's official runtime capabilities and `surge-cli` to check logs, events, policies, and external resources. Healthy checks stay silent; incidents are handled with low-risk actions first; only important cases are handed to Hermes, Codex, or chat delivery.
 
 **Current version: 0.1.0**
 

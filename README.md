@@ -5,7 +5,7 @@
 
 [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-TW.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.en.md)
 
-面向 Surge 用户的静默巡检和自愈工具。它基于 Surge 官方 Agent Skill / `surge-cli` 的运行时能力，持续检查日志、事件、策略和外部资源；健康时不打扰，异常时先自愈，只有重要问题才交给 Hermes、Codex 或聊天工具继续处理。
+面向 Surge 用户的静默巡检和自愈工具。它基于 Surge 官方运行时能力和 `surge-cli`，持续检查日志、事件、策略和外部资源；健康时不打扰，异常时先自愈，只有重要问题才交给 Hermes、Codex 或聊天工具继续处理。
 
 **当前版本：0.1.0**
 

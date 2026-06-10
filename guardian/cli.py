@@ -116,8 +116,6 @@ def build_hermes_cron_command(root: Path) -> list[str]:
         str(script),
         "--workdir",
         str(root),
-        "--skill",
-        "Surge",
     ]
 
 
