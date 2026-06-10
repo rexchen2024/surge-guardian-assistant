@@ -12,7 +12,7 @@ Use this checklist before publishing a release or making the repository public.
 - FAQ covers common Surge-user misunderstandings.
 - `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, and `CODE_OF_CONDUCT.md` are present.
 - Issue templates and PR template are present.
-- GitHub Actions check is passing.
+- If GitHub Actions is enabled, the check workflow is passing.
 - Release tag points to the intended commit.
 
 ## Privacy

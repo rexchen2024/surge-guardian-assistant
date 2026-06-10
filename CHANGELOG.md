@@ -19,8 +19,8 @@ First complete release.
 - `version`, `update`, `doctor`, `feedback`, and `redact-check` commands.
 - Private permissions for local `.env` and state files.
 - Privacy scanning and sanitized feedback reports.
-- GitHub Actions checks.
 - License, contributing guide, security policy, code of conduct, issue templates, and PR template.
 - Onboarding, troubleshooting, and release checklist docs.
 - Simplified Chinese default homepage, with Hong Kong Traditional Chinese, Taiwan Traditional Chinese, and English homepage variants.
 - Surge-user fit, project boundary, and FAQ sections.
+- Refined homepage positioning around low-power checks, quiet operation, Surge Agent Skill / `surge-cli`, Hermes learning, and AI escalation only when useful.

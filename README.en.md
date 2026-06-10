@@ -3,65 +3,58 @@
 [![Release](https://img.shields.io/github/v/release/rexchen2024/surge-guardian-assistant?label=release)](https://github.com/rexchen2024/surge-guardian-assistant/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [繁體中文（香港）](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-HK.md) | [繁體中文（台灣）](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-TW.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.en.md)
+[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [繁體中文（香港）](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-HK.md) | [繁體中文（台灣）](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-TW.md)
 
-Current version: **0.1.0**
+Surge Guardian Assistant is a quiet monitoring and self-healing tool for Surge users. It uses Surge's official Agent Skill / `surge-cli` runtime capabilities to watch logs, events, policies, and external resources. Healthy checks stay silent; incidents are handled with low-risk actions first; only important cases are handed to Hermes, Codex, or chat delivery.
 
-Surge Guardian Assistant watches Surge for you. It stays quiet when things are fine, tries safe fixes first, and asks before risky changes.
+**Current version: 0.1.0**
 
-Project:
+## Highlights
 
-```text
-https://github.com/rexchen2024/surge-guardian-assistant
+- **Extremely quiet by default**: healthy runs emit only `{"wakeAgent": false}`.
+- **Low-power monitoring**: routine checks use local scripts and Surge runtime interfaces, avoiding minute-level AI calls.
+- **Native Surge capabilities**: reads events, retests policies, flushes DNS, updates external resources, and adds temporary runtime rules.
+- **Self-healing before escalation**: low-risk issues are handled first; permanent config changes require confirmation.
+- **AI only when useful**: repeated, complex, or unresolved incidents can be reviewed by Hermes or Codex.
+- **Chat only for important issues**: Hermes can deliver through Telegram, Discord, Matrix, Weixin, Feishu, Signal, and other channels while healthy checks remain silent.
+- **Learns through Hermes**: Hermes Edition can use Hermes memory and skills to turn repeated incidents into future handling experience.
+- **Automatic updates**: installed copies can pull updates from GitHub without overwriting local tracked edits.
+- **Privacy-first**: `.env`, state files, and feedback reports stay local with private permissions; no automatic log or usage upload.
+
+## Good Fit
+
+- You already use Surge and want continuous checks for logs, events, and policy state.
+- You want healthy runs to stay fully silent and real incidents to produce a clear summary.
+- You want external-resource failures, DNS errors, policy issues, and repeated DIRECT failures handled before escalation.
+- You want Hermes for always-on monitoring or Codex for lower-frequency maintenance and incident review.
+
+## Project Boundary
+
+This project itself is not a Surge profile library, rule set, module collection, or proxy provider recommendation. It adds monitoring, self-healing, and incident feedback on top of an existing Surge setup.
+
+Automatic actions are intentionally narrow, runtime-only, and reversible where possible. Permanent profile changes, certificates, DNS, MITM, Rewrite, Scripting, policy-group selection, reload, or restart actions should happen only after user confirmation.
+
+## How It Works
+
+```mermaid
+flowchart LR
+  Surge["Surge logs / events / runtime state"] --> Tick["local tick check"]
+  Tick --> Quiet{"healthy?"}
+  Quiet -->|yes| Silent["emit wakeAgent:false"]
+  Quiet -->|no| Heal["low-risk self-healing"]
+  Heal --> Again{"recovered?"}
+  Again -->|yes| Silent
+  Again -->|no| AI["Hermes / Codex analysis"]
+  AI --> Notify["deliver important issues or ask for confirmation"]
 ```
-
-## What These Tools Are
-
-- [Surge](https://nssurge.com/) is a network and proxy tool for macOS and iOS. This project watches Surge.
-- [Hermes](https://github.com/NousResearch/hermes-agent) runs scheduled jobs, analyzes incidents, and sends messages. It is the recommended always-on runtime.
-- [Codex](https://openai.com/codex/) is OpenAI's coding assistant. It is useful for lower-frequency project checks, incident review, and maintenance.
 
 ## Requirements
 
 - Surge is installed and running on macOS.
 - Git is available.
 - Python 3.10 or newer.
-- Hermes Edition requires Hermes.
-- Codex Edition requires Codex access to the local repository.
-
-## Good Fit
-
-- You already use Surge and want continuous checks for logs, events, and policy state.
-- You want healthy runs to stay quiet and real incidents to produce a clear summary.
-- You want low-risk issues handled first, such as external-resource retry, DNS flush, and policy retest.
-- You want Hermes for always-on monitoring or Codex for lower-frequency maintenance.
-
-## Not A Fit
-
-- You are looking for Surge profiles, modules, rule sets, or subscription links.
-- You want a tool to edit permanent Surge profiles automatically.
-- You want every network issue to be judged by a model.
-- You do not want to install Git or run local scripts.
-
-## How It Works
-
-```mermaid
-flowchart LR
-  Surge["Surge logs and events"] --> Tick["tick check"]
-  Tick --> Fix["low-risk self-healing"]
-  Fix --> Healthy{"important incident left?"}
-  Healthy -->|no| Quiet["emit wakeAgent:false"]
-  Healthy -->|yes| Review["Hermes or Codex review"]
-  Review --> Confirm["ask before risky changes"]
-```
-
-The assistant only performs low-risk, reversible actions: external-resource retry, DNS flush, policy retest, and temporary runtime rules. Permanent Surge profile edits, service restarts, certificates, DNS, MITM, Rewrite, and Scripting changes require user confirmation.
-
-## Project Boundary
-
-This project is not a Surge profile library, rule set, module collection, or proxy provider recommendation. It only adds monitoring, self-healing, and incident feedback on top of an existing Surge setup.
-
-Automatic actions are intentionally narrow, runtime-only, and reversible where possible. Permanent profile changes, certificates, DNS, MITM, Rewrite, Scripting, policy-group selection, reload, or restart actions should happen only after user confirmation.
+- If you choose Hermes Edition, install Hermes first; it handles scheduling, AI analysis, and message delivery.
+- If you choose Codex Edition, Codex needs access to the local repository; it is for lower-frequency maintenance, not minute-level monitoring.
 
 ## One-Command Install
 
@@ -91,45 +84,25 @@ Prompt for Codex:
 Install https://github.com/rexchen2024/surge-guardian-assistant locally as my Surge Guardian Assistant project, run doctor and scripts/check, then create or suggest a safe Codex automation. Do not edit Surge profiles without asking me first.
 ```
 
-## Pick An Edition
+## Editions
 
-**Hermes Edition** is recommended. It is good for minute-level monitoring, stays silent on healthy runs, and notifies you only when needed.
+**Hermes Edition** is recommended for always-on monitoring. Healthy runs stay silent; important incidents can be delivered through Hermes.
 
 [Install Hermes Edition](docs/hermes-edition.md)
 
-**Codex Edition** is optional. It is good for daily or weekly repository checks, incident review, and ongoing project maintenance.
+**Codex Edition** is optional. It is useful for daily or weekly repository checks, incident review, and project maintenance.
 
 [Install Codex Edition](docs/codex-edition.md)
-
-## Core Features
-
-- Reads Surge logs and events.
-- Retries external resources when they fail.
-- Flushes DNS after repeated DNS problems.
-- Retests policies before bothering you.
-- Adds small temporary runtime rules for repeated DIRECT failures.
-- Emits `{"wakeAgent": false}` on healthy runs to avoid noise.
-- Pulls updates from GitHub automatically.
-- Keeps local `.env` and state files private.
-- Provides privacy scanning and sanitized feedback reports.
-- Never edits permanent Surge configuration without asking.
 
 ## Automatic Updates
 
 Automatic updates work when the install path is a Git checkout and Hermes, Codex, or another scheduler keeps running `tick`.
 
-The assistant checks GitHub once a day by default. If new code is available, it pulls the update and runs `scripts/check`. If local tracked files were changed, it skips the update instead of overwriting anything.
-
-Check manually:
+If new code is available, the assistant pulls it and runs `scripts/check`. If local tracked files were changed, it skips the update instead of overwriting anything.
 
 ```bash
 cd ~/.surge-guardian-assistant
 scripts/surge-guardian-assistant update --check
-```
-
-Update manually:
-
-```bash
 scripts/surge-guardian-assistant update
 ```
 
@@ -137,20 +110,6 @@ Turn off automatic updates in `.env`:
 
 ```bash
 AUTO_UPDATE=0
-```
-
-## Send Feedback
-
-The project does not upload logs or usage data by itself. A user can create a sanitized report, review it, and decide whether to send it:
-
-```bash
-scripts/surge-guardian-assistant feedback --github-url
-```
-
-Preview it in the terminal:
-
-```bash
-scripts/surge-guardian-assistant feedback --print
 ```
 
 ## Useful Commands
@@ -181,6 +140,6 @@ scripts/surge-guardian-assistant redact-check
 - Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
 - Security policy: [SECURITY.md](SECURITY.md)
 
-## Recommended Resource
+## My Recommended Proxy Provider
 
-If you also use Clash rules, you can take a look at [Hongmei Network](https://cmy.homes/register?aff=4MMK4C). This is a referral link. Try a small plan first and decide based on your own network environment and needs.
+[Hongmei Network](https://cmy.homes/register?aff=4MMK4C)

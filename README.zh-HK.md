@@ -3,65 +3,58 @@
 [![Release](https://img.shields.io/github/v/release/rexchen2024/surge-guardian-assistant?label=release)](https://github.com/rexchen2024/surge-guardian-assistant/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [繁體中文（香港）](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-HK.md) | [繁體中文（台灣）](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-TW.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.en.md)
+[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [繁體中文（台灣）](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-TW.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.en.md)
 
-目前版本：**0.1.0**
+Surge 守護助手是面向 Surge 用戶的靜默巡檢和自愈工具。它利用 Surge 官方 Agent Skill / `surge-cli` 的運行時能力，持續檢查日誌、事件、策略和外部資源；健康時不打擾，異常時先做低風險處理，只有重要問題才交給 Hermes、Codex 或聊天工具繼續分析。
 
-Surge 守護助手用於持續檢查 Surge 狀態。正常時保持安靜；發現異常時先執行安全修復；需要高風險操作時再請你確認。
+**目前版本：0.1.0**
 
-項目地址：
+## 亮點
 
-```text
-https://github.com/rexchen2024/surge-guardian-assistant
+- **極致靜默**：健康巡檢只輸出 `{"wakeAgent": false}`，不喚醒模型，不製造通知。
+- **低功耗巡檢**：日常檢查走本地腳本和 Surge 運行時接口，盡量避免每分鐘啟動 AI。
+- **Surge 原生能力**：讀取事件、複測策略、刷新 DNS、更新外部資源、加入運行時臨時規則。
+- **安全自愈優先**：能自動處理的低風險問題先處理，永久配置變更必須確認。
+- **必要時再用 AI**：重複、複雜或未恢復的問題才交給 Hermes/Codex 分析。
+- **聊天工具只收重要問題**：通過 Hermes 投遞到 Telegram、Discord、Matrix、微信、飛書、Signal 等渠道時，健康狀態保持靜默。
+- **可持續學習**：Hermes 版本可利用 Hermes 的記憶和技能機制，把重複問題沉澱成後續處理經驗。
+- **自動更新**：安裝後可從 GitHub 拉取新版本，本地有改動時不會覆蓋。
+- **私隱優先**：`.env`、state、回饋報告使用本地私有權限，不自動上傳日誌或使用數據。
+
+## 適合誰
+
+- 已經在用 Surge，希望有人持續檢查日誌、事件和策略狀態。
+- 希望健康時完全靜默，異常時再收到清晰摘要。
+- 希望外部資源失敗、DNS 異常、策略波動、DIRECT 反覆失敗這類問題能先自動處理。
+- 希望用 Hermes 做常駐巡檢，或用 Codex 做低頻維護和異常覆盤。
+
+## 項目邊界
+
+本項目主體不是 Surge 配置庫、規則集、模組合集或機場推薦。它只在你已有 Surge 配置的基礎上做巡檢、自愈和異常回饋。
+
+所有自動處理都盡量保持小範圍、運行時、可回退。涉及永久配置、證書、DNS、MITM、Rewrite、Scripting、策略組選擇、重載或重啟的操作，都應該由用戶確認後再執行。
+
+## 工作方式
+
+```mermaid
+flowchart LR
+  Surge["Surge 日誌 / 事件 / 運行時狀態"] --> Tick["本地 tick 巡檢"]
+  Tick --> Quiet{"是否健康？"}
+  Quiet -->|是| Silent["靜默輸出 wakeAgent:false"]
+  Quiet -->|否| Heal["低風險自愈"]
+  Heal --> Again{"是否恢復？"}
+  Again -->|是| Silent
+  Again -->|否| AI["Hermes / Codex 分析"]
+  AI --> Notify["重要問題再推送或請求確認"]
 ```
-
-## 相關項目
-
-- [Surge](https://nssurge.com/)：macOS / iOS 網絡及代理工具。本項目負責檢查和守護 Surge。
-- [Hermes](https://github.com/NousResearch/hermes-agent)：定時執行、異常分析和訊息通知層。建議用於常駐巡檢。
-- [Codex](https://openai.com/codex/)：OpenAI 的程式碼助手。適合低頻檢查、異常覆盤和項目維護。
 
 ## 要求
 
 - macOS 已安裝並正在運行 Surge。
 - 本機可使用 Git。
 - Python 3.10 或更新版本。
-- Hermes 版本需要已安裝 Hermes。
-- Codex 版本需要 Codex 可存取本地儲存庫。
-
-## 適合誰
-
-- 已經在用 Surge，並希望有人持續檢查日誌、事件和策略狀態。
-- 希望健康時保持安靜，異常時再收到清晰摘要。
-- 希望低風險問題先自動處理，例如外部資源重試、DNS 刷新、策略複測。
-- 希望透過 Hermes 做常駐巡檢，或透過 Codex 做低頻維護。
-
-## 不適合誰
-
-- 只想找 Surge 配置、模組、規則集或訂閱連結。
-- 希望工具自動修改永久 Surge profile。
-- 希望把所有網絡問題都交給模型判斷。
-- 不希望安裝 Git 或在本機執行腳本。
-
-## 工作方式
-
-```mermaid
-flowchart LR
-  Surge["Surge 日誌和事件"] --> Tick["tick 巡檢"]
-  Tick --> Fix["低風險自動處理"]
-  Fix --> Healthy{"是否仍有重要異常？"}
-  Healthy -->|否| Quiet["輸出 wakeAgent:false"]
-  Healthy -->|是| Review["交給 Hermes 或 Codex 分析"]
-  Review --> Confirm["高風險操作先請求確認"]
-```
-
-守護助手只做低風險、可回退的處理，例如重試外部資源、刷新 DNS、複測策略、加入運行時臨時規則。永久修改 Surge profile、重啟服務、證書、DNS、MITM、Rewrite、Scripting 等操作都需要用戶確認。
-
-## 項目邊界
-
-本項目不是 Surge 配置庫、規則集、模組合集或機場推薦。它只負責在你已有 Surge 配置的基礎上做巡檢、自愈和異常回饋。
-
-所有自動處理都盡量保持小範圍、運行時、可回退。涉及永久配置、證書、DNS、MITM、Rewrite、Scripting、策略組選擇、重載或重啟的操作，都應該由用戶確認後再執行。
+- 如選擇 Hermes 版本，需要先安裝 Hermes；它負責定時執行、AI 分析和訊息通知。
+- 如選擇 Codex 版本，需要 Codex 可存取本地儲存庫；它適合低頻維護，不建議做每分鐘巡檢。
 
 ## 一鍵安裝
 
@@ -91,9 +84,9 @@ scripts/surge-guardian-assistant setup --print-hermes-command
 請把 https://github.com/rexchen2024/surge-guardian-assistant 作為 Surge 守護助手項目安裝到本機，執行 doctor 和 scripts/check，幫我建立或建議一個安全的 Codex 自動化。未經我確認前，不要編輯 Surge profile。
 ```
 
-## 選哪個版本
+## 版本選擇
 
-**Hermes 版本**：推薦。適合每分鐘巡檢，健康時不喚醒模型，出現異常再通知。
+**Hermes 版本**：推薦。適合常駐巡檢，健康時不喚醒模型，出現重要異常再通知。
 
 [Hermes 版本安裝說明](docs/hermes-edition.zh-CN.md)
 
@@ -101,35 +94,15 @@ scripts/surge-guardian-assistant setup --print-hermes-command
 
 [Codex 版本安裝說明](docs/codex-edition.zh-CN.md)
 
-## 核心功能
-
-- 讀取 Surge 日誌和事件。
-- 外部資源失敗時自動重試。
-- DNS 連續異常時刷新 DNS。
-- 通知你之前先複測策略。
-- 對反覆 DIRECT 失敗加入小範圍臨時規則。
-- 健康時輸出 `{"wakeAgent": false}`，避免無意義打擾。
-- 自動從 GitHub 拉取更新。
-- 本地 `.env` 和 state 檔案使用私有權限。
-- 提供私隱掃描和脫敏回饋報告。
-- 不會擅自修改永久 Surge 配置。
-
 ## 自動更新
 
 只要安裝目錄是 Git 儲存庫，而且 Hermes/Codex/系統任務仍在執行 `tick`，它預設每天檢查一次 GitHub 更新。
 
 有新程式碼時會自動拉取並執行 `scripts/check`。如果用戶改過受 Git 管理的檔案，會跳過更新，不會覆蓋。
 
-手動檢查：
-
 ```bash
 cd ~/.surge-guardian-assistant
 scripts/surge-guardian-assistant update --check
-```
-
-手動更新：
-
-```bash
 scripts/surge-guardian-assistant update
 ```
 
@@ -137,20 +110,6 @@ scripts/surge-guardian-assistant update
 
 ```bash
 AUTO_UPDATE=0
-```
-
-## 回饋問題
-
-項目不會自動上傳日誌或使用數據。用戶可以主動產生脫敏報告，檢查後再決定是否提交：
-
-```bash
-scripts/surge-guardian-assistant feedback --github-url
-```
-
-想先在終端查看：
-
-```bash
-scripts/surge-guardian-assistant feedback --print
 ```
 
 ## 常用命令
@@ -181,6 +140,6 @@ scripts/surge-guardian-assistant redact-check
 - 貢獻說明：[CONTRIBUTING.md](CONTRIBUTING.md)
 - 安全策略：[SECURITY.md](SECURITY.md)
 
-## 推薦資源
+## 我推薦的機場
 
-如果你同時使用 Clash 規則，可以看看 [紅莓網絡](https://cmy.homes/register?aff=4MMK4C)。這是邀請連結，請按自己的網絡環境和需求先小額試用，再決定是否長期使用。
+[紅莓網絡](https://cmy.homes/register?aff=4MMK4C)
