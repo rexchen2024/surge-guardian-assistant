@@ -54,19 +54,19 @@ flowchart LR
 
 ## 安装方式
 
-**1. 极简本地**
+**1. 终端**
 
 只想在本机终端检查 Surge。最轻量，脚本直接调用 `surge-cli`，适合手动检查或本地调度。
 
 [一键安装和本地运行说明](docs/runtime-options.zh-CN.md)
 
-**2. 推荐 Hermes Agent ⭐**
+**2. 🌟推荐 - Hermes Agent**
 
 常驻巡检、异常通知、持续学习的首选方式。健康时完全静默，重要问题再唤醒 AI，也可以通过聊天工具推送。
 
 [一键安装和 Hermes 任务说明](docs/hermes-edition.zh-CN.md)
 
-**3. Codex 版本**
+**3. Codex**
 
 适合低频检查仓库、复盘异常、维护项目。不建议做每分钟巡检。
 

@@ -54,19 +54,19 @@ flowchart LR
 
 ## Install Options
 
-**1. Local-only**
+**1. Terminal**
 
 For users who only want to check Surge from the local terminal. This is the lightest path: the script calls `surge-cli` directly and can be run manually or by a local scheduler.
 
 [One-command install and local run notes](docs/runtime-options.md)
 
-**2. Recommended Hermes Agent ⭐**
+**2. 🌟 Recommended - Hermes Agent**
 
 Best for always-on monitoring, incident notifications, and learning from repeated patterns. Healthy checks stay fully silent; important issues can wake AI and notify you through chat.
 
 [One-command install and Hermes task setup](docs/hermes-edition.md)
 
-**3. Codex Edition**
+**3. Codex**
 
 Best for lower-frequency repository checks, incident review, and project maintenance. It is not recommended for minute-level monitoring.
 

@@ -6,17 +6,17 @@ Surge Guardian Assistant has one core loop and three practical ways to run it.
 
 ## 1. Choose A Runtime
 
-**1. Recommended Hermes Agent**
+**1. Terminal**
+
+Best when you only want to check Surge from the local terminal. This is the lightest path: local scripts plus `surge-cli`.
+
+**2. 🌟 Recommended - Hermes Agent**
 
 Best for always-on monitoring, incident notifications, and learning from repeated patterns. Healthy checks stay silent; important issues can wake AI.
 
 [Read Hermes setup](hermes-edition.md)
 
-**2. Local-only**
-
-Best when you only want to check Surge from the local terminal. This is the lightest path: local scripts plus `surge-cli`.
-
-**3. Codex Edition**
+**3. Codex**
 
 Best for lower-frequency repository checks, incident review, and project maintenance. It is not recommended for minute-level monitoring.
 

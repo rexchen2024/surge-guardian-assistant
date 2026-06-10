@@ -54,19 +54,19 @@ flowchart LR
 
 ## 安裝方式
 
-**1. 極簡本機**
+**1. 終端**
 
 只想在本機終端檢查 Surge。最輕量，腳本直接呼叫 `surge-cli`，適合手動檢查或本機排程。
 
 [一鍵安裝和本機執行說明](docs/runtime-options.zh-TW.md)
 
-**2. 推薦 Hermes Agent ⭐**
+**2. 🌟推薦 - Hermes Agent**
 
 常駐巡檢、異常通知、持續學習的首選方式。健康時完全靜默，重要問題再喚醒 AI，也可以透過聊天工具推送。
 
 [一鍵安裝和 Hermes 任務說明](docs/hermes-edition.zh-TW.md)
 
-**3. Codex 版本**
+**3. Codex**
 
 適合低頻檢查儲存庫、回顧異常、維護專案。不建議做每分鐘巡檢。
 
