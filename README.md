@@ -2,6 +2,8 @@
 
 [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-CN.md)
 
+Current version: **0.2.0**
+
 Surge Guardian Assistant is a lightweight autonomous operations assistant for
 people who run [Surge](https://nssurge.com/) on macOS. It watches Surge signals,
 handles safe recovery steps, keeps healthy checks quiet, and asks for user
@@ -15,6 +17,29 @@ https://github.com/rexchen2024/surge-guardian-assistant
 
 Repository slug and public product name are aligned as
 `surge-guardian-assistant`.
+
+## Quick Start
+
+One-command install:
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)"
+```
+
+Private repository users can use Git directly:
+
+```bash
+git clone https://github.com/rexchen2024/surge-guardian-assistant.git
+cd surge-guardian-assistant
+scripts/surge-guardian-assistant setup --print-hermes-command
+```
+
+Update later:
+
+```bash
+cd ~/.surge-guardian-assistant
+scripts/surge-guardian-assistant update
+```
 
 ## Choose A Version
 
@@ -61,12 +86,15 @@ provided prompt to review non-silent incidents or propose improvements.
 - `setup`: interactive first-run setup; writes local `.env` only.
 - `tick`: one lightweight guardian run.
 - `doctor`: sanitized manual diagnostic summary.
+- `version`: print installed version.
+- `update`: pull the latest GitHub version and run checks.
 - `redact-check`: repository scan before commit or GitHub push.
 
 ```bash
 scripts/surge-guardian-assistant setup --print-hermes-command
 scripts/surge-guardian-assistant doctor
 scripts/surge-guardian-assistant tick
+scripts/surge-guardian-assistant update --check
 ```
 
 Healthy `tick` output is:
@@ -98,6 +126,8 @@ scripts/check
 - [Hermes Edition](docs/hermes-edition.md)
 - [Codex Edition](docs/codex-edition.md)
 - [Runtime options](docs/runtime-options.md)
+- [Updating](docs/updating.md)
 - [Autonomy model](docs/autonomy.md)
 - [Privacy notes](docs/privacy.md)
 - [Sync workflow](docs/sync-workflow.md)
+- [Changelog](CHANGELOG.md)

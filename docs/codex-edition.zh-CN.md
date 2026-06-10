@@ -23,6 +23,16 @@ Codex 版本是可选部署方式，适合希望用 Codex 检查项目、分析�
 
 ## 安装
 
+最快方式：
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)"
+```
+
+如果仓库仍是私有仓库，请使用下面的 Git 方式，并确保当前 GitHub 账号有访问权限。
+
+Git 方式：
+
 ```bash
 git clone https://github.com/rexchen2024/surge-guardian-assistant.git
 cd surge-guardian-assistant
@@ -48,6 +58,18 @@ codex/automation-prompts/surge-guardian-review.md
 
 不建议用 Codex 做分钟级健康巡检。Codex automation 会启动一次 Codex 任务，
 而 Hermes 在健康运行时可以完全跳过模型工作。
+
+可以直接交给 Codex 的提示词：
+
+```text
+请把这个仓库作为 Surge 守护助手使用：从 https://github.com/rexchen2024/surge-guardian-assistant 安装，运行 scripts/surge-guardian-assistant doctor，然后基于 codex/automation-prompts/surge-guardian-review.md 创建或建议一个安全的 Codex 自动化。不要在未确认前编辑 Surge profiles 或执行永久网络变更。
+```
+
+以后升级：
+
+```bash
+scripts/surge-guardian-assistant update
+```
 
 ## 安全边界
 

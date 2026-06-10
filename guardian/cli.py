@@ -8,6 +8,7 @@ import shutil
 import subprocess
 from pathlib import Path
 
+from . import __version__
 from .config import DEFAULT_SURGE_CLI, GuardianConfig, write_env
 from .guardian import SurgeGuardian
 from .redact import scan
@@ -59,6 +60,21 @@ def discover_policies(surge_cli: str) -> list[str]:
     if isinstance(proxies, list):
         return [str(item) for item in proxies]
     return []
+
+
+def run_git(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["git", *args],
+        cwd=root,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+
+
+def command_version(_args: argparse.Namespace) -> int:
+    print(f"Surge Guardian Assistant {__version__}")
+    return 0
 
 
 def command_setup(args: argparse.Namespace) -> int:
@@ -185,16 +201,73 @@ def command_redact_check(_args: argparse.Namespace) -> int:
     return 1
 
 
+def command_update(args: argparse.Namespace) -> int:
+    root = project_root()
+    if not (root / ".git").exists():
+        print("update: this install is not a git checkout; reinstall from GitHub to receive updates")
+        return 1
+
+    status = run_git(root, "status", "--porcelain", "--untracked-files=no")
+    if status.returncode != 0:
+        print(f"update: git status failed: {status.stderr.strip()}")
+        return status.returncode
+    if status.stdout.strip() and not args.force and not args.check:
+        print("update: local tracked files have changes; commit/stash them first or rerun with --force")
+        return 1
+
+    fetch = run_git(root, "fetch", "--prune", "origin")
+    if fetch.returncode != 0:
+        print(f"update: git fetch failed: {fetch.stderr.strip()}")
+        return fetch.returncode
+
+    upstream = run_git(root, "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}")
+    upstream_ref = upstream.stdout.strip() if upstream.returncode == 0 else "origin/main"
+    counts = run_git(root, "rev-list", "--left-right", "--count", f"HEAD...{upstream_ref}")
+    if counts.returncode != 0:
+        print(f"update: cannot compare with {upstream_ref}: {counts.stderr.strip()}")
+        return counts.returncode
+    ahead, behind = [int(item) for item in counts.stdout.split()]
+
+    if behind == 0:
+        print(f"Surge Guardian Assistant {__version__} is up to date")
+        return 0
+    if args.check:
+        if ahead:
+            print(f"updates available: {behind} commit(s) behind {upstream_ref}; local branch is also {ahead} commit(s) ahead")
+        else:
+            print(f"updates available: {behind} commit(s) behind {upstream_ref}")
+        return 0
+    if ahead and not args.force:
+        print(f"update: local branch is {ahead} commit(s) ahead and {behind} behind; resolve manually")
+        return 1
+
+    pull = run_git(root, "pull", "--ff-only")
+    if pull.returncode != 0:
+        print(f"update: git pull failed: {pull.stderr.strip()}")
+        return pull.returncode
+
+    check = subprocess.run(["scripts/check"], cwd=root, text=True)
+    if check.returncode != 0:
+        print("update: code updated, but scripts/check failed; inspect the output above")
+        return check.returncode
+    print("update: complete")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="surge-guardian-assistant")
+    parser.add_argument("--version", action="version", version=f"Surge Guardian Assistant {__version__}")
     sub = parser.add_subparsers(dest="command", required=True)
+
+    version = sub.add_parser("version", help="print installed version")
+    version.set_defaults(func=command_version)
 
     setup = sub.add_parser("setup", help="interactive first-run setup")
     setup.add_argument("--print-hermes-command", action="store_true", help="print a Hermes cron create command")
     setup.add_argument("--install-hermes", action="store_true", help="create the Hermes cron job after writing .env")
     setup.set_defaults(func=command_setup)
 
-    tick = sub.add_parser("tick", help="one guardian run for Hermes cron")
+    tick = sub.add_parser("tick", help="one guardian run")
     tick.set_defaults(func=command_tick)
 
     doctor = sub.add_parser("doctor", help="manual sanitized diagnostic summary")
@@ -202,6 +275,11 @@ def main(argv: list[str] | None = None) -> int:
 
     redact = sub.add_parser("redact-check", help="scan repository for private content before commit")
     redact.set_defaults(func=command_redact_check)
+
+    update = sub.add_parser("update", help="fetch and apply GitHub updates")
+    update.add_argument("--check", action="store_true", help="only report whether updates are available")
+    update.add_argument("--force", action="store_true", help="allow update despite local tracked changes or ahead commits")
+    update.set_defaults(func=command_update)
 
     args = parser.parse_args(argv)
     return int(args.func(args))

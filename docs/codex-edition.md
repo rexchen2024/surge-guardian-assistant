@@ -25,6 +25,17 @@ minute-level quiet monitoring.
 
 ## Install
 
+Fast path:
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)"
+```
+
+If the repository is private, use the Git path below with a GitHub account that
+has access.
+
+Git path:
+
 ```bash
 git clone https://github.com/rexchen2024/surge-guardian-assistant.git
 cd surge-guardian-assistant
@@ -52,6 +63,18 @@ Recommended cadence:
 
 Avoid minute-level Codex automations for healthy checks. A Codex automation
 starts a Codex task, while Hermes can skip model work entirely on healthy runs.
+
+Suggested user prompt for Codex:
+
+```text
+Use this repository as Surge Guardian Assistant. Install it from https://github.com/rexchen2024/surge-guardian-assistant, run scripts/surge-guardian-assistant doctor, then create or suggest a safe Codex automation using codex/automation-prompts/surge-guardian-review.md. Do not edit Surge profiles or make permanent network changes without asking me first.
+```
+
+Update later:
+
+```bash
+scripts/surge-guardian-assistant update
+```
 
 ## Safety Boundary
 

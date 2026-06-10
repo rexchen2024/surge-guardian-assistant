@@ -2,6 +2,8 @@
 
 [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-CN.md)
 
+当前版本：**0.2.0**
+
 Surge 守护助手是一个面向 macOS [Surge](https://nssurge.com/) 用户的轻量级自治运维助手。它会观察 Surge 信号，执行安全范围内的恢复动作，在健康状态下保持静默，并且在高风险动作前请求用户确认。
 
 项目主页：
@@ -11,6 +13,29 @@ https://github.com/rexchen2024/surge-guardian-assistant
 ```
 
 仓库 slug 和对外项目名已统一为 `surge-guardian-assistant`。
+
+## 快速开始
+
+一条命令安装：
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)"
+```
+
+如果仓库仍是私有仓库，可以用 Git 方式：
+
+```bash
+git clone https://github.com/rexchen2024/surge-guardian-assistant.git
+cd surge-guardian-assistant
+scripts/surge-guardian-assistant setup --print-hermes-command
+```
+
+以后升级：
+
+```bash
+cd ~/.surge-guardian-assistant
+scripts/surge-guardian-assistant update
+```
 
 ## 选择版本
 
@@ -52,12 +77,15 @@ https://github.com/rexchen2024/surge-guardian-assistant
 - `setup`：交互式首次配置；只写入本地 `.env`。
 - `tick`：执行一次轻量守护。
 - `doctor`：脱敏后的手动诊断摘要。
+- `version`：显示已安装版本。
+- `update`：拉取 GitHub 最新版本并运行检查。
 - `redact-check`：提交或推送 GitHub 前的仓库扫描。
 
 ```bash
 scripts/surge-guardian-assistant setup --print-hermes-command
 scripts/surge-guardian-assistant doctor
 scripts/surge-guardian-assistant tick
+scripts/surge-guardian-assistant update --check
 ```
 
 健康状态下的 `tick` 输出是：
@@ -89,6 +117,8 @@ scripts/check
 - [Hermes 版本](docs/hermes-edition.zh-CN.md)
 - [Codex 版本](docs/codex-edition.zh-CN.md)
 - [运行方式](docs/runtime-options.zh-CN.md)
+- [升级](docs/updating.zh-CN.md)
 - [自治模型](docs/autonomy.zh-CN.md)
 - [隐私说明](docs/privacy.zh-CN.md)
 - [同步流程](docs/sync-workflow.zh-CN.md)
+- [更新日志](CHANGELOG.zh-CN.md)

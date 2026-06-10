@@ -25,6 +25,17 @@ another platform supported by the user's Hermes setup.
 
 ## Install
 
+Fast path:
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
+```
+
+If the repository is private, use the Git path below with a GitHub account that
+has access.
+
+Git path:
+
 ```bash
 git clone https://github.com/rexchen2024/surge-guardian-assistant.git
 cd surge-guardian-assistant
@@ -62,10 +73,25 @@ Use `hermes/job-prompts/guardian.md` as the model-analysis prompt. It tells
 Hermes to stay silent for minor already-handled issues and to request
 confirmation before risky Surge changes.
 
+Suggested user prompt for Hermes:
+
+```text
+Install Surge Guardian Assistant from https://github.com/rexchen2024/surge-guardian-assistant, run scripts/surge-guardian-assistant setup --print-hermes-command, show me the generated Hermes cron command, and do not edit Surge profiles or make permanent network changes without asking me first.
+```
+
 ## Operate
 
 - Run `doctor` for a sanitized status check.
+- Run `version` to see the installed version.
+- Run `update --check` to see whether GitHub has newer code.
+- Run `update` to pull the latest code and run validation.
 - Run `scripts/check` before publishing changes.
 - Keep `.env`, logs, state, profiles, and real infrastructure identifiers out of
   Git.
 - Treat Hermes Edition as the default path for always-on monitoring.
+
+```bash
+scripts/surge-guardian-assistant version
+scripts/surge-guardian-assistant update --check
+scripts/surge-guardian-assistant update
+```

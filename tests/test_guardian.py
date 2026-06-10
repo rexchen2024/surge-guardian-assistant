@@ -2,6 +2,7 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+import guardian
 from guardian.config import write_env
 from guardian.guardian import SurgeGuardian
 from guardian.state import StateStore
@@ -60,6 +61,11 @@ class GuardianParsingTest(unittest.TestCase):
             path = Path(tmp) / "state.json"
             StateStore(path).save({"ok": True})
             self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+
+    def test_package_version_matches_pyproject(self):
+        pyproject = Path(__file__).resolve().parent.parent / "pyproject.toml"
+        version_line = next(line for line in pyproject.read_text().splitlines() if line.startswith("version = "))
+        self.assertEqual(guardian.__version__, version_line.split('"')[1])
 
 
 if __name__ == "__main__":
