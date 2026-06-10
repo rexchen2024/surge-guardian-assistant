@@ -1,6 +1,6 @@
 # 运行方式
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.md)
 
 Surge 守护助手的核心循环只有一套，但有三种实际运行方式。
 

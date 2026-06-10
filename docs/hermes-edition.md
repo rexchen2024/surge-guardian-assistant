@@ -1,6 +1,6 @@
 # Hermes Edition
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/hermes-edition.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/hermes-edition.zh-CN.md)
+[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/hermes-edition.zh-CN.md)
 
 Hermes Edition is the recommended setup. It is for always-on monitoring: quiet when healthy, noisy only when something needs attention.
 

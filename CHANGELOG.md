@@ -1,6 +1,6 @@
 # Changelog
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.zh-CN.md)
+[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.zh-CN.md)
 
 ## 0.1.0
 
@@ -24,3 +24,4 @@ First complete release.
 - Simplified Chinese default homepage, with Hong Kong Traditional Chinese, Taiwan Traditional Chinese, and English homepage variants.
 - Surge-user fit, project boundary, and FAQ sections.
 - Refined homepage positioning around low-power checks, quiet operation, Surge Agent Skill / `surge-cli`, Hermes learning, and AI escalation only when useful.
+- Simplified Chinese homepage install section now presents local, Hermes Agent recommended, and Codex paths with detail links.

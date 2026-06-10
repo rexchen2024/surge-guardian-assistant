@@ -1,6 +1,6 @@
 # Troubleshooting
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/troubleshooting.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/troubleshooting.zh-CN.md)
+[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/troubleshooting.zh-CN.md)
 
 Start with:
 

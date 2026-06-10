@@ -1,8 +1,8 @@
 # Codex 版本
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.md)
 
-Codex 版本是可选用法。它适合低频检查、分析异常包、维护仓库。不建议用它做每分钟巡检。
+Codex 版本适合低频检查、分析异常包、维护仓库。不建议用它做每分钟巡检。
 
 ## 一键安装
 

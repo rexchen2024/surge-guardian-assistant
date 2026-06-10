@@ -1,6 +1,6 @@
 # 常见问题
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/faq.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/faq.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/faq.md)
 
 ## 这是 Surge 配置仓库吗？
 

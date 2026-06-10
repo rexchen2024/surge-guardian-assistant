@@ -1,6 +1,6 @@
 # Onboarding
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/onboarding.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/onboarding.zh-CN.md)
+[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/onboarding.zh-CN.md)
 
 This guide assumes Surge for macOS is already installed. Hermes is recommended
 for scheduled model-assisted operation, but the local `doctor` and `tick`

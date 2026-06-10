@@ -1,6 +1,6 @@
 # Privacy Notes
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/privacy.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/privacy.zh-CN.md)
+[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/privacy.zh-CN.md)
 
 Treat these as sensitive:
 

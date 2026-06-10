@@ -1,6 +1,6 @@
 # Hermes 版本
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/hermes-edition.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/hermes-edition.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/hermes-edition.md)
 
 Hermes 版本是推荐用法。它适合常驻巡检：健康时不吵你，出问题时再通知。
 

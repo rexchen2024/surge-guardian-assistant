@@ -1,6 +1,6 @@
 # Autonomy Model
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/autonomy.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/autonomy.zh-CN.md)
+[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/autonomy.zh-CN.md)
 
 Surge Guardian Assistant uses layered autonomy.
 

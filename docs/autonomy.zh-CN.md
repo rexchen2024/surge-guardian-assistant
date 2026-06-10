@@ -1,6 +1,6 @@
 # 自治模型
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/autonomy.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/autonomy.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/autonomy.md)
 
 Surge 守护助手使用分层自治模型。
 

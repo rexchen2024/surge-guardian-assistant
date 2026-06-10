@@ -1,6 +1,6 @@
 # Runtime Options
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.zh-CN.md)
+[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.zh-CN.md)
 
 Surge Guardian Assistant has one core loop and three practical ways to run it.
 

@@ -1,6 +1,6 @@
 # Codex Edition
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.zh-CN.md)
+[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.zh-CN.md)
 
 Codex Edition is optional. Use it for lower-frequency checks, incident review, and repository maintenance. Do not use it for minute-level monitoring.
 

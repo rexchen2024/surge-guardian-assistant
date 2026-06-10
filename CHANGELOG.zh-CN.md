@@ -1,6 +1,6 @@
 # 更新日志
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.md)
 
 ## 0.1.0
 
@@ -24,4 +24,5 @@
 - 默认简体中文主页，并提供香港繁中、台湾繁中和英文主页。
 - 面向 Surge 用户补充适用边界和常见问题。
 - 主页重排，强化低功耗、极致静默、Surge Agent Skill / `surge-cli`、Hermes 学习机制和必要时 AI 分析的定位。
-- 简体主页增加目录和三种安装方式说明：极简本地、Hermes 推荐、Codex 可选。
+- 简体主页增加目录和三种安装方式说明：极简本地、Hermes Agent 推荐、Codex 版本。
+- 简体主页安装方式改为更清晰的分段入口，突出 Hermes Agent 推荐，并把详细步骤放到二级文档。
