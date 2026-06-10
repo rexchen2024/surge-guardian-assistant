@@ -1,6 +1,6 @@
 # Surge 守护助手
 
-[![Release](https://img.shields.io/github/v/release/rexchen2024/surge-guardian-assistant?label=release)](https://github.com/rexchen2024/surge-guardian-assistant/releases)
+[![Release](https://img.shields.io/badge/release-v0.1.0-blue.svg)](https://github.com/rexchen2024/surge-guardian-assistant/releases/tag/v0.1.0)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-TW.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.en.md)
