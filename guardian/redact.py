@@ -20,6 +20,13 @@ PATTERNS = [
 ]
 
 
+def redact_text(text: str) -> str:
+    redacted = text
+    for kind, pattern in PATTERNS:
+        redacted = pattern.sub(f"[redacted:{kind}]", redacted)
+    return redacted
+
+
 @dataclass(frozen=True)
 class Finding:
     path: Path

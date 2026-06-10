@@ -4,7 +4,9 @@ from tempfile import TemporaryDirectory
 
 import guardian
 from guardian.config import GuardianConfig, write_env
+from guardian.cli import build_feedback_report
 from guardian.guardian import SurgeGuardian
+from guardian.redact import redact_text
 from guardian.state import StateStore
 
 
@@ -72,6 +74,22 @@ class GuardianParsingTest(unittest.TestCase):
             config = GuardianConfig.load(Path(tmp))
             self.assertTrue(config.auto_update)
             self.assertEqual(config.auto_update_interval_seconds, 86400)
+
+    def test_redact_text_removes_private_values(self):
+        token = "g" + "hp_" + "abcdefghijklmnopqrstuvwxyz"
+        user_path = "/" + "Users" + "/" + "example" + "/path"
+        key = "to" + "ken"
+        text = f"{key}={token} and {user_path}"
+        redacted = redact_text(text)
+        self.assertNotIn(token, redacted)
+        self.assertNotIn(user_path, redacted)
+
+    def test_feedback_report_is_sanitized(self):
+        with TemporaryDirectory() as tmp:
+            config = GuardianConfig.load(Path(tmp))
+            report = build_feedback_report(config)
+            self.assertIn("version:", report)
+            self.assertNotIn(str(Path.home()), report)
 
 
 if __name__ == "__main__":

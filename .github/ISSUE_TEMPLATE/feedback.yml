@@ -1,0 +1,37 @@
+name: Sanitized feedback
+description: Share a sanitized problem report or improvement idea.
+title: "Feedback: "
+labels: ["feedback"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please do not paste raw Surge profiles, subscription URLs, node credentials, request logs, DNS dumps, tokens, real domains, or real IPs.
+
+        You can generate a local report with:
+
+        ```bash
+        scripts/surge-guardian-assistant feedback --print
+        ```
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the problem in a few sentences.
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Sanitized report
+      description: Paste the output from the feedback command after reviewing it.
+      render: markdown
+    validations:
+      required: false
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      description: What should the assistant have done instead?
+    validations:
+      required: false

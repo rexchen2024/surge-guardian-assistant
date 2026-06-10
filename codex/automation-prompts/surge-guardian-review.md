@@ -11,12 +11,13 @@ Default runtime assumption:
 Tasks:
 
 1. Run `scripts/check`.
-2. Inspect recent repository changes and untracked files.
-3. Check whether README/docs still describe Hermes as the recommended runtime.
-4. Look for privacy leaks, including real user paths, IPs, domains, node names,
+2. Run `scripts/surge-guardian-assistant update --check`.
+3. Inspect recent repository changes and untracked files.
+4. Check whether README/docs still describe Hermes as the recommended runtime.
+5. Look for privacy leaks, including real user paths, IPs, domains, node names,
    tokens, subscription URLs, request bodies, profile content, and notification
    targets.
-5. Review any provided non-silent incident package and decide whether it is
+6. Review any provided non-silent incident package and decide whether it is
    transient, already handled, or requires user confirmation.
 
 Safety boundaries:

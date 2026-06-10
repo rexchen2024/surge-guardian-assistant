@@ -3,16 +3,18 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import platform
 import shlex
 import shutil
 import subprocess
 import time
 from pathlib import Path
+from urllib.parse import urlencode
 
 from . import __version__
 from .config import DEFAULT_SURGE_CLI, GuardianConfig, write_env
 from .guardian import SurgeGuardian
-from .redact import scan
+from .redact import redact_text, scan
 from .surge import SurgeClient, latest_surge_log
 
 
@@ -287,6 +289,95 @@ def command_redact_check(_args: argparse.Namespace) -> int:
     return 1
 
 
+def yesno(value: bool) -> str:
+    return "yes" if value else "no"
+
+
+def build_feedback_report(config: GuardianConfig, include_check: bool = False) -> str:
+    client = SurgeClient(config.surge_cli)
+    latest = latest_surge_log(config.surge_log_dir)
+    update_state = read_json(config.state_dir / "update-state.json")
+
+    lines = [
+        "# Surge Guardian Assistant Feedback Report",
+        "",
+        "Review this before sharing. Remove anything you do not want to send.",
+        "",
+        f"version: {__version__}",
+        f"platform: {platform.system()} {platform.release()}",
+        f"python: {platform.python_version()}",
+        f"git_checkout: {yesno((config.root / '.git').exists())}",
+        f"config_present: {yesno(config.env_path.exists())}",
+        f"surge_cli_found: {yesno(os.path.exists(config.surge_cli))}",
+        f"log_dir_found: {yesno(config.surge_log_dir.exists())}",
+        f"latest_surge_log_found: {yesno(bool(latest))}",
+        f"primary_profile_configured: {yesno(bool(config.mac_profile))}",
+        f"secondary_profile_configured: {yesno(bool(config.mobile_profile))}",
+        f"auto_update: {yesno(config.auto_update)}",
+        f"auto_update_interval_seconds: {config.auto_update_interval_seconds}",
+        f"last_update_result: {update_state.get('last_result', 'none')}",
+    ]
+
+    env, env_result = client.dump_environment()
+    runtime_env = env.get("environment", env) if isinstance(env, dict) else {}
+    lines.append(f"surge_environment_available: {yesno(bool(env_result['ok'] and runtime_env))}")
+
+    policy, policy_result = client.dump_policy()
+    proxies = policy.get("proxies", []) if isinstance(policy, dict) else []
+    lines.append(f"surge_policy_available: {yesno(bool(policy_result['ok'] and policy))}")
+    lines.append(f"surge_proxy_count: {len(proxies) if isinstance(proxies, list) else 0}")
+
+    for label, path in [("primary_profile_check", config.mac_profile), ("secondary_profile_check", config.mobile_profile)]:
+        if not path:
+            lines.append(f"{label}: not configured")
+            continue
+        result = client.check_profile(path)
+        lines.append(f"{label}: {'ok' if result['ok'] else 'failed'}")
+
+    if include_check:
+        check = subprocess.run(
+            ["scripts/check"],
+            cwd=config.root,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            timeout=120,
+        )
+        lines.extend([
+            "",
+            "## scripts/check",
+            f"exit_code: {check.returncode}",
+            "output:",
+            check.stdout.strip()[-4000:] or "(empty)",
+        ])
+
+    return redact_text("\n".join(lines).strip() + "\n")
+
+
+def command_feedback(args: argparse.Namespace) -> int:
+    config = GuardianConfig.load(project_root())
+    report = build_feedback_report(config, include_check=args.with_check)
+
+    if args.print:
+        print(report, end="")
+        return 0
+
+    output = Path(args.output) if args.output else config.state_dir / "feedback-report.md"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(report)
+    output.chmod(0o600)
+    print(f"feedback report: {output}")
+    print("Review it before sharing. Nothing was uploaded.")
+
+    if args.github_url:
+        query = urlencode({
+            "title": "Feedback: Surge Guardian Assistant issue",
+            "body": report,
+        })
+        print(f"github issue url: https://github.com/rexchen2024/surge-guardian-assistant/issues/new?{query}")
+    return 0
+
+
 def command_update(args: argparse.Namespace) -> int:
     root = project_root()
     if not (root / ".git").exists():
@@ -366,6 +457,13 @@ def main(argv: list[str] | None = None) -> int:
     update.add_argument("--check", action="store_true", help="only report whether updates are available")
     update.add_argument("--force", action="store_true", help="allow update despite local tracked changes or ahead commits")
     update.set_defaults(func=command_update)
+
+    feedback = sub.add_parser("feedback", help="create a sanitized user feedback report")
+    feedback.add_argument("--print", action="store_true", help="print the report instead of writing a file")
+    feedback.add_argument("--output", help="write the report to this path")
+    feedback.add_argument("--with-check", action="store_true", help="include scripts/check output")
+    feedback.add_argument("--github-url", action="store_true", help="print a prefilled GitHub issue URL")
+    feedback.set_defaults(func=command_feedback)
 
     args = parser.parse_args(argv)
     return int(args.func(args))

@@ -49,8 +49,15 @@ Next:
   cd "$INSTALL_DIR"
   scripts/surge-guardian-assistant setup --print-hermes-command
 
-Update later:
+Automatic updates:
+  Normal tick runs check GitHub once a day.
+
+Manual update:
   cd "$INSTALL_DIR"
   scripts/surge-guardian-assistant update
+
+Send feedback:
+  cd "$INSTALL_DIR"
+  scripts/surge-guardian-assistant feedback --github-url
 EOF
 fi

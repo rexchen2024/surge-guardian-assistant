@@ -2,54 +2,38 @@
 
 [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.zh-CN.md)
 
-Codex Edition is an optional deployment style for users who want Codex to review
-the project, inspect non-silent incidents, and suggest improvements.
+Codex Edition is optional. Use it for lower-frequency checks, incident review, and repository maintenance. Do not use it for minute-level monitoring.
 
-It is not the default production runtime. Hermes Edition remains better for
-minute-level quiet monitoring.
-
-## What It Does
-
-- Runs lower-frequency Codex workspace automations.
-- Reviews repository health and privacy risk.
-- Runs `scripts/check`.
-- Analyzes non-silent incident packages when provided.
-- Suggests code or documentation improvements after repeated patterns.
-
-## Requirements
-
-- Surge for macOS is installed and running.
-- Codex can access the local repository workspace.
-- The user has Codex automations available.
-- Model-backed scheduled analysis is acceptable for the chosen cadence.
-
-## Install
-
-Fast path:
+## One-Command Install
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)"
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
 ```
 
-If the repository is private, use the Git path below with a GitHub account that
-has access.
-
-Git path:
+If the repository is still private:
 
 ```bash
-git clone https://github.com/rexchen2024/surge-guardian-assistant.git
-cd surge-guardian-assistant
-scripts/surge-guardian-assistant setup --print-hermes-command
+git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-guardian-assistant
+cd ~/.surge-guardian-assistant
+scripts/surge-guardian-assistant setup
 scripts/surge-guardian-assistant doctor
 ```
 
-The setup command still writes the same local `.env`, because the deterministic
-guardian logic is shared by both editions.
+## Prompt For Codex
+
+```text
+Install https://github.com/rexchen2024/surge-guardian-assistant locally as my Surge Guardian Assistant project. Run doctor and scripts/check, then create or suggest a safe Codex automation using codex/automation-prompts/surge-guardian-review.md. Do not edit Surge profiles or make permanent network changes without asking me first.
+```
 
 ## Create A Codex Automation
 
-Create a Codex workspace automation pointed at this repository root. Use the
-prompt template:
+Use this repository as the automation workspace:
+
+```text
+~/.surge-guardian-assistant
+```
+
+Prompt template:
 
 ```text
 codex/automation-prompts/surge-guardian-review.md
@@ -57,30 +41,29 @@ codex/automation-prompts/surge-guardian-review.md
 
 Recommended cadence:
 
-- daily for repository health review
-- weekly for privacy and documentation review
-- ad hoc when a non-silent incident package needs analysis
+- daily for repository health and privacy risk
+- weekly for docs and tests
+- ad hoc when a non-silent incident package needs review
 
-Avoid minute-level Codex automations for healthy checks. A Codex automation
-starts a Codex task, while Hermes can skip model work entirely on healthy runs.
+## Automatic Updates
 
-Suggested user prompt for Codex:
+A Codex automation can run this every day:
 
-```text
-Use this repository as Surge Guardian Assistant. Install it from https://github.com/rexchen2024/surge-guardian-assistant, run scripts/surge-guardian-assistant doctor, then create or suggest a safe Codex automation using codex/automation-prompts/surge-guardian-review.md. Do not edit Surge profiles or make permanent network changes without asking me first.
+```bash
+scripts/surge-guardian-assistant update --check
+scripts/check
 ```
 
-Update later:
+If you want it to upgrade directly, have the automation run:
 
 ```bash
 scripts/surge-guardian-assistant update
 ```
 
+If local tracked files were changed, the update skips instead of overwriting them.
+
 ## Safety Boundary
 
-Codex automations should not directly edit Surge profiles, `.conf`, `.sgmodule`,
-certificates, DNS records, server settings, MITM, Rewrite, Scripting, Replica,
-profile selection, policy group selections, reload, or restart behavior.
+Codex should not directly edit Surge profiles, certificates, DNS, MITM, Rewrite, Scripting, Replica, profile selection, policy group selection, reload, or restart.
 
-If any of those actions looks necessary, Codex should ask the user for
-confirmation instead of performing it.
+If any of those actions looks necessary, ask the user first.

@@ -2,24 +2,20 @@
 
 [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.zh-CN.md)
 
-## 0.3.0
-
-- 正常 `tick` 巡检时默认自动检查更新。
-- 新增 `AUTO_UPDATE` 和 `AUTO_UPDATE_INTERVAL_SECONDS`。
-- 升级保持安全：用户改过受 Git 管理的文件时会停止更新。
-- 简化 README 和升级说明。
-
-## 0.2.0
-
-- 对外项目名改为 Surge 守护助手。
-- 新增 Hermes 版本和 Codex 版本文档。
-- 只保留 `scripts/surge-guardian-assistant` 作为公开 CLI 入口。
-- 新增 `version` 和 `update` 命令。
-- 新增 `install.sh`，支持基于 Git 的一条命令安装。
-- 本地 `.env` 和 state 文件保持 `0600` 私有权限。
-
 ## 0.1.0
 
-- 初始 Surge 日志和事件守护循环。
-- 面向 Hermes cron 的健康输出 `{"wakeAgent": false}`。
-- 支持外部资源重试、DNS 刷新、策略复测、临时规则处理、隐私扫描和中英文文档。
+首个完整版本。
+
+- Surge 日志和事件巡检。
+- 健康时静默输出 `{"wakeAgent": false}`。
+- 外部资源失败自动重试。
+- DNS 连续异常自动刷新。
+- 通知前复测策略状态。
+- 反复 DIRECT 失败时添加小范围临时规则。
+- Hermes 版本：适合常驻巡检和通知。
+- Codex 版本：适合低频检查、异常分析和项目维护。
+- 一键安装脚本。
+- GitHub 自动更新。
+- `version`、`update`、`doctor`、`feedback` 和 `redact-check` 命令。
+- 本地 `.env` 和 state 文件私有权限。
+- 隐私扫描和脱敏反馈报告。

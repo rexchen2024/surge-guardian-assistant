@@ -4,34 +4,30 @@
 
 Updates come from GitHub.
 
-After setup, normal `tick` runs check for updates once a day. If new code is
-available, the assistant pulls it and runs `scripts/check`. If local tracked
-files were changed, it skips the update instead of overwriting anything.
+Automatic updates do not run in the background by themselves. Hermes, Codex, or another scheduler must keep running `tick`.
 
-## Automatic Updates
-
-Automatic updates are on by default:
+## Default Behavior
 
 ```bash
 AUTO_UPDATE=1
 AUTO_UPDATE_INTERVAL_SECONDS=86400
 ```
 
-Turn them off in `.env`:
+That means: check at most once a day.
 
-```bash
-AUTO_UPDATE=0
-```
+If new code is available, the assistant pulls it and runs `scripts/check`.
+
+If local tracked files were changed, the update skips instead of overwriting anything.
 
 ## Manual Commands
 
-Show the installed version:
+Show the version:
 
 ```bash
 scripts/surge-guardian-assistant version
 ```
 
-Check for updates:
+Check only:
 
 ```bash
 scripts/surge-guardian-assistant update --check
@@ -43,10 +39,16 @@ Update now:
 scripts/surge-guardian-assistant update
 ```
 
+Turn automatic updates off:
+
+```bash
+AUTO_UPDATE=0
+```
+
 ## Notes
 
 - `.env` stays local.
 - State files stay local.
 - Updates use `git pull --ff-only`.
-- Local tracked edits stop the update.
+- Non-Git installs cannot auto-update.
 - Release notes are in [Changelog](../CHANGELOG.md).
