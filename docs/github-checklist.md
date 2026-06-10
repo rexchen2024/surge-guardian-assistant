@@ -6,6 +6,8 @@ Use this checklist before publishing a release or making the repository public.
 
 - README explains what the project does in the first screen.
 - README includes install, requirements, update, feedback, license, and security links.
+- `README.md` is Simplified Chinese by default.
+- `README.zh-HK.md`, `README.zh-TW.md`, and `README.en.md` are present and linked from the homepage.
 - `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, and `CODE_OF_CONDUCT.md` are present.
 - Issue templates and PR template are present.
 - GitHub Actions check is passing.

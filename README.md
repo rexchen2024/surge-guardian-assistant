@@ -1,57 +1,57 @@
-# Surge Guardian Assistant
+# Surge 守护助手
 
 [![Release](https://img.shields.io/github/v/release/rexchen2024/surge-guardian-assistant?label=release)](https://github.com/rexchen2024/surge-guardian-assistant/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-CN.md)
+[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [繁體中文（香港）](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-HK.md) | [繁體中文（台灣）](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-TW.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.en.md)
 
-Current version: **0.1.0**
+当前版本：**0.1.0**
 
-Surge Guardian Assistant watches Surge for you. It stays quiet when things are fine, tries safe fixes first, and asks before risky changes.
+Surge 守护助手用于持续检查 Surge 状态。正常时保持静默；发现异常时先执行安全修复；需要高风险操作时再请求确认。
 
-Project:
+项目地址：
 
 ```text
 https://github.com/rexchen2024/surge-guardian-assistant
 ```
 
-## What These Tools Are
+## 相关项目
 
-- [Surge](https://nssurge.com/) is a network and proxy tool for macOS and iOS. This project watches Surge.
-- [Hermes](https://github.com/NousResearch/hermes-agent) runs scheduled jobs, analyzes incidents, and sends messages. It is the recommended always-on runtime.
-- [Codex](https://openai.com/codex/) is OpenAI's coding assistant. It is useful for lower-frequency project checks, incident review, and maintenance.
+- [Surge](https://nssurge.com/)：macOS / iOS 网络和代理工具。本项目负责检查和守护 Surge。
+- [Hermes](https://github.com/NousResearch/hermes-agent)：定时运行、异常分析和消息通知层。推荐用于常驻巡检。
+- [Codex](https://openai.com/codex/)：OpenAI 的代码助手。适合低频检查、异常复盘和仓库维护。
 
-## Requirements
+## 要求
 
-- Surge is installed and running on macOS.
-- Git is available.
-- Python 3.10 or newer.
-- Hermes Edition requires Hermes.
-- Codex Edition requires Codex access to the local repository.
+- macOS 上已安装并运行 Surge。
+- 本机可使用 Git。
+- Python 3.10 或更新版本。
+- Hermes 版本需要已安装 Hermes。
+- Codex 版本需要 Codex 能访问本地仓库。
 
-## How It Works
+## 工作方式
 
 ```mermaid
 flowchart LR
-  Surge["Surge logs and events"] --> Tick["tick check"]
-  Tick --> Fix["low-risk self-healing"]
-  Fix --> Healthy{"important incident left?"}
-  Healthy -->|no| Quiet["emit wakeAgent:false"]
-  Healthy -->|yes| Review["Hermes or Codex review"]
-  Review --> Confirm["ask before risky changes"]
+  Surge["Surge 日志和事件"] --> Tick["tick 巡检"]
+  Tick --> Fix["低风险自动处理"]
+  Fix --> Healthy{"是否仍有重要异常？"}
+  Healthy -->|否| Quiet["输出 wakeAgent:false"]
+  Healthy -->|是| Review["交给 Hermes 或 Codex 分析"]
+  Review --> Confirm["高风险操作先请求确认"]
 ```
 
-The assistant only performs low-risk, reversible actions: external-resource retry, DNS flush, policy retest, and temporary runtime rules. Permanent Surge profile edits, service restarts, certificates, DNS, MITM, Rewrite, and Scripting changes require user confirmation.
+守护助手只做低风险、可回退的处理，例如重试外部资源、刷新 DNS、复测策略、添加运行时临时规则。永久修改 Surge profile、重启服务、证书、DNS、MITM、Rewrite、Scripting 等操作都需要用户确认。
 
-## One-Command Install
+## 一键安装
 
-Default install path: `~/.surge-guardian-assistant`
+默认装到 `~/.surge-guardian-assistant`：
 
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
 ```
 
-If the repository is still private, use Git:
+如果仓库暂时还是私有的，用 Git：
 
 ```bash
 git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-guardian-assistant
@@ -59,81 +59,81 @@ cd ~/.surge-guardian-assistant
 scripts/surge-guardian-assistant setup --print-hermes-command
 ```
 
-Prompt for Hermes:
+也可以把下面的内容复制给 Hermes：
 
 ```text
-Install Surge Guardian Assistant from https://github.com/rexchen2024/surge-guardian-assistant, run setup, and show me the generated Hermes cron command. Do not edit Surge profiles or make permanent network changes without asking me first.
+请从 https://github.com/rexchen2024/surge-guardian-assistant 安装 Surge 守护助手，运行 setup，显示生成的 Hermes cron 命令。不要在未确认前编辑 Surge profile 或执行永久网络变更。
 ```
 
-Prompt for Codex:
+复制给 Codex：
 
 ```text
-Install https://github.com/rexchen2024/surge-guardian-assistant locally as my Surge Guardian Assistant project, run doctor and scripts/check, then create or suggest a safe Codex automation. Do not edit Surge profiles without asking me first.
+请把 https://github.com/rexchen2024/surge-guardian-assistant 作为 Surge 守护助手项目安装到本地，运行 doctor 和 scripts/check，帮我创建或建议一个安全的 Codex 自动化。不要在未确认前编辑 Surge profile。
 ```
 
-## Pick An Edition
+## 选哪个版本
 
-**Hermes Edition** is recommended. It is good for minute-level monitoring, stays silent on healthy runs, and notifies you only when needed.
+**Hermes 版本**：推荐。适合每分钟巡检，健康时不唤醒模型，出现异常再通知。
 
-[Install Hermes Edition](docs/hermes-edition.md)
+[Hermes 版本安装说明](docs/hermes-edition.zh-CN.md)
 
-**Codex Edition** is optional. It is good for daily or weekly repository checks, incident review, and ongoing project maintenance.
+**Codex 版本**：可选。适合每天或每周检查仓库、分析异常包、持续改进项目。
 
-[Install Codex Edition](docs/codex-edition.md)
+[Codex 版本安装说明](docs/codex-edition.zh-CN.md)
 
-## Core Features
+## 核心功能
 
-- Reads Surge logs and events.
-- Retries external resources when they fail.
-- Flushes DNS after repeated DNS problems.
-- Retests policies before bothering you.
-- Adds small temporary runtime rules for repeated DIRECT failures.
-- Emits `{"wakeAgent": false}` on healthy runs to avoid noise.
-- Pulls updates from GitHub automatically.
-- Keeps local `.env` and state files private.
-- Provides privacy scanning and sanitized feedback reports.
-- Never edits permanent Surge configuration without asking.
+- 读取 Surge 日志和事件。
+- 外部资源失败时自动重试。
+- DNS 连续异常时刷新 DNS。
+- 通知你之前先复测策略。
+- 对反复 DIRECT 失败加小范围临时规则。
+- 健康时输出 `{"wakeAgent": false}`，避免无意义打扰。
+- 自动从 GitHub 拉取更新。
+- 本地 `.env` 和 state 文件使用私有权限。
+- 提供隐私扫描和脱敏反馈报告。
+- 不会擅自改永久 Surge 配置。
 
-## Automatic Updates
+## 自动更新
 
-Automatic updates work when the install path is a Git checkout and Hermes, Codex, or another scheduler keeps running `tick`.
+只要安装目录是 Git 仓库，并且 Hermes/Codex/系统任务还在运行 `tick`，它会默认每天检查一次 GitHub 更新。
 
-The assistant checks GitHub once a day by default. If new code is available, it pulls the update and runs `scripts/check`. If local tracked files were changed, it skips the update instead of overwriting anything.
+有新代码时会自动拉取并运行 `scripts/check`。如果用户改过受 Git 管理的文件，会跳过更新，不会覆盖。
 
-Check manually:
+手动检查：
 
 ```bash
 cd ~/.surge-guardian-assistant
 scripts/surge-guardian-assistant update --check
 ```
 
-Update manually:
+手动更新：
 
 ```bash
 scripts/surge-guardian-assistant update
 ```
 
-Turn off automatic updates in `.env`:
+不想自动更新，在 `.env` 里写：
 
 ```bash
 AUTO_UPDATE=0
 ```
 
-## Send Feedback
+## 反馈问题
 
-The project does not upload logs or usage data by itself. A user can create a sanitized report, review it, and decide whether to send it:
+项目不会自动上传日志或使用数据。用户可以主动生成脱敏报告，检查后再决定是否提交：
 
 ```bash
 scripts/surge-guardian-assistant feedback --github-url
 ```
 
-Preview it in the terminal:
+想先在终端查看：
 
 ```bash
 scripts/surge-guardian-assistant feedback --print
 ```
 
-## Useful Commands
+## 常用命令
 
 ```bash
 scripts/surge-guardian-assistant doctor
@@ -144,18 +144,18 @@ scripts/surge-guardian-assistant feedback
 scripts/surge-guardian-assistant redact-check
 ```
 
-## Docs
+## 文档
 
-- [Hermes Edition](docs/hermes-edition.md)
-- [Codex Edition](docs/codex-edition.md)
-- [Updating](docs/updating.md)
-- [Autonomy model](docs/autonomy.md)
-- [Troubleshooting](docs/troubleshooting.md)
-- [Privacy notes](docs/privacy.md)
-- [Changelog](CHANGELOG.md)
+- [Hermes 版本](docs/hermes-edition.zh-CN.md)
+- [Codex 版本](docs/codex-edition.zh-CN.md)
+- [升级](docs/updating.zh-CN.md)
+- [自治模型](docs/autonomy.zh-CN.md)
+- [故障排查](docs/troubleshooting.zh-CN.md)
+- [隐私说明](docs/privacy.zh-CN.md)
+- [更新日志](CHANGELOG.zh-CN.md)
 
-## Project Rules
+## 项目规则
 
-- License: [MIT](LICENSE)
-- Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
-- Security policy: [SECURITY.md](SECURITY.md)
+- 许可证：[MIT](LICENSE)
+- 贡献说明：[CONTRIBUTING.md](CONTRIBUTING.md)
+- 安全策略：[SECURITY.md](SECURITY.md)

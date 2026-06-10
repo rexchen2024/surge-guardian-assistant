@@ -22,3 +22,4 @@
 - GitHub Actions 自动检查。
 - License、Contributing、Security、Code of Conduct、Issue 模板和 PR 模板。
 - 快速上手、故障排查和发布检查清单。
+- 默认简体中文主页，并提供香港繁中、台湾繁中和英文主页。

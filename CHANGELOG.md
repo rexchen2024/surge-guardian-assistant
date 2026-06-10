@@ -22,3 +22,4 @@ First complete release.
 - GitHub Actions checks.
 - License, contributing guide, security policy, code of conduct, issue templates, and PR template.
 - Onboarding, troubleshooting, and release checklist docs.
+- Simplified Chinese default homepage, with Hong Kong Traditional Chinese, Taiwan Traditional Chinese, and English homepage variants.
