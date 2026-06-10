@@ -92,9 +92,11 @@ def command_setup(args: argparse.Namespace) -> int:
         "STATE_DIR": "${HOME}/.hermes/state/surge-hermes-guardian",
         "DIRECT_FAIL_WINDOW_SECONDS": "900",
         "TEMP_RULE_REVIEW_SECONDS": "43200",
-        "DNS_FAIL_THRESHOLD": "5",
+        "EXTERNAL_RESOURCE_FAIL_THRESHOLD": "2",
+        "DNS_FAIL_THRESHOLD": "10",
         "DIRECT_FAIL_THRESHOLD": "3",
         "POLICY_RECOVERED_ALERT_THRESHOLD": "3",
+        "ALERT_COOLDOWN_SECONDS": "3600",
     }
     if mobile_profile:
         values["MOBILE_PROFILE"] = mobile_profile
@@ -150,10 +152,11 @@ def command_doctor(_args: argparse.Namespace) -> int:
     print(f"expected policies: {', '.join(config.expected_policies) if config.expected_policies else 'missing'}")
 
     env, env_result = client.dump_environment()
-    print(f"environment: {'ok' if env_result['ok'] and env else 'unavailable'}")
-    if env:
+    runtime_env = env.get("environment", env) if isinstance(env, dict) else {}
+    print(f"environment: {'ok' if env_result['ok'] and runtime_env else 'unavailable'}")
+    if runtime_env:
         safe_keys = ["ProxyMode", "MitMEnabled", "RewriteEnabled", "ScriptingEnabled", "Replica"]
-        safe = {key: env.get(key) for key in safe_keys if key in env}
+        safe = {key: runtime_env.get(key) for key in safe_keys if key in runtime_env}
         print(f"runtime flags: {json.dumps(safe, ensure_ascii=False)}")
 
     policy, policy_result = client.dump_policy()
@@ -206,4 +209,3 @@ def main(argv: list[str] | None = None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

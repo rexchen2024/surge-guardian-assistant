@@ -3,10 +3,9 @@
 [English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/README.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/README.zh-CN.md)
 
 Surge Hermes Guardian is a lightweight autonomous operations agent for people
-who already run [Surge](https://nssurge.com/) on macOS and use Hermes for
-scheduled agent work. It watches Surge continuously through Hermes cron, handles
-safe fixes by itself, and wakes a model only when the evidence deserves
-analysis.
+who run [Surge](https://nssurge.com/) on macOS. It can run as a local
+deterministic guardian with only Surge installed, and it can use Hermes for the
+recommended scheduled-agent, model-analysis, and notification workflow.
 
 The goal is not to produce more alerts. The goal is to keep Surge healthy,
 reduce repeated network errors, learn from recurring patterns, and notify the
@@ -23,6 +22,8 @@ confirmation.
   DNS, retest policies, and add narrow temporary runtime rules.
 - **Model-assisted when needed**: non-silent incidents wake Hermes, which uses
   the user's configured model and delivery channel.
+- **Hermes optional for local checks**: users without Hermes can run `tick` from
+  launchd or another local scheduler and review incident logs manually.
 - **Privacy-first**: real domains, IPs, profile paths, policy names, logs, and
   state stay in local `.env` and local state files.
 
@@ -124,6 +125,7 @@ scripts/check
 More docs:
 
 - [Onboarding](docs/onboarding.md)
+- [Runtime options](docs/runtime-options.md)
 - [Autonomy model](docs/autonomy.md)
 - [Privacy notes](docs/privacy.md)
 - [Sync workflow](docs/sync-workflow.md)

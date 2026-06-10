@@ -2,7 +2,8 @@
 
 [English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/onboarding.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/onboarding.zh-CN.md)
 
-本指南假设你已经安装了 Surge for macOS 和 Hermes。
+本指南假设你已经安装了 Surge for macOS。Hermes 是推荐的定时模型辅助运行方式，
+但本地 `doctor` 和 `tick` 命令不依赖 Hermes，也可以单独运行。
 
 ## 1. Clone
 
@@ -39,16 +40,20 @@ scripts/surge-hermes-guardian tick
 {"wakeAgent": false}
 ```
 
-## 4. 安装 Hermes Cron
+## 4. 选择运行方式
 
-检查 setup 打印出的命令，然后运行它。推荐调度频率是每分钟一次。
+如果使用推荐的 Hermes 工作流，检查 setup 打印出的命令，然后运行它。
+推荐调度频率是每分钟一次。
 
 Hermes 会根据用户现有的 Hermes 配置处理消息投递。如果还没有配置投递目标，
 请先配置一个 Hermes 支持的平台。Guardian 不要求必须使用 Telegram。
+
+如果这台机器只有 Surge、没有 Hermes，可以用 launchd 或其他本地调度器运行
+`tick`，然后只查看不等于 `{"wakeAgent": false}` 的输出。详见
+[运行方式](runtime-options.zh-CN.md)。
 
 ## 5. 日常使用
 
 - 使用 `doctor` 手动查看脱敏后的状态摘要。
 - 提交更改前运行 `redact-check` 或 `scripts/check`。
 - 不要把 `.env`、日志、state、profiles 或真实基础设施标识提交到 Git。
-

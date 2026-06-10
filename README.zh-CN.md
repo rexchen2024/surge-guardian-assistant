@@ -2,10 +2,10 @@
 
 [English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/README.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/README.zh-CN.md)
 
-Surge Hermes Guardian 是一个轻量级自治运维 agent，面向已经在 macOS
-上运行 [Surge](https://nssurge.com/) 并使用 Hermes 做定时 agent
-任务的用户。它通过 Hermes cron 持续守护 Surge，能自行处理安全范围内的
-修复动作，并且只在证据值得分析时才唤醒模型。
+Surge Hermes Guardian 是一个轻量级自治运维 agent，面向在 macOS
+上运行 [Surge](https://nssurge.com/) 的用户。它可以在只安装 Surge
+的情况下作为本地确定性守护脚本运行，也可以使用 Hermes 获得推荐的定时
+agent、模型分析和通知工作流。
 
 它的目标不是制造更多提醒，而是让 Surge 尽可能保持健康，减少重复网络错误，
 从长期模式中学习，并且只在问题被有效处理、或高风险动作需要用户确认时通知用户。
@@ -16,6 +16,8 @@ Surge Hermes Guardian 是一个轻量级自治运维 agent，面向已经在 mac
 - **默认静默**：健康运行返回 `{"wakeAgent": false}`，Hermes 不调用模型，也不发送消息。
 - **安全自治**：可自动更新外部资源、刷新 DNS、复测策略，并添加窄范围临时运行时规则。
 - **需要时调用模型**：非静默事件会唤醒 Hermes，使用用户已配置的模型和通知渠道。
+- **Hermes 不是本地检查的硬依赖**：没有 Hermes 的用户也可以用 launchd
+  或其他本地调度器运行 `tick`，再手动查看异常日志。
 - **隐私优先**：真实域名、IP、profile 路径、策略名称、日志和状态只保存在本地 `.env` 与本地 state 文件中。
 
 ## 推荐安装方式
@@ -112,6 +114,7 @@ scripts/check
 更多文档：
 
 - [新手上手](docs/onboarding.zh-CN.md)
+- [运行方式](docs/runtime-options.zh-CN.md)
 - [自治模型](docs/autonomy.zh-CN.md)
 - [隐私说明](docs/privacy.zh-CN.md)
 - [同步流程](docs/sync-workflow.zh-CN.md)

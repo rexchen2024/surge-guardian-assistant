@@ -71,6 +71,7 @@ class GuardianConfig:
     dns_fail_threshold: int
     direct_fail_threshold: int
     policy_recovered_alert_threshold: int
+    alert_cooldown_seconds: int
 
     @classmethod
     def load(cls, root: Path) -> "GuardianConfig":
@@ -91,9 +92,10 @@ class GuardianConfig:
             direct_fail_window_seconds=int(env.get("DIRECT_FAIL_WINDOW_SECONDS", "900") or "900"),
             temp_rule_review_seconds=int(env.get("TEMP_RULE_REVIEW_SECONDS", "43200") or "43200"),
             external_resource_fail_threshold=int(env.get("EXTERNAL_RESOURCE_FAIL_THRESHOLD", "2") or "2"),
-            dns_fail_threshold=int(env.get("DNS_FAIL_THRESHOLD", "5") or "5"),
+            dns_fail_threshold=int(env.get("DNS_FAIL_THRESHOLD", "10") or "10"),
             direct_fail_threshold=int(env.get("DIRECT_FAIL_THRESHOLD", "3") or "3"),
             policy_recovered_alert_threshold=int(env.get("POLICY_RECOVERED_ALERT_THRESHOLD", "3") or "3"),
+            alert_cooldown_seconds=int(env.get("ALERT_COOLDOWN_SECONDS", "3600") or "3600"),
         )
 
     def missing_required(self) -> list[str]:

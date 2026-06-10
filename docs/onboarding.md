@@ -2,7 +2,9 @@
 
 [English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/onboarding.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/onboarding.zh-CN.md)
 
-This guide assumes Surge for macOS and Hermes are already installed.
+This guide assumes Surge for macOS is already installed. Hermes is recommended
+for scheduled model-assisted operation, but the local `doctor` and `tick`
+commands can run without Hermes.
 
 ## 1. Clone
 
@@ -39,14 +41,18 @@ Healthy `tick` output is:
 {"wakeAgent": false}
 ```
 
-## 4. Install Hermes Cron
+## 4. Choose A Runtime
 
-Review the command printed by setup, then run it. The recommended schedule is
-once per minute.
+For the recommended Hermes workflow, review the command printed by setup, then
+run it. The recommended schedule is once per minute.
 
 Hermes handles delivery according to the user's existing Hermes configuration.
 If no delivery target is configured, set up a Hermes-supported platform first.
 The guardian does not require Telegram specifically.
+
+For a Surge-only machine without Hermes, run `tick` from launchd or another
+local scheduler and review any output that is not `{"wakeAgent": false}`. See
+[Runtime options](runtime-options.md).
 
 ## 5. Operate
 

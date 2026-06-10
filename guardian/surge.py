@@ -56,6 +56,10 @@ class SurgeClient:
         data, result = self.raw_json("dump", "policy", timeout=10)
         return (data if isinstance(data, dict) else {}), result
 
+    def dump_rules(self) -> tuple[dict[str, Any], dict[str, Any]]:
+        data, result = self.raw_json("dump", "rule", timeout=10)
+        return (data if isinstance(data, dict) else {}), result
+
     def dump_environment(self) -> tuple[dict[str, Any], dict[str, Any]]:
         data, result = self.raw_json("environment", timeout=10)
         return (data if isinstance(data, dict) else {}), result
@@ -84,4 +88,3 @@ def latest_surge_log(log_dir: Path) -> Path | None:
         return None
     files = sorted(log_dir.glob("Surge-*.log"), key=lambda p: p.stat().st_mtime, reverse=True)
     return files[0] if files else None
-

@@ -13,6 +13,22 @@ from .state import StateStore
 from .surge import SurgeClient, latest_surge_log
 
 
+CAUTIOUS_DIRECT_EXACT_HOSTS = {
+    "dns.alidns.com",
+    "doh.pub",
+}
+CAUTIOUS_DIRECT_SUFFIXES = (
+    ".alidns.com",
+    ".aliyuncs.com",
+    ".apple.com",
+    ".icloud.com",
+    ".meituan.net",
+    ".mi.com",
+    ".qq.com",
+    ".163.com",
+)
+
+
 def short_text(result: dict[str, Any], limit: int = 420) -> str:
     text = str(result.get("stdout") or result.get("stderr") or "")
     text = re.sub(r"\s+", " ", text).strip()
@@ -57,6 +73,8 @@ class SurgeGuardian:
 
     def classify_log(self, line: str) -> Incident | None:
         if "Resource update completed:" in line and "error: N/A" in line:
+            return None
+        if "Resource update completed:" in line and "error:" in line:
             return Incident("external_resource", "medium", line)
         ignored = [
             "Unknown VIF virtual IP",
@@ -93,6 +111,10 @@ class SurgeGuardian:
         return host
 
     @staticmethod
+    def should_skip_temp_proxy(host: str) -> bool:
+        return host in CAUTIOUS_DIRECT_EXACT_HOSTS or host.endswith(CAUTIOUS_DIRECT_SUFFIXES)
+
+    @staticmethod
     def classify_event(event: dict[str, Any]) -> Incident | None:
         ident = str(event.get("identifier", ""))
         content = str(event.get("content", ""))
@@ -108,7 +130,7 @@ class SurgeGuardian:
         text = f"{result.get('stdout') or ''} {result.get('stderr') or ''}"
         return bool(result.get("ok")) and '"error"' not in text and "error" not in text.lower()
 
-    def update_external_resource_state(self, state: dict[str, Any], incidents: list[Incident], actions: list[str]) -> None:
+    def update_external_resource_state(self, state: dict[str, Any], incidents: list[Incident], actions: list[str], important: list[Incident]) -> None:
         if not any(item.kind == "external_resource" for item in incidents):
             return
         counters = state.setdefault("counters", {})
@@ -118,6 +140,13 @@ class SurgeGuardian:
         actions.append(f"已尝试更新全部外部资源：{'成功' if result['ok'] else '失败'} {short_text(result)}")
         if result["ok"]:
             counters["external_resource"] = 0
+            state.setdefault("suppressed", []).append({
+                "time": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "reason": "external resource recovered after retry",
+            })
+            return
+        if count >= self.config.external_resource_fail_threshold:
+            important.append(Incident("external_resource", "medium", f"外部资源更新连续失败 {count} 次，自动重试仍失败"))
 
     def update_dns_state(self, state: dict[str, Any], incidents: list[Incident], actions: list[str], important: list[Incident]) -> None:
         counters = state.setdefault("counters", {})
@@ -129,15 +158,68 @@ class SurgeGuardian:
         if int(counters["dns"]) >= self.config.dns_fail_threshold:
             result = self.client.flush_dns()
             actions.append(f"已刷新 Surge DNS 缓存：{'成功' if result['ok'] else '失败'} {short_text(result)}")
-            important.append(Incident("dns", "medium", f"DNS errors reached consecutive score {counters['dns']}"))
+            now = int(time.time())
+            last_flush = int(counters.get("last_dns_flush_at", 0) or 0)
+            if now - last_flush > 1800:
+                counters["dns_flush_repeats"] = 0
+            counters["dns_flush_repeats"] = int(counters.get("dns_flush_repeats", 0) or 0) + 1
+            counters["last_dns_flush_at"] = now
+            if not result["ok"] or int(counters["dns_flush_repeats"]) >= 2:
+                important.append(Incident("dns", "medium", f"DNS errors reached consecutive score {counters['dns']}"))
+            else:
+                state.setdefault("suppressed", []).append({
+                    "time": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "reason": "dns errors handled by one successful flush",
+                    "score": counters["dns"],
+                })
             counters["dns"] = 0
+
+    @staticmethod
+    def rule_present(rule: str, rules_dump: dict[str, Any]) -> bool:
+        if not rules_dump:
+            return True
+        return rule in json.dumps(rules_dump, ensure_ascii=False)
+
+    def reconcile_temp_rules(self, state: dict[str, Any]) -> None:
+        temp_rules = state.setdefault("temp_rules", {})
+        legacy_temp_rules = state.get("temp_proxy_rules")
+        if isinstance(legacy_temp_rules, dict):
+            for host, info in legacy_temp_rules.items():
+                temp_rules.setdefault(host, info)
+            state.pop("temp_proxy_rules", None)
+        if not temp_rules:
+            return
+        rules_dump, result = self.client.dump_rules()
+        if not result.get("ok") or not rules_dump:
+            return
+        reviews = state.setdefault("temp_rule_reviews", [])
+        for host, info in list(temp_rules.items()):
+            rule = str(info.get("rule", ""))
+            if not rule or self.rule_present(rule, rules_dump):
+                continue
+            reviews.append({
+                "time": time.strftime("%Y-%m-%d %H:%M:%S"),
+                "host": host,
+                "rule": rule,
+                "updated_resources": False,
+                "removed": True,
+                "reason": "state reconciliation; rule is no longer present in Surge runtime",
+            })
+            temp_rules.pop(host, None)
+        state["temp_rule_reviews"] = reviews[-50:]
 
     def update_direct_failure_state(self, state: dict[str, Any], incidents: list[Incident], actions: list[str]) -> list[Incident]:
         now = int(time.time())
         failures = state.setdefault("direct_failures", {})
         temp_rules = state.setdefault("temp_rules", {})
+        legacy_temp_rules = state.get("temp_proxy_rules")
+        if isinstance(legacy_temp_rules, dict):
+            for host, info in legacy_temp_rules.items():
+                temp_rules.setdefault(host, info)
+            state.pop("temp_proxy_rules", None)
         escalated: list[Incident] = []
         active_hosts = {item.host for item in incidents if item.kind == "direct_domain_failure" and item.host}
+        self.reconcile_temp_rules(state)
 
         for host, info in list(failures.items()):
             if now - int(info.get("last", 0) or 0) > self.config.direct_fail_window_seconds:
@@ -171,6 +253,16 @@ class SurgeGuardian:
                 info.update({"count": 0, "first": now, "last": now})
             info["count"] = int(info.get("count", 0) or 0) + 1
             info["last"] = now
+
+            if self.should_skip_temp_proxy(host):
+                if info["count"] >= self.config.direct_fail_threshold:
+                    state.setdefault("suppressed", []).append({
+                        "time": time.strftime("%Y-%m-%d %H:%M:%S"),
+                        "reason": "direct failure on cautious infrastructure host; no temp proxy rule added",
+                        "host": host,
+                        "count": info["count"],
+                    })
+                continue
 
             if info["count"] == 2 and now - int(info.get("last_resource_update", 0) or 0) > 1800:
                 result = self.client.external_resource_update_all()
@@ -213,6 +305,25 @@ class SurgeGuardian:
         counters["proxy_recovered_count"] = 0
         return False
 
+    def apply_alert_cooldown(self, state: dict[str, Any], incidents: list[Incident]) -> list[Incident]:
+        now = int(time.time())
+        cooldowns = state.setdefault("alert_cooldowns", {})
+        kept: list[Incident] = []
+        for item in incidents:
+            key = f"{item.kind}:{item.host or item.message[:120]}"
+            prior = int(cooldowns.get(key, 0) or 0)
+            if prior and now - prior < self.config.alert_cooldown_seconds:
+                state.setdefault("suppressed", []).append({
+                    "time": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "reason": "alert cooldown",
+                    "key": key,
+                })
+                continue
+            cooldowns[key] = now
+            kept.append(item)
+        state["suppressed"] = state.get("suppressed", [])[-50:]
+        return kept
+
     def tick(self) -> str:
         missing = self.config.missing_required()
         if missing:
@@ -243,8 +354,11 @@ class SurgeGuardian:
 
         actions: list[str] = []
         diagnostics: list[str] = []
-        important = [item for item in incidents if item.severity in {"high", "medium"}]
-        self.update_external_resource_state(state, incidents, actions)
+        important = [
+            item for item in incidents
+            if item.severity in {"high", "medium"} and item.kind != "external_resource"
+        ]
+        self.update_external_resource_state(state, incidents, actions, important)
         self.update_dns_state(state, incidents, actions, important)
         important.extend(self.update_direct_failure_state(state, incidents, actions))
 
@@ -255,7 +369,9 @@ class SurgeGuardian:
             self.store.save(state)
             return '{"wakeAgent": false}'
 
-        if not important and not actions:
+        important = self.apply_alert_cooldown(state, important)
+
+        if not important:
             state["seen_events"] = list(seen)[-200:]
             self.store.save(state)
             return '{"wakeAgent": false}'
@@ -287,8 +403,8 @@ class SurgeGuardian:
             "",
             "【AI 分析要求】",
             "- 判断这是临时波动、已自动修复的问题，还是需要用户决策的问题。",
+            "- 如果无需通知用户，最终回复必须只包含 [SILENT] 六个字符，不能附加解释、代码块或大小写变体。",
             "- 永久修改 profile、重启 Surge、修改证书/DNS/服务器时，只能给方案并请求确认。",
             "- 回复要短：结论、原因、已处理、下一步、可沉淀规则。",
         ])
         return "\n".join(lines)
-
