@@ -23,7 +23,7 @@ while [ "$#" -gt 0 ]; do
 done
 
 if ! command -v git >/dev/null 2>&1; then
-  echo "git is required to install Surge Guardian Assistant" >&2
+  echo "git is required to install Surge 守护助手" >&2
   exit 1
 fi
 

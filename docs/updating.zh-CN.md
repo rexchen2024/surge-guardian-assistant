@@ -39,7 +39,7 @@ scripts/surge-guardian-assistant update --check
 scripts/surge-guardian-assistant update
 ```
 
-关闭自动更新：
+关闭自动更新：在安装目录的 `.env` 里写入：
 
 ```bash
 AUTO_UPDATE=0

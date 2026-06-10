@@ -4,7 +4,7 @@ from tempfile import TemporaryDirectory
 
 import guardian
 from guardian.config import GuardianConfig, write_env
-from guardian.cli import build_feedback_report
+from guardian.cli import build_feedback_report, build_hermes_cron_command
 from guardian.guardian import SurgeGuardian
 from guardian.redact import redact_text
 from guardian.state import StateStore
@@ -68,6 +68,13 @@ class GuardianParsingTest(unittest.TestCase):
         pyproject = Path(__file__).resolve().parent.parent / "pyproject.toml"
         version_line = next(line for line in pyproject.read_text().splitlines() if line.startswith("version = "))
         self.assertEqual(guardian.__version__, version_line.split('"')[1])
+
+    def test_hermes_cron_command_uses_display_name_and_skill_flag(self):
+        root = Path(__file__).resolve().parent.parent
+        command = build_hermes_cron_command(root)
+        self.assertIn("Surge 守护助手", command)
+        self.assertIn("--skill", command)
+        self.assertNotIn("--skills", command)
 
     def test_auto_update_defaults_on(self):
         with TemporaryDirectory() as tmp:

@@ -1,11 +1,11 @@
-# Surge Guardian Codex Review
+# Surge 守护助手 Codex Review
 
-You are reviewing Surge Guardian Assistant as a Codex automation.
+You are reviewing Surge 守护助手 as a Codex automation.
 
 Default runtime assumption:
 
 - Hermes remains the recommended production scheduler and notification layer.
-- Codex is an optional lower-frequency analysis and maintenance layer.
+- Codex is a lower-frequency analysis and maintenance layer.
 - Do not turn healthy minute-level checks into model-heavy work.
 
 Tasks:

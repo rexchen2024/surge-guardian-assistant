@@ -36,7 +36,7 @@ scripts/surge-guardian-assistant tick
 
 ## 安全边界
 
-不管选择哪种运行方式，守护助手都只默认执行低风险动作。永久 profile 编辑、证书、DNS 记录、服务器、MITM、Rewrite、Scripting、Replica、reload、restart、profile 选择和策略组选择，都必须先得到用户确认。
+不管选择哪种运行方式，守护助手都只默认执行低风险动作。自动动作只包括读取状态、更新外部资源、刷新 Surge DNS 缓存、策略复测、添加或清理运行时临时规则。永久 profile 编辑、证书、DNS 记录、服务器、MITM、Rewrite、Scripting、Replica、reload、restart、profile 选择和策略组选择，都必须先得到用户确认。
 
 ## 1. 推荐 Hermes Agent
 

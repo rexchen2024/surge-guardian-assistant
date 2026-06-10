@@ -20,7 +20,7 @@ Install Surge Guardian Assistant from https://github.com/rexchen2024/surge-guard
 
 ## Create The Schedule
 
-After setup, the tool prints a Hermes cron command. Review it, then run it.
+After setup, the tool prints a Hermes cron command. Review the path, frequency, and job name before running it.
 
 Recommended frequency: once per minute.
 
@@ -50,7 +50,7 @@ scripts/surge-guardian-assistant tick
 
 The Hermes job keeps running `tick`. If the install path is a Git checkout, the assistant checks GitHub for updates once a day by default.
 
-Turn it off:
+Turn it off by writing this in the install directory's `.env`:
 
 ```bash
 AUTO_UPDATE=0

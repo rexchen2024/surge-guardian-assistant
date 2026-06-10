@@ -5,10 +5,10 @@ Use this checklist before publishing a release or making the repository public.
 ## Repository
 
 - README explains what the project does in the first screen.
-- README includes install, requirements, update, feedback, license, and security links.
+- README links to install, update, feedback, license, and security docs without crowding the homepage.
 - `README.md` is Simplified Chinese by default.
-- `README.zh-HK.md`, `README.zh-TW.md`, and `README.en.md` are present and linked from the homepage.
-- README explains that this is not a Surge profile, rule set, module collection, or proxy subscription project.
+- `README.zh-TW.md` and `README.en.md` are present and linked from the homepage.
+- FAQ explains that this is not a Surge profile, rule set, module collection, or proxy subscription project.
 - FAQ covers common Surge-user misunderstandings.
 - `LICENSE`, `CONTRIBUTING.md`, `SECURITY.md`, and `CODE_OF_CONDUCT.md` are present.
 - Issue templates and PR template are present.

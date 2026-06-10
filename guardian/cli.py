@@ -18,6 +18,9 @@ from .redact import redact_text, scan
 from .surge import SurgeClient, latest_surge_log
 
 
+DISPLAY_NAME = "Surge 守护助手"
+
+
 def project_root() -> Path:
     return Path(__file__).resolve().parent.parent
 
@@ -76,7 +79,7 @@ def run_git(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
 
 
 def command_version(_args: argparse.Namespace) -> int:
-    print(f"Surge Guardian Assistant {__version__}")
+    print(f"{DISPLAY_NAME} {__version__}")
     return 0
 
 
@@ -96,6 +99,26 @@ def write_json_private(path: Path, data: dict) -> None:
     tmp.chmod(0o600)
     tmp.replace(path)
     path.chmod(0o600)
+
+
+def build_hermes_cron_command(root: Path) -> list[str]:
+    script = root / "scripts" / "surge-guardian-assistant"
+    prompt_path = root / "hermes" / "job-prompts" / "guardian.md"
+    return [
+        "hermes",
+        "cron",
+        "create",
+        "*/1 * * * *",
+        prompt_path.read_text(),
+        "--name",
+        DISPLAY_NAME,
+        "--script",
+        str(script),
+        "--workdir",
+        str(root),
+        "--skill",
+        "Surge",
+    ]
 
 
 def auto_update_if_due(config: GuardianConfig) -> None:
@@ -165,7 +188,7 @@ def auto_update_if_due(config: GuardianConfig) -> None:
 def command_setup(args: argparse.Namespace) -> int:
     root = project_root()
     env_path = root / ".env"
-    print("Surge Guardian Assistant setup")
+    print(f"{DISPLAY_NAME} setup")
     print("This writes local .env only. It will not be committed.\n")
 
     surge_cli = prompt("surge-cli path", discover_surge_cli())
@@ -211,23 +234,7 @@ def command_setup(args: argparse.Namespace) -> int:
     print(f"\nWrote {env_path}")
 
     if args.print_hermes_command or args.install_hermes:
-        script = root / "scripts" / "surge-guardian-assistant"
-        prompt_path = root / "hermes" / "job-prompts" / "guardian.md"
-        cmd = [
-            "hermes",
-            "cron",
-            "create",
-            "*/1 * * * *",
-            prompt_path.read_text(),
-            "--name",
-            "Surge Guardian Assistant",
-            "--script",
-            str(script),
-            "--workdir",
-            str(root),
-            "--skills",
-            "Surge",
-        ]
+        cmd = build_hermes_cron_command(root)
         print("\nHermes cron command:")
         print(" ".join(shlex.quote(item) for item in cmd))
         if args.install_hermes:
@@ -246,7 +253,7 @@ def command_tick(_args: argparse.Namespace) -> int:
 def command_doctor(_args: argparse.Namespace) -> int:
     config = GuardianConfig.load(project_root())
     client = SurgeClient(config.surge_cli)
-    print("Surge Guardian Assistant doctor")
+    print(f"{DISPLAY_NAME} doctor")
     print("")
     print(f"Config: {'present' if config.env_path.exists() else 'missing .env'}")
     print(f"surge-cli: {config.surge_cli} ({'ok' if os.path.exists(config.surge_cli) else 'not found'})")
@@ -299,7 +306,7 @@ def build_feedback_report(config: GuardianConfig, include_check: bool = False) -
     update_state = read_json(config.state_dir / "update-state.json")
 
     lines = [
-        "# Surge Guardian Assistant Feedback Report",
+        f"# {DISPLAY_NAME} Feedback Report",
         "",
         "Review this before sharing. Remove anything you do not want to send.",
         "",
@@ -371,7 +378,7 @@ def command_feedback(args: argparse.Namespace) -> int:
 
     if args.github_url:
         query = urlencode({
-            "title": "Feedback: Surge Guardian Assistant issue",
+            "title": f"Feedback: {DISPLAY_NAME} issue",
             "body": report,
         })
         print(f"github issue url: https://github.com/rexchen2024/surge-guardian-assistant/issues/new?{query}")
@@ -406,7 +413,7 @@ def command_update(args: argparse.Namespace) -> int:
     ahead, behind = [int(item) for item in counts.stdout.split()]
 
     if behind == 0:
-        print(f"Surge Guardian Assistant {__version__} is up to date")
+        print(f"{DISPLAY_NAME} {__version__} is up to date")
         return 0
     if args.check:
         if ahead:
@@ -433,7 +440,7 @@ def command_update(args: argparse.Namespace) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="surge-guardian-assistant")
-    parser.add_argument("--version", action="version", version=f"Surge Guardian Assistant {__version__}")
+    parser.add_argument("--version", action="version", version=f"{DISPLAY_NAME} {__version__}")
     sub = parser.add_subparsers(dest="command", required=True)
 
     version = sub.add_parser("version", help="print installed version")

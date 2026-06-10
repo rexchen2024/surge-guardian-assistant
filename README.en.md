@@ -3,36 +3,37 @@
 [![Release](https://img.shields.io/github/v/release/rexchen2024/surge-guardian-assistant?label=release)](https://github.com/rexchen2024/surge-guardian-assistant/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [繁體中文（香港）](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-HK.md) | [繁體中文（台灣）](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-TW.md)
+[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-TW.md)
 
-Surge Guardian Assistant is a quiet monitoring and self-healing tool for Surge users. It uses Surge's official Agent Skill / `surge-cli` runtime capabilities to watch logs, events, policies, and external resources. Healthy checks stay silent; incidents are handled with low-risk actions first; only important cases are handed to Hermes, Codex, or chat delivery.
+A quiet monitoring and self-healing assistant for Surge users. It uses Surge's official Agent Skill / `surge-cli` runtime capabilities to check logs, events, policies, and external resources. Healthy checks stay silent; incidents are handled with low-risk actions first; only important cases are handed to Hermes, Codex, or chat delivery.
 
 **Current version: 0.1.0**
 
+This project is still in early testing. Trial use and feedback are welcome, and future updates will continue to follow real-world usage.
+
+## Contents
+
+- [Highlights](#highlights)
+- [How It Works](#how-it-works)
+- [Install Options](#install-options)
+- [Docs](#docs)
+- [Project Info](#project-info)
+- [My Recommendation](#my-recommendation)
+
+
+---
+
 ## Highlights
 
-- **Extremely quiet by default**: healthy runs emit only `{"wakeAgent": false}`.
-- **Low-power monitoring**: routine checks use local scripts and Surge runtime interfaces, avoiding minute-level AI calls.
-- **Native Surge capabilities**: reads events, retests policies, flushes DNS, updates external resources, and adds temporary runtime rules.
-- **Self-healing before escalation**: low-risk issues are handled first; permanent config changes require confirmation.
+- **Quiet and low-power**: healthy checks emit only `{"wakeAgent": false}`; routine work stays on local scripts and Surge runtime APIs where possible.
+- **Native Surge checks**: reads events, retests policies, flushes DNS, updates external resources, and adds temporary runtime rules.
+- **Safe self-healing first**: low-risk issues are handled first; actions stay narrow, runtime-only, and reversible where possible. Permanent config, certificates, DNS records, servers, MITM, Rewrite, Scripting, reload, or restart require confirmation.
 - **AI only when useful**: repeated, complex, or unresolved incidents can be reviewed by Hermes or Codex.
-- **Chat only for important issues**: Hermes can deliver through Telegram, Discord, Matrix, Weixin, Feishu, Signal, and other channels while healthy checks remain silent.
 - **Learns through Hermes**: Hermes Edition can use Hermes memory and skills to turn repeated incidents into future handling experience.
-- **Automatic updates**: installed copies can pull updates from GitHub without overwriting local tracked edits.
-- **Privacy-first**: `.env`, state files, and feedback reports stay local with private permissions; no automatic log or usage upload.
+- **Automatic updates and privacy-first defaults**: installed copies can pull updates from GitHub; local tracked edits are not overwritten; logs and usage data are not uploaded automatically.
 
-## Good Fit
 
-- You already use Surge and want continuous checks for logs, events, and policy state.
-- You want healthy runs to stay fully silent and real incidents to produce a clear summary.
-- You want external-resource failures, DNS errors, policy issues, and repeated DIRECT failures handled before escalation.
-- You want Hermes for always-on monitoring or Codex for lower-frequency maintenance and incident review.
-
-## Project Boundary
-
-This project itself is not a Surge profile library, rule set, module collection, or proxy provider recommendation. It adds monitoring, self-healing, and incident feedback on top of an existing Surge setup.
-
-Automatic actions are intentionally narrow, runtime-only, and reversible where possible. Permanent profile changes, certificates, DNS, MITM, Rewrite, Scripting, policy-group selection, reload, or restart actions should happen only after user confirmation.
+---
 
 ## How It Works
 
@@ -48,77 +49,39 @@ flowchart LR
   AI --> Notify["deliver important issues or ask for confirmation"]
 ```
 
-## Requirements
 
-- Surge is installed and running on macOS.
-- Git is available.
-- Python 3.10 or newer.
-- If you choose Hermes Edition, install Hermes first; it handles scheduling, AI analysis, and message delivery.
-- If you choose Codex Edition, Codex needs access to the local repository; it is for lower-frequency maintenance, not minute-level monitoring.
+---
 
-## One-Command Install
+## Install Options
 
-Default install path: `~/.surge-guardian-assistant`
+**1. Local-only**
 
-```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
-```
+For users who only want to check Surge from the local terminal. This is the lightest path: the script calls `surge-cli` directly and can be run manually or by a local scheduler.
 
-Prompt for Hermes:
+[One-command install and local run notes](docs/runtime-options.md)
 
-```text
-Install Surge Guardian Assistant from https://github.com/rexchen2024/surge-guardian-assistant, run setup, and show me the generated Hermes cron command. Do not edit Surge profiles or make permanent network changes without asking me first.
-```
+**2. Recommended Hermes Agent ⭐**
 
-Prompt for Codex:
+Best for always-on monitoring, incident notifications, and learning from repeated patterns. Healthy checks stay fully silent; important issues can wake AI and notify you through chat.
 
-```text
-Install https://github.com/rexchen2024/surge-guardian-assistant locally as my Surge Guardian Assistant project, run doctor and scripts/check, then create or suggest a safe Codex automation. Do not edit Surge profiles without asking me first.
-```
+[One-command install and Hermes task setup](docs/hermes-edition.md)
 
-## Editions
+**3. Codex Edition**
 
-**Hermes Edition** is recommended for always-on monitoring. Healthy runs stay silent; important incidents can be delivered through Hermes.
+Best for lower-frequency repository checks, incident review, and project maintenance. It is not recommended for minute-level monitoring.
 
-[Install Hermes Edition](docs/hermes-edition.md)
+[One-command install and Codex automation setup](docs/codex-edition.md)
 
-**Codex Edition** is useful for daily or weekly repository checks, incident review, and project maintenance.
+The scripts call Surge's `surge-cli` directly. Installation, automatic updates, schedule frequency, and safety boundaries are covered in the linked docs.
 
-[Install Codex Edition](docs/codex-edition.md)
 
-## Automatic Updates
-
-Automatic updates work when the install path is a Git checkout and Hermes, Codex, or another scheduler keeps running `tick`.
-
-If new code is available, the assistant pulls it and runs `scripts/check`. If local tracked files were changed, it skips the update instead of overwriting anything.
-
-```bash
-cd ~/.surge-guardian-assistant
-scripts/surge-guardian-assistant update --check
-scripts/surge-guardian-assistant update
-```
-
-Turn off automatic updates in `.env`:
-
-```bash
-AUTO_UPDATE=0
-```
-
-## Useful Commands
-
-```bash
-scripts/surge-guardian-assistant doctor
-scripts/surge-guardian-assistant tick
-scripts/surge-guardian-assistant version
-scripts/surge-guardian-assistant update
-scripts/surge-guardian-assistant feedback
-scripts/surge-guardian-assistant redact-check
-```
+---
 
 ## Docs
 
 - [Hermes Edition](docs/hermes-edition.md)
 - [Codex Edition](docs/codex-edition.md)
+- [Runtime options](docs/runtime-options.md)
 - [Updating](docs/updating.md)
 - [Autonomy model](docs/autonomy.md)
 - [Troubleshooting](docs/troubleshooting.md)
@@ -126,11 +89,18 @@ scripts/surge-guardian-assistant redact-check
 - [Privacy notes](docs/privacy.md)
 - [Changelog](CHANGELOG.md)
 
-## Project Rules
+
+---
+
+## Project Info
 
 - License: [MIT](LICENSE)
 - Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
 - Security policy: [SECURITY.md](SECURITY.md)
+- Code of conduct: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+
+
+---
 
 ## My Recommendation
 

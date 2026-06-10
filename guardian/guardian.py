@@ -327,7 +327,7 @@ class SurgeGuardian:
     def tick(self) -> str:
         missing = self.config.missing_required()
         if missing:
-            return "Surge Guardian Assistant 配置缺失：" + ", ".join(missing)
+            return "Surge 守护助手配置缺失：" + ", ".join(missing)
 
         state = self.store.load()
         events, _event_raw = self.client.dump_events()
@@ -382,7 +382,7 @@ class SurgeGuardian:
 
     def render_incident(self, incidents: list[Incident], actions: list[str], diagnostics: list[str], log_path: Path | None) -> str:
         lines = [
-            "Surge Guardian Assistant 发现需要分析的异常",
+            "Surge 守护助手发现需要分析的异常",
             "",
             f"时间：{time.strftime('%Y-%m-%d %H:%M:%S')}",
             f"日志：{log_path.name if log_path else 'N/A'}",
@@ -405,6 +405,8 @@ class SurgeGuardian:
             "- 判断这是临时波动、已自动修复的问题，还是需要用户决策的问题。",
             "- 如果无需通知用户，最终回复必须只包含 [SILENT] 六个字符，不能附加解释、代码块或大小写变体。",
             "- 永久修改 profile、重启 Surge、修改证书/DNS/服务器时，只能给方案并请求确认。",
-            "- 回复要短：结论、原因、已处理、下一步、可沉淀规则。",
+            "- 需要通知时，用简短中文标题开头，下面写 2-4 条要点；只说发生了什么、已处理什么、是否需要确认。",
+            "- 不要加入格式说明、任务管理提示或括号里的解释性后缀。",
+            "- 如果有可复用经验，再加一行“可沉淀：...”；没有就不要写。",
         ])
         return "\n".join(lines)

@@ -6,26 +6,17 @@
 
 First complete release.
 
-- Surge log and event checks.
-- Silent healthy output: `{"wakeAgent": false}`.
-- Automatic retry for failed external resources.
-- DNS flush after repeated DNS problems.
-- Policy retest before sending noise.
-- Small temporary runtime rules for repeated DIRECT failures.
-- Hermes Edition for always-on monitoring and notifications.
-- Codex Edition for lower-frequency checks, incident review, and maintenance.
-- One-command install script.
-- GitHub-based automatic updates.
+- Quiet monitoring for Surge logs, events, policies, and external resources.
+- Healthy runs emit only `{"wakeAgent": false}` to avoid unnecessary AI calls and notifications.
+- Runtime checks and low-risk self-healing through Surge's official Agent Skill / `surge-cli`.
+- Automatic retry for failed external resources and Surge DNS cache flush after repeated DNS problems.
+- Policy retests before notification to reduce noise from temporary failures.
+- Narrow temporary runtime rules for repeated DIRECT failures, with periodic cleanup.
+- Hermes Edition for always-on monitoring, incident notification, memory, and AI analysis when useful.
+- Codex Edition for lower-frequency repository checks, incident review, and project maintenance.
+- One-command install, first-run setup, automatic updates, and manual update commands.
 - `version`, `update`, `doctor`, `feedback`, and `redact-check` commands.
-- Private permissions for local `.env` and state files.
-- Privacy scanning and sanitized feedback reports.
-- License, contributing guide, security policy, code of conduct, issue templates, and PR template.
-- Onboarding, troubleshooting, and release checklist docs.
-- Simplified Chinese default homepage, with Hong Kong Traditional Chinese, Taiwan Traditional Chinese, and English homepage variants.
-- Surge-user fit, project boundary, and FAQ sections.
-- Refined homepage positioning around low-power checks, quiet operation, Surge Agent Skill / `surge-cli`, Hermes learning, and AI escalation only when useful.
-- Simplified Chinese homepage install section now presents local, Hermes Agent recommended, and Codex paths with detail links.
-- Simplified Chinese homepage now keeps install and update details in secondary docs to reduce clutter.
-- Simplified Chinese install docs now use clearer step-by-step setup and remove private-repository fallback wording.
-- Simplified Chinese install docs now include explicit safety boundaries, and the homepage recommendation section was renamed.
-- Homepage recommendation copy now uses the official CMYNetwork naming.
+- Private permissions for local `.env` and state files; no automatic log or usage upload.
+- Sanitized feedback reports that users review before sharing.
+- User confirmation required for permanent profile edits, certificates, DNS records, servers, MITM, Rewrite, Scripting, Replica, reload, restart, profile selection, and policy-group selection.
+- Simplified Chinese homepage by default, with Traditional Chinese and English entry points.

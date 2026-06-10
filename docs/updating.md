@@ -39,7 +39,7 @@ Update now:
 scripts/surge-guardian-assistant update
 ```
 
-Turn automatic updates off:
+Turn automatic updates off by writing this in the install directory's `.env`:
 
 ```bash
 AUTO_UPDATE=0
