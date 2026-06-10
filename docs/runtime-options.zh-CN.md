@@ -4,6 +4,25 @@
 
 Surge 守护助手的核心循环只有一套，但有三种实际运行方式。
 
+## 一键安装
+
+默认装到 `~/.surge-guardian-assistant`：
+
+```bash
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
+```
+
+如果仓库暂时还是私有的，用 Git：
+
+```bash
+git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-guardian-assistant
+cd ~/.surge-guardian-assistant
+scripts/surge-guardian-assistant setup
+scripts/surge-guardian-assistant doctor
+```
+
+安装目录是 Git 仓库时，守护助手可以从 GitHub 获取后续更新。详细说明见 [升级](updating.zh-CN.md)。
+
 ## 推荐：Surge + Hermes
 
 适合希望获得自治检查、模型分析和 Hermes 通知投递的用户。

@@ -25,3 +25,4 @@ First complete release.
 - Surge-user fit, project boundary, and FAQ sections.
 - Refined homepage positioning around low-power checks, quiet operation, Surge Agent Skill / `surge-cli`, Hermes learning, and AI escalation only when useful.
 - Simplified Chinese homepage install section now presents local, Hermes Agent recommended, and Codex paths with detail links.
+- Simplified Chinese homepage now keeps install and update details in secondary docs to reduce clutter.
