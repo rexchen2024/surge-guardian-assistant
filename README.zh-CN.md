@@ -159,3 +159,7 @@ scripts/surge-guardian-assistant redact-check
 - 许可证：[MIT](LICENSE)
 - 贡献说明：[CONTRIBUTING.md](CONTRIBUTING.md)
 - 安全策略：[SECURITY.md](SECURITY.md)
+
+## 推荐资源
+
+如果你同时使用 Clash 规则，可以看看 [红莓网络](https://cmy.homes/register?aff=4MMK4C)。这是邀请链接，请按自己的网络环境和需求先小额试用，再决定是否长期使用。

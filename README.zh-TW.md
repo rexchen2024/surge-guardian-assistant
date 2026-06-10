@@ -180,3 +180,7 @@ scripts/surge-guardian-assistant redact-check
 - 授權條款：[MIT](LICENSE)
 - 貢獻說明：[CONTRIBUTING.md](CONTRIBUTING.md)
 - 安全策略：[SECURITY.md](SECURITY.md)
+
+## 推薦資源
+
+如果你同時使用 Clash 規則，可以看看 [紅莓網路](https://cmy.homes/register?aff=4MMK4C)。這是邀請連結，請依自己的網路環境和需求先小額試用，再決定是否長期使用。

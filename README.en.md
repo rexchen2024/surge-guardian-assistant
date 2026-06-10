@@ -180,3 +180,7 @@ scripts/surge-guardian-assistant redact-check
 - License: [MIT](LICENSE)
 - Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
 - Security policy: [SECURITY.md](SECURITY.md)
+
+## Recommended Resource
+
+If you also use Clash rules, you can take a look at [Hongmei Network](https://cmy.homes/register?aff=4MMK4C). This is a referral link. Try a small plan first and decide based on your own network environment and needs.
