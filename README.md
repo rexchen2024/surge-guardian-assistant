@@ -7,17 +7,14 @@ people who run [Surge](https://nssurge.com/) on macOS. It watches Surge signals,
 handles safe recovery steps, keeps healthy checks quiet, and asks for user
 confirmation before risky changes.
 
-The repository URL remains:
+Project URL:
 
 ```text
 https://github.com/rexchen2024/surge-guardian-assistant
 ```
 
-The repository slug is now aligned with the public product name:
+Repository slug and public product name are aligned as
 `surge-guardian-assistant`.
-
-The old script entrypoint remains as a compatibility wrapper, but new installs
-should use `scripts/surge-guardian-assistant`.
 
 ## Choose A Version
 

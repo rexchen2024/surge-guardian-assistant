@@ -4,15 +4,13 @@
 
 Surge 守护助手是一个面向 macOS [Surge](https://nssurge.com/) 用户的轻量级自治运维助手。它会观察 Surge 信号，执行安全范围内的恢复动作，在健康状态下保持静默，并且在高风险动作前请求用户确认。
 
-仓库主页仍然是：
+项目主页：
 
 ```text
 https://github.com/rexchen2024/surge-guardian-assistant
 ```
 
-仓库 slug 已经和对外项目名对齐为 `surge-guardian-assistant`。
-
-旧脚本入口会保留为兼容包装，但新安装建议使用 `scripts/surge-guardian-assistant`。
+仓库 slug 和对外项目名已统一为 `surge-guardian-assistant`。
 
 ## 选择版本
 
