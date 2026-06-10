@@ -6,7 +6,7 @@ import guardian
 from guardian.config import GuardianConfig, write_env
 from guardian.cli import build_feedback_report, build_hermes_cron_command
 from guardian.guardian import SurgeGuardian
-from guardian.redact import redact_text
+from guardian.redact import redact_text, scan
 from guardian.state import StateStore
 
 
@@ -90,6 +90,21 @@ class GuardianParsingTest(unittest.TestCase):
         redacted = redact_text(text)
         self.assertNotIn(token, redacted)
         self.assertNotIn(user_path, redacted)
+
+    def test_redact_scan_skips_binary_assets(self):
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            fake_email = "fake" + "@" + "example.test"
+            asset = root / "assets" / "brand" / "icon.png"
+            asset.parent.mkdir(parents=True)
+            asset.write_bytes(b"\x89PNG\r\n" + fake_email.encode() + b"\x00")
+
+            note = root / "note.txt"
+            note.write_text(f"contact {fake_email}")
+
+            findings = scan(root)
+            self.assertFalse(any(item.path == Path("assets/brand/icon.png") for item in findings))
+            self.assertTrue(any(item.path == Path("note.txt") for item in findings))
 
     def test_feedback_report_is_sanitized(self):
         with TemporaryDirectory() as tmp:

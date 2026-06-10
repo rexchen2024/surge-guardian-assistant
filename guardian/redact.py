@@ -7,6 +7,21 @@ from pathlib import Path
 
 SKIP_DIRS = {".git", "__pycache__", ".pytest_cache", "state", "logs"}
 SKIP_FILES = {".env", "redact.py"}
+SKIP_SUFFIXES = {
+    ".gif",
+    ".gz",
+    ".ico",
+    ".jpeg",
+    ".jpg",
+    ".pdf",
+    ".png",
+    ".tar",
+    ".ttf",
+    ".webp",
+    ".woff",
+    ".woff2",
+    ".zip",
+}
 
 PATTERNS = [
     ("github_token", re.compile(r"gh[oprsu]_[A-Za-z0-9_]{20,}")),
@@ -43,6 +58,8 @@ def iter_files(root: Path):
         if rel_parts & SKIP_DIRS:
             continue
         if path.name in SKIP_FILES:
+            continue
+        if path.suffix.lower() in SKIP_SUFFIXES:
             continue
         yield path
 

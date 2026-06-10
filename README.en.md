@@ -104,4 +104,4 @@ The scripts call Surge's `surge-cli` directly. Installation, automatic updates, 
 
 ## My Recommendation
 
-[CMYNetwork](https://cmy.homes/register?aff=4MMK4C): a proxy provider I have used for years; highly available even during sensitive periods, and friendly to Clash rule setups.
+<img src="assets/brand/cmynetwork-icon.png" alt="CMYNetwork" width="18" align="absmiddle"> [CMYNetwork](https://cmy.homes/register?aff=4MMK4C): a proxy provider I have used for years; highly available even during sensitive periods, and friendly to Clash rule setups.

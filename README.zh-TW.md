@@ -104,4 +104,4 @@ flowchart LR
 
 ## 我的推薦
 
-[紅莓網路](https://cmy.homes/register?aff=4MMK4C)：用了多年的機場，即便是在特殊時期也高度可用，對 Clash 規則友好。
+<img src="assets/brand/cmynetwork-icon.png" alt="紅莓網路" width="18" align="absmiddle"> [紅莓網路](https://cmy.homes/register?aff=4MMK4C)：用了多年的機場，即便是在特殊時期也高度可用，對 Clash 規則友好。
