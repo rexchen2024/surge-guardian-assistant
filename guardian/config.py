@@ -46,6 +46,7 @@ def write_env(path: Path, values: dict[str, str]) -> None:
         else:
             lines.append(f"{key}={value}")
     path.write_text("\n".join(lines) + "\n")
+    path.chmod(0o600)
 
 
 def split_csv(value: str) -> list[str]:

@@ -19,6 +19,11 @@ This is the strongest mode because Hermes supplies scheduling, model reasoning,
 memory, and notification delivery without adding those responsibilities to the
 guardian core.
 
+For production use, keep this as the default deployment path. The guardian's
+`{"wakeAgent": false}` contract is designed for Hermes cron: healthy checks can
+complete without a model call, while incident packages wake the agent only when
+evidence justifies it.
+
 ## Local-Only: Surge Without Hermes
 
 Use this when the machine has Surge but does not run Hermes.
@@ -68,6 +73,10 @@ If you want Codex involved, keep the scheduler local and hand Codex the
 non-silent incident log or repository state when analysis is needed. This keeps
 the routine path lightweight and avoids turning every minute-level check into a
 model task.
+
+Codex automations can also run scheduled workspace jobs. Use them for lower
+frequency review work, such as daily repository checks, weekly privacy scans, or
+non-silent incident analysis. See [Codex automation option](codex-automation.md).
 
 ## Rule Of Thumb
 

@@ -1,6 +1,10 @@
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
+from guardian.config import write_env
 from guardian.guardian import SurgeGuardian
+from guardian.state import StateStore
 
 
 class GuardianParsingTest(unittest.TestCase):
@@ -44,6 +48,18 @@ class GuardianParsingTest(unittest.TestCase):
         guardian.reconcile_temp_rules(state)
         self.assertIn("example.com", state["temp_rules"])
         self.assertNotIn("temp_proxy_rules", state)
+
+    def test_local_env_written_private(self):
+        with TemporaryDirectory() as tmp:
+            path = Path(tmp) / ".env"
+            write_env(path, {"SURGE_CLI": "/tmp/surge-cli"})
+            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+
+    def test_state_written_private(self):
+        with TemporaryDirectory() as tmp:
+            path = Path(tmp) / "state.json"
+            StateStore(path).save({"ok": True})
+            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
 
 
 if __name__ == "__main__":

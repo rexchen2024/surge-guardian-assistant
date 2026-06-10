@@ -16,6 +16,8 @@ agent、模型分析和通知工作流。
 - **默认静默**：健康运行返回 `{"wakeAgent": false}`，Hermes 不调用模型，也不发送消息。
 - **安全自治**：可自动更新外部资源、刷新 DNS、复测策略，并添加窄范围临时运行时规则。
 - **需要时调用模型**：非静默事件会唤醒 Hermes，使用用户已配置的模型和通知渠道。
+- **可选 Codex 分析路径**：Codex 自动化可以用于定时仓库检查或异常复盘，
+  但分钟级静默巡检仍推荐交给 Hermes。
 - **Hermes 不是本地检查的硬依赖**：没有 Hermes 的用户也可以用 launchd
   或其他本地调度器运行 `tick`，再手动查看异常日志。
 - **隐私优先**：真实域名、IP、profile 路径、策略名称、日志和状态只保存在本地 `.env` 与本地 state 文件中。
@@ -115,6 +117,7 @@ scripts/check
 
 - [新手上手](docs/onboarding.zh-CN.md)
 - [运行方式](docs/runtime-options.zh-CN.md)
+- [Codex 自动化选项](docs/codex-automation.zh-CN.md)
 - [自治模型](docs/autonomy.zh-CN.md)
 - [隐私说明](docs/privacy.zh-CN.md)
 - [同步流程](docs/sync-workflow.zh-CN.md)

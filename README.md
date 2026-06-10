@@ -22,6 +22,9 @@ confirmation.
   DNS, retest policies, and add narrow temporary runtime rules.
 - **Model-assisted when needed**: non-silent incidents wake Hermes, which uses
   the user's configured model and delivery channel.
+- **Optional Codex analysis path**: Codex automations can be used for scheduled
+  repository or incident review, while Hermes remains the recommended runtime
+  for minute-level quiet checks.
 - **Hermes optional for local checks**: users without Hermes can run `tick` from
   launchd or another local scheduler and review incident logs manually.
 - **Privacy-first**: real domains, IPs, profile paths, policy names, logs, and
@@ -126,6 +129,7 @@ More docs:
 
 - [Onboarding](docs/onboarding.md)
 - [Runtime options](docs/runtime-options.md)
+- [Codex automation option](docs/codex-automation.md)
 - [Autonomy model](docs/autonomy.md)
 - [Privacy notes](docs/privacy.md)
 - [Sync workflow](docs/sync-workflow.md)

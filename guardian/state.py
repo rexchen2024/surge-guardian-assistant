@@ -21,5 +21,6 @@ class StateStore:
     def save(self, state: dict[str, Any]) -> None:
         tmp = self.path.with_suffix(".tmp")
         tmp.write_text(json.dumps(state, ensure_ascii=False, indent=2, sort_keys=True))
+        tmp.chmod(0o600)
         tmp.replace(self.path)
-
+        self.path.chmod(0o600)
