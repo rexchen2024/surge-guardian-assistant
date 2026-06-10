@@ -4,7 +4,7 @@
 
 当前版本：**0.1.0**
 
-Surge 守护助手用来盯着 Surge。正常时安静；出问题时先做安全修复；需要危险操作时再问你。
+Surge 守护助手用于持续检查 Surge 状态。正常时保持静默；发现异常时先执行安全修复；需要高风险操作时再请求确认。
 
 项目地址：
 
@@ -12,11 +12,11 @@ Surge 守护助手用来盯着 Surge。正常时安静；出问题时先做安�
 https://github.com/rexchen2024/surge-guardian-assistant
 ```
 
-## 先说清楚这几个东西
+## 相关项目
 
-- [Surge](https://nssurge.com/)：macOS / iOS 上常用的网络和代理工具。这个项目要守护的就是它。
-- [Hermes](https://github.com/NousResearch/hermes-agent)：负责定时运行、分析异常、把结果发给你。推荐用它做常驻巡检。
-- [Codex](https://openai.com/codex/)：OpenAI 的代码助手。适合低频检查项目、看异常包、帮你维护这个仓库。
+- [Surge](https://nssurge.com/)：macOS / iOS 网络和代理工具。本项目负责检查和守护 Surge。
+- [Hermes](https://github.com/NousResearch/hermes-agent)：定时运行、异常分析和消息通知层。推荐用于常驻巡检。
+- [Codex](https://openai.com/codex/)：OpenAI 的代码助手。适合低频检查、异常复盘和仓库维护。
 
 ## 一键安装
 
@@ -34,7 +34,7 @@ cd ~/.surge-guardian-assistant
 scripts/surge-guardian-assistant setup --print-hermes-command
 ```
 
-也可以把这段话直接复制给 Hermes：
+也可以把下面的内容复制给 Hermes：
 
 ```text
 请从 https://github.com/rexchen2024/surge-guardian-assistant 安装 Surge 守护助手，运行 setup，显示生成的 Hermes cron 命令。不要在未确认前编辑 Surge profile 或执行永久网络变更。
@@ -48,11 +48,11 @@ scripts/surge-guardian-assistant setup --print-hermes-command
 
 ## 选哪个版本
 
-**Hermes 版本**：推荐。适合每分钟巡检，健康时不唤醒模型，有事再通知。
+**Hermes 版本**：推荐。适合每分钟巡检，健康时不唤醒模型，出现异常再通知。
 
 [Hermes 版本安装说明](docs/hermes-edition.zh-CN.md)
 
-**Codex 版本**：可选。适合每天或每周检查仓库、分析异常包、帮项目持续改进。
+**Codex 版本**：可选。适合每天或每周检查仓库、分析异常包、持续改进项目。
 
 [Codex 版本安装说明](docs/codex-edition.zh-CN.md)
 
@@ -96,7 +96,7 @@ AUTO_UPDATE=0
 
 ## 反馈问题
 
-项目不会偷偷上传日志或使用数据。用户可以主动生成一份脱敏报告，再自己决定要不要发给维护者：
+项目不会自动上传日志或使用数据。用户可以主动生成脱敏报告，检查后再决定是否提交：
 
 ```bash
 scripts/surge-guardian-assistant feedback --github-url
@@ -127,3 +127,9 @@ scripts/surge-guardian-assistant redact-check
 - [自治模型](docs/autonomy.zh-CN.md)
 - [隐私说明](docs/privacy.zh-CN.md)
 - [更新日志](CHANGELOG.zh-CN.md)
+
+## 项目规则
+
+- 许可证：[MIT](LICENSE)
+- 贡献说明：[CONTRIBUTING.md](CONTRIBUTING.md)
+- 安全策略：[SECURITY.md](SECURITY.md)

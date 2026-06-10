@@ -127,3 +127,9 @@ scripts/surge-guardian-assistant redact-check
 - [Autonomy model](docs/autonomy.md)
 - [Privacy notes](docs/privacy.md)
 - [Changelog](CHANGELOG.md)
+
+## Project Rules
+
+- License: [MIT](LICENSE)
+- Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Security policy: [SECURITY.md](SECURITY.md)

@@ -1,0 +1,53 @@
+name: Bug report
+description: Report a reproducible problem.
+title: "Bug: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not paste raw Surge profiles, subscription URLs, node credentials, request logs, DNS dumps, tokens, real domains, or real IPs.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What went wrong?
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Run `scripts/surge-guardian-assistant version`.
+      placeholder: "0.1.0"
+    validations:
+      required: false
+  - type: dropdown
+    id: edition
+    attributes:
+      label: Edition
+      options:
+        - Hermes Edition
+        - Codex Edition
+        - Not sure
+    validations:
+      required: false
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Keep this sanitized.
+    validations:
+      required: false
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: false
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: false
