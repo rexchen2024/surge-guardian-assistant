@@ -1,88 +1,79 @@
 # Runtime Options
 
-[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.zh-CN.md)
+[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.zh-TW.md)
 
 Surge Guardian Assistant has one core loop and three practical ways to run it.
 
-## Recommended: Surge + Hermes
+## 1. Choose A Runtime
 
-Use this when you want autonomous checks, model analysis, and delivery through
-your existing Hermes channels.
+**1. Recommended Hermes Agent**
 
-- `scripts/surge-guardian-assistant tick` performs the deterministic local check.
-- Healthy output is exactly `{"wakeAgent": false}`.
-- Non-silent output becomes the evidence package for Hermes.
-- Hermes decides whether to stay silent, report an already-handled issue, or ask
-  for confirmation before a risky action.
+Best for always-on monitoring, incident notifications, and learning from repeated patterns. Healthy checks stay silent; important issues can wake AI.
 
-This is the strongest mode because Hermes supplies scheduling, model reasoning,
-memory, and notification delivery without adding those responsibilities to the
-guardian core.
+[Read Hermes setup](hermes-edition.md)
 
-For production use, keep this as the default deployment path. The guardian's
-`{"wakeAgent": false}` contract is designed for Hermes cron: healthy checks can
-complete without a model call, while incident packages wake the agent only when
-evidence justifies it.
+**2. Local-only**
 
-For installation steps, see [Hermes Edition](hermes-edition.md).
+Best when you only want to check Surge from the local terminal. This is the lightest path: local scripts plus `surge-cli`.
 
-## Local-Only: Surge Without Hermes
+**3. Codex Edition**
 
-Use this when the machine has Surge but does not run Hermes.
+Best for lower-frequency repository checks, incident review, and project maintenance. It is not recommended for minute-level monitoring.
 
-What still works:
+[Read Codex setup](codex-edition.md)
 
-- log and event inspection
-- repeated-error counters
-- external resource retry
-- DNS flush
-- policy retest
-- narrow temporary runtime rules
-- temp-rule cleanup and state reconciliation
-- `doctor`, `tick`, and `redact-check`
-
-What does not happen automatically:
-
-- model analysis
-- chat-style explanation
-- cross-session learning through Hermes memory
-- delivery through Telegram, Discord, Matrix, Weixin, Feishu, Signal, or other
-  Hermes channels
-
-Run it from launchd, cron, or another local scheduler. A minimal launchd job can
-call:
+## 2. Common One-Command Install
 
 ```bash
-/path/to/surge-guardian-assistant/scripts/surge-guardian-assistant tick >> "$HOME/Library/Logs/surge-guardian-assistant.log" 2>&1
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
 ```
 
-In local-only mode, monitor the log for any line that is not:
+The installer puts the project in `~/.surge-guardian-assistant`, checks the Surge environment, and starts first-run setup.
+
+## 3. Verify It Works
+
+```bash
+cd ~/.surge-guardian-assistant
+scripts/surge-guardian-assistant doctor
+scripts/surge-guardian-assistant tick
+```
+
+`doctor` checks the Surge command, logs, and local config. `tick` performs one real check. Healthy output is:
 
 ```json
 {"wakeAgent": false}
 ```
 
-This mode is deliberately simple. It keeps the deterministic safety behavior but
-does not pretend to replace an agent runtime.
+## 4. Run Local-only Mode
 
-## Codex-Assisted
+Local-only mode can be scheduled with launchd, cron, or another local scheduler:
 
-Codex can help inspect the repository, review local state, and analyze incident
-logs when a person asks it to. Codex is useful for maintenance and deeper
-debugging, but it should not be treated as the default always-on scheduler.
+```bash
+/path/to/surge-guardian-assistant/scripts/surge-guardian-assistant tick >> "$HOME/Library/Logs/surge-guardian-assistant.log" 2>&1
+```
 
-If you want Codex involved, keep the scheduler local and hand Codex the
-non-silent incident log or repository state when analysis is needed. This keeps
-the routine path lightweight and avoids turning every minute-level check into a
-model task.
+It still supports:
 
-Codex automations can also run scheduled workspace jobs. Use them for lower
-frequency review work, such as daily repository checks, weekly privacy scans, or
-non-silent incident analysis. For installation steps, see
-[Codex Edition](codex-edition.md).
+1. Log and event checks.
+2. External resource retry.
+3. DNS flush.
+4. Policy retest.
+5. Narrow temporary runtime rules.
+6. Temporary rule cleanup and state reconciliation.
 
-## Rule Of Thumb
+It does not automatically provide:
 
-- Use Surge-only local mode for deterministic self-healing and manual review.
-- Use Hermes when you want quiet scheduled automation plus notifications.
-- Use Codex for interactive improvement, debugging, and project maintenance.
+1. Model analysis.
+2. Chat-style explanation.
+3. Cross-session learning through Hermes memory.
+4. Telegram, Discord, Matrix, Weixin, Feishu, Signal, or other Hermes delivery channels.
+
+## 5. Automatic Updates
+
+As long as the install path remains a Git checkout, it can keep receiving updates from GitHub. See [Updating](updating.md).
+
+## 6. Safety Boundary
+
+Regardless of runtime, the assistant only performs low-risk actions by default: reading state, updating external resources, flushing the Surge DNS cache, retesting policies, and adding or removing temporary runtime rules.
+
+Permanent profile edits, certificates, DNS records, servers, MITM, Rewrite, Scripting, Replica, reload, restart, profile selection, and policy-group selection require user confirmation.

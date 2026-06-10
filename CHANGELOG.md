@@ -20,3 +20,4 @@ First complete release.
 - Sanitized feedback reports that users review before sharing.
 - User confirmation required for permanent profile edits, certificates, DNS records, servers, MITM, Rewrite, Scripting, Replica, reload, restart, profile selection, and policy-group selection.
 - Simplified Chinese homepage by default, with Traditional Chinese and English entry points.
+- Install docs are available in Simplified Chinese, Traditional Chinese, and English, with language-switch links.

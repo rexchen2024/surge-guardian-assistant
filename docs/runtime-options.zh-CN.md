@@ -1,22 +1,36 @@
 # 运行方式
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.md)
+[繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.zh-TW.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.md)
 
 Surge 守护助手的核心循环只有一套，但有三种实际运行方式。
 
-## 一键安装
+## 1. 先选运行方式
 
-这一步会把项目安装到 `~/.surge-guardian-assistant`，检查 Surge 环境，并进入首次配置。
+**1. 推荐 Hermes Agent**
 
-### 1. 在终端运行安装命令
+适合常驻巡检、异常通知和持续学习。健康时静默，重要问题再唤醒 AI。
+
+[查看 Hermes 安装](hermes-edition.zh-CN.md)
+
+**2. 极简本地**
+
+适合只想在本机终端检查 Surge 的用户。最轻量，只运行本地脚本和 `surge-cli`。
+
+**3. Codex 版本**
+
+适合低频检查仓库、复盘异常和维护项目。不建议做每分钟巡检。
+
+[查看 Codex 安装](codex-edition.zh-CN.md)
+
+## 2. 通用一键安装
 
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
 ```
 
-安装脚本会自动拉取 GitHub 仓库。以后只要安装目录还是 Git 仓库，就可以继续获取项目更新。
+安装脚本会把项目安装到 `~/.surge-guardian-assistant`，检查 Surge 环境，并进入首次配置。
 
-### 2. 验证是否可用
+## 3. 验证是否可用
 
 ```bash
 cd ~/.surge-guardian-assistant
@@ -24,91 +38,42 @@ scripts/surge-guardian-assistant doctor
 scripts/surge-guardian-assistant tick
 ```
 
-`doctor` 用来检查 Surge 命令、日志和本地配置。`tick` 是一次正式巡检；健康时只会输出 `{"wakeAgent": false}`。
-
-### 3. 选择运行方式
-
-- 要常驻巡检和通知：继续看 [Hermes 版本](hermes-edition.zh-CN.md)。
-- 要低频审查和项目维护：继续看 [Codex 版本](codex-edition.zh-CN.md)。
-- 只想本地运行：用 launchd、cron 或其他调度器定时运行 `tick`。
-
-自动更新说明见 [升级](updating.zh-CN.md)。
-
-## 安全边界
-
-不管选择哪种运行方式，守护助手都只默认执行低风险动作。自动动作只包括读取状态、更新外部资源、刷新 Surge DNS 缓存、策略复测、添加或清理运行时临时规则。永久 profile 编辑、证书、DNS 记录、服务器、MITM、Rewrite、Scripting、Replica、reload、restart、profile 选择和策略组选择，都必须先得到用户确认。
-
-## 1. 推荐 Hermes Agent
-
-适合希望获得自治检查、模型分析和 Hermes 通知投递的用户。
-
-- `scripts/surge-guardian-assistant tick` 执行本地确定性检查。
-- 健康输出必须精确为 `{"wakeAgent": false}`。
-- 非静默输出会成为 Hermes 的现场证据包。
-- Hermes 再判断应该保持静默、报告已经处理的问题，还是在高风险动作前请求确认。
-
-这是最完整的模式，因为 Hermes 提供调度、模型推理、记忆和通知投递，
-Guardian 核心不需要自己承担这些职责。
-
-生产使用时，建议继续把它作为默认部署方式。Guardian 的
-`{"wakeAgent": false}` 合同就是为 Hermes cron 设计的：健康检查可以不调用模型，
-只有有证据的问题包才唤醒 agent。
-
-安装步骤见 [Hermes 版本](hermes-edition.zh-CN.md)。
-
-## 2. 极简本地
-
-适合机器上只有 Surge、没有 Hermes 的用户。
-
-仍然可用：
-
-- 日志和事件检查
-- 重复错误计数
-- 外部资源重试
-- DNS 刷新
-- 策略复测
-- 窄范围临时运行时规则
-- 临时规则清理和状态对账
-- `doctor`、`tick` 和 `redact-check`
-
-不会自动发生：
-
-- 模型分析
-- 聊天式解释
-- 通过 Hermes memory 做跨会话学习
-- 通过 Telegram、Discord、Matrix、微信、飞书、Signal 或其他 Hermes
-  渠道投递通知
-
-可以用 launchd、cron 或其他本地调度器运行。最小 launchd 任务可以调用：
-
-```bash
-/path/to/surge-guardian-assistant/scripts/surge-guardian-assistant tick >> "$HOME/Library/Logs/surge-guardian-assistant.log" 2>&1
-```
-
-本地模式下，只需要关注日志中不等于下面内容的输出：
+`doctor` 用来检查 Surge 命令、日志和本地配置。`tick` 是一次正式巡检；健康时只会输出：
 
 ```json
 {"wakeAgent": false}
 ```
 
-这个模式刻意保持简单：保留确定性的安全自治能力，但不假装替代完整 agent
-运行时。
+## 4. 极简本地怎么运行
 
-## 3. Codex 版本
+本地模式可以用 launchd、cron 或其他调度器定时运行：
 
-Codex 适合在用户主动发起时检查仓库、审查本地状态、分析异常日志。
-它很适合维护和深度排障，但不应该默认当成常驻分钟级调度器。
+```bash
+/path/to/surge-guardian-assistant/scripts/surge-guardian-assistant tick >> "$HOME/Library/Logs/surge-guardian-assistant.log" 2>&1
+```
 
-如果希望 Codex 参与，建议仍然把调度留在本地，只在出现非静默事件或需要优化
-项目时，把异常日志或仓库状态交给 Codex 分析。这样日常路径保持轻量，
-也避免把每分钟检查都变成模型任务。
+本地模式仍然支持：
 
-Codex 自动化也可以运行定时 workspace 任务。建议把它用于较低频的审查工作，
-比如每日仓库检查、每周隐私扫描，或非静默异常复盘。安装步骤见
-[Codex 版本](codex-edition.zh-CN.md)。
+1. 日志和事件检查。
+2. 外部资源重试。
+3. DNS 刷新。
+4. 策略复测。
+5. 小范围运行时临时规则。
+6. 临时规则清理和状态对账。
 
-## 简单判断
+不会自动发生：
 
-- 只想要确定性自愈和手动查看：用 Surge-only 本地模式。
-- 想要安静的定时自动化和通知：用 Hermes。
-- 想做交互式改进、排障和项目维护：用 Codex。
+1. 模型分析。
+2. 聊天式解释。
+3. Hermes memory 跨会话学习。
+4. Telegram、Discord、Matrix、微信、飞书、Signal 等 Hermes 渠道通知。
+
+## 5. 自动更新
+
+只要安装目录还是 Git 仓库，后续就可以继续从 GitHub 获取更新。自动更新说明见 [升级](updating.zh-CN.md)。
+
+## 6. 安全边界
+
+不管选择哪种运行方式，守护助手都只默认执行低风险动作。自动动作只包括读取状态、更新外部资源、刷新 Surge DNS 缓存、策略复测、添加或清理运行时临时规则。
+
+永久 profile 编辑、证书、DNS 记录、服务器、MITM、Rewrite、Scripting、Replica、reload、restart、profile 选择和策略组选择，都必须先得到用户确认。

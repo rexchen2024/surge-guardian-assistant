@@ -58,19 +58,19 @@ flowchart LR
 
 只想在本機終端檢查 Surge。最輕量，腳本直接呼叫 `surge-cli`，適合手動檢查或本機排程。
 
-[一鍵安裝和本機執行說明](docs/runtime-options.zh-CN.md)
+[一鍵安裝和本機執行說明](docs/runtime-options.zh-TW.md)
 
 **2. 推薦 Hermes Agent ⭐**
 
 常駐巡檢、異常通知、持續學習的首選方式。健康時完全靜默，重要問題再喚醒 AI，也可以透過聊天工具推送。
 
-[一鍵安裝和 Hermes 任務說明](docs/hermes-edition.zh-CN.md)
+[一鍵安裝和 Hermes 任務說明](docs/hermes-edition.zh-TW.md)
 
 **3. Codex 版本**
 
 適合低頻檢查儲存庫、回顧異常、維護專案。不建議做每分鐘巡檢。
 
-[一鍵安裝和 Codex 自動化說明](docs/codex-edition.zh-CN.md)
+[一鍵安裝和 Codex 自動化說明](docs/codex-edition.zh-TW.md)
 
 腳本直接呼叫 Surge 的 `surge-cli`。一鍵安裝、自動更新、任務頻率和安全邊界，都在對應說明裡。
 
@@ -79,10 +79,10 @@ flowchart LR
 
 ## 文件
 
-- [Hermes 版本](docs/hermes-edition.zh-CN.md)
-- [Codex 版本](docs/codex-edition.zh-CN.md)
-- [執行方式](docs/runtime-options.zh-CN.md)
-- [升級](docs/updating.zh-CN.md)
+- [Hermes 版本](docs/hermes-edition.zh-TW.md)
+- [Codex 版本](docs/codex-edition.zh-TW.md)
+- [執行方式](docs/runtime-options.zh-TW.md)
+- [升級](docs/updating.zh-TW.md)
 - [自治模型](docs/autonomy.zh-CN.md)
 - [故障排查](docs/troubleshooting.zh-CN.md)
 - [常見問題](docs/faq.zh-CN.md)

@@ -20,3 +20,4 @@
 - 反馈报告默认脱敏，提交前需要用户自行检查。
 - 永久 profile 编辑、证书、DNS 记录、服务器、MITM、Rewrite、Scripting、Replica、reload、restart、profile 选择和策略组选择都需要用户确认。
 - 默认简体中文主页，并提供繁体中文和英文入口。
+- 安装相关文档提供简体中文、繁体中文和英文版本，并带语言切换链接。

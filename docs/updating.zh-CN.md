@@ -1,6 +1,6 @@
 # 升级
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/updating.md)
+[繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/updating.zh-TW.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/updating.md)
 
 更新来自 GitHub。
 
