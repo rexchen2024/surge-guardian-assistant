@@ -6,6 +6,7 @@ import os
 import shlex
 import shutil
 import subprocess
+import time
 from pathlib import Path
 
 from . import __version__
@@ -77,6 +78,88 @@ def command_version(_args: argparse.Namespace) -> int:
     return 0
 
 
+def read_json(path: Path) -> dict:
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text())
+    except Exception:
+        return {}
+
+
+def write_json_private(path: Path, data: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(".tmp")
+    tmp.write_text(json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True))
+    tmp.chmod(0o600)
+    tmp.replace(path)
+    path.chmod(0o600)
+
+
+def auto_update_if_due(config: GuardianConfig) -> None:
+    if not config.auto_update:
+        return
+    root = config.root
+    if not (root / ".git").exists():
+        return
+
+    state_path = config.state_dir / "update-state.json"
+    state = read_json(state_path)
+    now = int(time.time())
+    last = int(state.get("last_check_at", 0) or 0)
+    if now - last < config.auto_update_interval_seconds:
+        return
+
+    state["last_check_at"] = now
+    try:
+        status = run_git(root, "status", "--porcelain", "--untracked-files=no")
+        if status.returncode != 0:
+            state["last_result"] = "git status failed"
+            return
+        if status.stdout.strip():
+            state["last_result"] = "skipped: local tracked files changed"
+            return
+
+        fetch = run_git(root, "fetch", "--prune", "origin")
+        if fetch.returncode != 0:
+            state["last_result"] = "git fetch failed"
+            return
+
+        upstream = run_git(root, "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{u}")
+        upstream_ref = upstream.stdout.strip() if upstream.returncode == 0 else "origin/main"
+        counts = run_git(root, "rev-list", "--left-right", "--count", f"HEAD...{upstream_ref}")
+        if counts.returncode != 0:
+            state["last_result"] = f"cannot compare with {upstream_ref}"
+            return
+        ahead, behind = [int(item) for item in counts.stdout.split()]
+        if behind == 0:
+            state["last_result"] = "up to date"
+            return
+        if ahead:
+            state["last_result"] = "skipped: local branch has unpublished commits"
+            return
+
+        pull = run_git(root, "pull", "--ff-only")
+        if pull.returncode != 0:
+            state["last_result"] = "git pull failed"
+            return
+
+        check = subprocess.run(
+            ["scripts/check"],
+            cwd=root,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            timeout=120,
+        )
+        state["last_result"] = "updated" if check.returncode == 0 else "updated but check failed"
+    except Exception as exc:
+        state["last_result"] = f"failed: {exc}"
+    finally:
+        state["last_finished_at"] = int(time.time())
+        write_json_private(state_path, state)
+
+
 def command_setup(args: argparse.Namespace) -> int:
     root = project_root()
     env_path = root / ".env"
@@ -113,6 +196,8 @@ def command_setup(args: argparse.Namespace) -> int:
         "DIRECT_FAIL_THRESHOLD": "3",
         "POLICY_RECOVERED_ALERT_THRESHOLD": "3",
         "ALERT_COOLDOWN_SECONDS": "3600",
+        "AUTO_UPDATE": "1",
+        "AUTO_UPDATE_INTERVAL_SECONDS": "86400",
     }
     if mobile_profile:
         values["MOBILE_PROFILE"] = mobile_profile
@@ -151,6 +236,7 @@ def command_setup(args: argparse.Namespace) -> int:
 
 def command_tick(_args: argparse.Namespace) -> int:
     config = GuardianConfig.load(project_root())
+    auto_update_if_due(config)
     print(SurgeGuardian(config).tick())
     return 0
 

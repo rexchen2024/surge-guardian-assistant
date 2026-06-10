@@ -2,6 +2,13 @@
 
 [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.zh-CN.md)
 
+## 0.3.0
+
+- 正常 `tick` 巡检时默认自动检查更新。
+- 新增 `AUTO_UPDATE` 和 `AUTO_UPDATE_INTERVAL_SECONDS`。
+- 升级保持安全：用户改过受 Git 管理的文件时会停止更新。
+- 简化 README 和升级说明。
+
 ## 0.2.0
 
 - 对外项目名改为 Surge 守护助手。

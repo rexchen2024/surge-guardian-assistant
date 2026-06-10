@@ -2,31 +2,27 @@
 
 [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-CN.md)
 
-Current version: **0.2.0**
+Current version: **0.3.0**
 
-Surge Guardian Assistant is a lightweight autonomous operations assistant for
-people who run [Surge](https://nssurge.com/) on macOS. It watches Surge signals,
-handles safe recovery steps, keeps healthy checks quiet, and asks for user
-confirmation before risky changes.
+Surge Guardian Assistant keeps an eye on Surge for you. When everything is fine,
+it stays quiet. When something looks wrong, it tries the safe fixes first and
+only asks you before risky changes.
 
-Project URL:
+Project:
 
 ```text
 https://github.com/rexchen2024/surge-guardian-assistant
 ```
 
-Repository slug and public product name are aligned as
-`surge-guardian-assistant`.
+## Install
 
-## Quick Start
-
-One-command install:
+One command:
 
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)"
 ```
 
-Private repository users can use Git directly:
+If the repo is private, use Git:
 
 ```bash
 git clone https://github.com/rexchen2024/surge-guardian-assistant.git
@@ -34,100 +30,84 @@ cd surge-guardian-assistant
 scripts/surge-guardian-assistant setup --print-hermes-command
 ```
 
-Update later:
+## What It Does
+
+- Watches Surge logs and events.
+- Retries external resources when they fail.
+- Flushes DNS after repeated DNS problems.
+- Retests policies before bothering you.
+- Adds small temporary runtime rules for repeated DIRECT failures.
+- Keeps `.env` and state files private.
+- Never edits permanent Surge profiles without asking.
+
+Healthy output is:
+
+```json
+{"wakeAgent": false}
+```
+
+## Pick A Version
+
+**Hermes Edition** is the normal choice. It runs often, stays quiet when healthy,
+and uses Hermes for messages.
+
+[Install Hermes Edition](docs/hermes-edition.md)
+
+**Codex Edition** is for lower-frequency review and maintenance. It is useful if
+you already use Codex automations.
+
+[Install Codex Edition](docs/codex-edition.md)
+
+## Updates
+
+Installed copies check GitHub automatically once a day during normal runs.
+Nothing is overwritten if the user changed tracked files locally.
+
+Manual update:
 
 ```bash
 cd ~/.surge-guardian-assistant
 scripts/surge-guardian-assistant update
 ```
 
-## Choose A Version
+Check only:
 
-### Hermes Edition
+```bash
+scripts/surge-guardian-assistant update --check
+```
 
-Best for production use. Hermes runs the minute-level guardian loop, skips model
-work on healthy checks with `{"wakeAgent": false}`, and wakes the configured
-model only when the script emits an incident package.
+Turn off automatic updates by setting this in `.env`:
 
-- Recommended for always-on monitoring.
-- Lowest noise and lowest routine model usage.
-- Uses Hermes cron, memory, model reasoning, and delivery channels.
-- Best fit when the user already has Hermes and Surge.
+```bash
+AUTO_UPDATE=0
+```
 
-[Install Hermes Edition](docs/hermes-edition.md)
-
-### Codex Edition
-
-Best for scheduled review, project maintenance, and incident analysis. Codex can
-run lower-frequency workspace automations against this repository and use the
-provided prompt to review non-silent incidents or propose improvements.
-
-- Optional, not the default production runtime.
-- Good for daily/weekly review, privacy scans, and code/documentation upkeep.
-- Useful for users who already rely on Codex automations.
-- Not recommended as a replacement for Hermes minute-level quiet checks.
-
-[Install Codex Edition](docs/codex-edition.md)
-
-## Shared Capabilities
-
-- Reads Surge event and log signals locally.
-- Retries external resources when safe.
-- Flushes DNS after repeated DNS failures.
-- Retests policies before escalating.
-- Adds narrow temporary runtime rules for repeated DIRECT failures.
-- Reviews and removes temporary runtime rules later.
-- Keeps local `.env` and state files private with `0600` permissions.
-- Refuses permanent Surge profile, DNS, certificate, server, MITM, Rewrite,
-  Scripting, Replica, reload, or restart changes without user confirmation.
-
-## Commands
-
-- `setup`: interactive first-run setup; writes local `.env` only.
-- `tick`: one lightweight guardian run.
-- `doctor`: sanitized manual diagnostic summary.
-- `version`: print installed version.
-- `update`: pull the latest GitHub version and run checks.
-- `redact-check`: repository scan before commit or GitHub push.
+## Useful Commands
 
 ```bash
 scripts/surge-guardian-assistant setup --print-hermes-command
 scripts/surge-guardian-assistant doctor
 scripts/surge-guardian-assistant tick
-scripts/surge-guardian-assistant update --check
-```
-
-Healthy `tick` output is:
-
-```json
-{"wakeAgent": false}
+scripts/surge-guardian-assistant version
+scripts/surge-guardian-assistant update
 ```
 
 ## Privacy
 
-Never commit:
+Do not commit `.env`, logs, state files, Surge profiles, subscription URLs, node
+credentials, real domains, real IPs, or notification targets.
 
-- `.env`
-- state or log files
-- Surge profiles
-- subscription URLs
-- node credentials
-- real domains or IPs
-- notification targets
-
-Run this before every commit:
+Before publishing changes:
 
 ```bash
 scripts/check
 ```
 
-## More Docs
+## Docs
 
 - [Hermes Edition](docs/hermes-edition.md)
 - [Codex Edition](docs/codex-edition.md)
-- [Runtime options](docs/runtime-options.md)
 - [Updating](docs/updating.md)
 - [Autonomy model](docs/autonomy.md)
 - [Privacy notes](docs/privacy.md)
-- [Sync workflow](docs/sync-workflow.md)
 - [Changelog](CHANGELOG.md)

@@ -2,27 +2,25 @@
 
 [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-CN.md)
 
-当前版本：**0.2.0**
+当前版本：**0.3.0**
 
-Surge 守护助手是一个面向 macOS [Surge](https://nssurge.com/) 用户的轻量级自治运维助手。它会观察 Surge 信号，执行安全范围内的恢复动作，在健康状态下保持静默，并且在高风险动作前请求用户确认。
+Surge 守护助手会帮你盯着 Surge。正常时不吵你；出问题时先自己做安全修复；需要改危险设置时，再来问你。
 
-项目主页：
+项目地址：
 
 ```text
 https://github.com/rexchen2024/surge-guardian-assistant
 ```
 
-仓库 slug 和对外项目名已统一为 `surge-guardian-assistant`。
+## 安装
 
-## 快速开始
-
-一条命令安装：
+一条命令：
 
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)"
 ```
 
-如果仓库仍是私有仓库，可以用 Git 方式：
+如果仓库是私有的，用 Git：
 
 ```bash
 git clone https://github.com/rexchen2024/surge-guardian-assistant.git
@@ -30,95 +28,80 @@ cd surge-guardian-assistant
 scripts/surge-guardian-assistant setup --print-hermes-command
 ```
 
-以后升级：
+## 它会做什么
+
+- 看 Surge 日志和事件。
+- 外部资源失败时自动重试。
+- DNS 连续异常时刷新 DNS。
+- 通知你之前先复测策略。
+- 对反复 DIRECT 失败加小范围临时规则。
+- 保护本地 `.env` 和 state 文件。
+- 不会擅自改永久 Surge 配置。
+
+健康输出是：
+
+```json
+{"wakeAgent": false}
+```
+
+## 选择版本
+
+**Hermes 版本** 是默认推荐。适合常驻巡检，正常时静默，有事再通过 Hermes 通知你。
+
+[安装 Hermes 版本](docs/hermes-edition.zh-CN.md)
+
+**Codex 版本** 适合低频检查和项目维护。如果你已经在用 Codex 自动化，可以选它。
+
+[安装 Codex 版本](docs/codex-edition.zh-CN.md)
+
+## 更新
+
+安装后，正常巡检时会每天自动检查一次 GitHub 更新。用户改过受 Git 管理的文件时，不会覆盖。
+
+手动升级：
 
 ```bash
 cd ~/.surge-guardian-assistant
 scripts/surge-guardian-assistant update
 ```
 
-## 选择版本
+只检查不升级：
 
-### Hermes 版本
+```bash
+scripts/surge-guardian-assistant update --check
+```
 
-适合生产使用。Hermes 负责分钟级守护循环，健康检查通过 `{"wakeAgent": false}` 跳过模型工作，只有脚本输出异常包时才唤醒已配置模型。
+如果不想自动更新，在 `.env` 里写：
 
-- 推荐用于常驻巡检。
-- 日常噪音最低，健康状态下模型消耗最低。
-- 使用 Hermes cron、memory、模型分析和消息投递渠道。
-- 最适合已经安装 Hermes 和 Surge 的用户。
+```bash
+AUTO_UPDATE=0
+```
 
-[安装 Hermes 版本](docs/hermes-edition.zh-CN.md)
-
-### Codex 版本
-
-适合定期审查、项目维护和异常复盘。Codex 可以针对这个仓库运行较低频 workspace 自动化，并使用内置 prompt 分析非静默异常或提出改进。
-
-- 可选版本，不是默认生产运行时。
-- 适合每日/每周检查、隐私扫描、代码和文档维护。
-- 适合已经依赖 Codex 自动化的用户。
-- 不建议替代 Hermes 做分钟级静默巡检。
-
-[安装 Codex 版本](docs/codex-edition.zh-CN.md)
-
-## 共享能力
-
-- 本地读取 Surge event 和日志信号。
-- 安全时自动重试外部资源。
-- 重复 DNS 异常后刷新 DNS。
-- 升级前先复测策略。
-- 对重复 DIRECT 失败添加窄范围运行时临时规则。
-- 后续复查和移除运行时临时规则。
-- 本地 `.env` 和 state 文件强制使用 `0600` 权限。
-- 永久 Surge profile、DNS、证书、服务器、MITM、Rewrite、Scripting、Replica、reload 或 restart 变更都必须先获得用户确认。
-
-## 命令
-
-- `setup`：交互式首次配置；只写入本地 `.env`。
-- `tick`：执行一次轻量守护。
-- `doctor`：脱敏后的手动诊断摘要。
-- `version`：显示已安装版本。
-- `update`：拉取 GitHub 最新版本并运行检查。
-- `redact-check`：提交或推送 GitHub 前的仓库扫描。
+## 常用命令
 
 ```bash
 scripts/surge-guardian-assistant setup --print-hermes-command
 scripts/surge-guardian-assistant doctor
 scripts/surge-guardian-assistant tick
-scripts/surge-guardian-assistant update --check
-```
-
-健康状态下的 `tick` 输出是：
-
-```json
-{"wakeAgent": false}
+scripts/surge-guardian-assistant version
+scripts/surge-guardian-assistant update
 ```
 
 ## 隐私
 
-永远不要提交：
+不要提交 `.env`、日志、state、Surge profiles、订阅 URL、节点凭据、真实域名、真实 IP 或通知目标。
 
-- `.env`
-- state 或日志文件
-- Surge profiles
-- 订阅 URL
-- 节点凭据
-- 真实域名或 IP
-- 通知目标
-
-每次提交前运行：
+发布前运行：
 
 ```bash
 scripts/check
 ```
 
-## 更多文档
+## 文档
 
 - [Hermes 版本](docs/hermes-edition.zh-CN.md)
 - [Codex 版本](docs/codex-edition.zh-CN.md)
-- [运行方式](docs/runtime-options.zh-CN.md)
 - [升级](docs/updating.zh-CN.md)
 - [自治模型](docs/autonomy.zh-CN.md)
 - [隐私说明](docs/privacy.zh-CN.md)
-- [同步流程](docs/sync-workflow.zh-CN.md)
 - [更新日志](CHANGELOG.zh-CN.md)

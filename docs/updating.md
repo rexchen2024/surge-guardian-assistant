@@ -2,44 +2,51 @@
 
 [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/updating.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/updating.zh-CN.md)
 
-Surge Guardian Assistant is installed as a Git checkout. GitHub is the update
-source.
+Updates come from GitHub.
 
-This keeps updates simple:
+After setup, normal `tick` runs check for updates once a day. If new code is
+available, the assistant pulls it and runs `scripts/check`. If local tracked
+files were changed, it skips the update instead of overwriting anything.
 
-- users keep the same local `.env`
-- code updates come from `main`
-- local private state stays outside Git
-- the update command validates the new code before reporting success
+## Automatic Updates
 
-## Check The Installed Version
+Automatic updates are on by default:
+
+```bash
+AUTO_UPDATE=1
+AUTO_UPDATE_INTERVAL_SECONDS=86400
+```
+
+Turn them off in `.env`:
+
+```bash
+AUTO_UPDATE=0
+```
+
+## Manual Commands
+
+Show the installed version:
 
 ```bash
 scripts/surge-guardian-assistant version
 ```
 
-## Check For Updates
+Check for updates:
 
 ```bash
 scripts/surge-guardian-assistant update --check
 ```
 
-## Apply Updates
+Update now:
 
 ```bash
 scripts/surge-guardian-assistant update
 ```
 
-The update command runs:
+## Notes
 
-1. `git fetch --prune origin`
-2. a local-change safety check
-3. `git pull --ff-only`
-4. `scripts/check`
-
-If tracked files were edited locally, the command stops instead of overwriting
-them. Commit, stash, or reset those local edits before updating.
-
-## Release Notes
-
-See [Changelog](../CHANGELOG.md).
+- `.env` stays local.
+- State files stay local.
+- Updates use `git pull --ff-only`.
+- Local tracked edits stop the update.
+- Release notes are in [Changelog](../CHANGELOG.md).

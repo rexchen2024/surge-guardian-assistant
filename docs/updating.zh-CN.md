@@ -2,43 +2,49 @@
 
 [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/updating.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/updating.zh-CN.md)
 
-Surge 守护助手以 Git checkout 的方式安装。GitHub 就是更新源。
+更新来自 GitHub。
 
-这样升级逻辑很简单：
+安装后，正常 `tick` 巡检会每天检查一次更新。如果 GitHub 有新代码，它会自动拉取并运行 `scripts/check`。如果用户改过受 Git 管理的文件，它会跳过，不会覆盖。
 
-- 用户保留同一份本地 `.env`
-- 代码更新来自 `main`
-- 本地私有 state 不进入 Git
-- 更新命令会先校验新代码，再报告成功
+## 自动更新
 
-## 查看已安装版本
+默认开启：
+
+```bash
+AUTO_UPDATE=1
+AUTO_UPDATE_INTERVAL_SECONDS=86400
+```
+
+如果不想自动更新，在 `.env` 里关掉：
+
+```bash
+AUTO_UPDATE=0
+```
+
+## 手动命令
+
+查看版本：
 
 ```bash
 scripts/surge-guardian-assistant version
 ```
 
-## 检查是否有更新
+检查更新：
 
 ```bash
 scripts/surge-guardian-assistant update --check
 ```
 
-## 执行升级
+立刻升级：
 
 ```bash
 scripts/surge-guardian-assistant update
 ```
 
-更新命令会执行：
+## 说明
 
-1. `git fetch --prune origin`
-2. 本地改动安全检查
-3. `git pull --ff-only`
-4. `scripts/check`
-
-如果用户修改过受 Git 管理的文件，命令会停止，避免覆盖本地改动。先 commit、
-stash 或 reset 这些本地改动后再升级。
-
-## 更新日志
-
-见 [更新日志](../CHANGELOG.zh-CN.md)。
+- `.env` 留在本地。
+- state 文件留在本地。
+- 更新使用 `git pull --ff-only`。
+- 用户改过受 Git 管理的文件时会停止更新。
+- 版本说明见 [更新日志](../CHANGELOG.zh-CN.md)。

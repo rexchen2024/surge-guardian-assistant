@@ -73,6 +73,8 @@ class GuardianConfig:
     direct_fail_threshold: int
     policy_recovered_alert_threshold: int
     alert_cooldown_seconds: int
+    auto_update: bool
+    auto_update_interval_seconds: int
 
     @classmethod
     def load(cls, root: Path) -> "GuardianConfig":
@@ -97,6 +99,8 @@ class GuardianConfig:
             direct_fail_threshold=int(env.get("DIRECT_FAIL_THRESHOLD", "3") or "3"),
             policy_recovered_alert_threshold=int(env.get("POLICY_RECOVERED_ALERT_THRESHOLD", "3") or "3"),
             alert_cooldown_seconds=int(env.get("ALERT_COOLDOWN_SECONDS", "3600") or "3600"),
+            auto_update=env.get("AUTO_UPDATE", "1").strip().lower() not in {"0", "false", "no", "off"},
+            auto_update_interval_seconds=int(env.get("AUTO_UPDATE_INTERVAL_SECONDS", "86400") or "86400"),
         )
 
     def missing_required(self) -> list[str]:

@@ -3,7 +3,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import guardian
-from guardian.config import write_env
+from guardian.config import GuardianConfig, write_env
 from guardian.guardian import SurgeGuardian
 from guardian.state import StateStore
 
@@ -66,6 +66,12 @@ class GuardianParsingTest(unittest.TestCase):
         pyproject = Path(__file__).resolve().parent.parent / "pyproject.toml"
         version_line = next(line for line in pyproject.read_text().splitlines() if line.startswith("version = "))
         self.assertEqual(guardian.__version__, version_line.split('"')[1])
+
+    def test_auto_update_defaults_on(self):
+        with TemporaryDirectory() as tmp:
+            config = GuardianConfig.load(Path(tmp))
+            self.assertTrue(config.auto_update)
+            self.assertEqual(config.auto_update_interval_seconds, 86400)
 
 
 if __name__ == "__main__":

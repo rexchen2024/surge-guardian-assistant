@@ -401,7 +401,7 @@ class SurgeGuardian:
             lines.extend(f"- {item}" for item in diagnostics)
         lines.extend([
             "",
-            "【AI 分析要求】",
+            "【分析要求】",
             "- 判断这是临时波动、已自动修复的问题，还是需要用户决策的问题。",
             "- 如果无需通知用户，最终回复必须只包含 [SILENT] 六个字符，不能附加解释、代码块或大小写变体。",
             "- 永久修改 profile、重启 Surge、修改证书/DNS/服务器时，只能给方案并请求确认。",
