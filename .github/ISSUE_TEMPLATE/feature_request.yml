@@ -1,33 +1,33 @@
-name: Feature request
-description: Suggest a focused improvement.
-title: "Feature: "
+name: 功能建议
+description: 提出一个清晰、聚焦的改进建议。
+title: "功能建议："
 labels: ["enhancement"]
 body:
   - type: textarea
     id: problem
     attributes:
-      label: Problem
-      description: What user problem should this solve?
+      label: 想解决什么问题？
+      description: 简单说清楚这个建议要解决的实际使用问题。
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: Proposal
-      description: What should change?
+      label: 你的建议
+      description: 你希望它怎么改？
     validations:
       required: true
   - type: dropdown
     id: area
     attributes:
-      label: Area
+      label: 影响范围
       options:
-        - Surge checks
-        - Hermes Edition
-        - Codex Edition
-        - Install or update
-        - Documentation
-        - Privacy or security
-        - Other
+        - Surge 巡检
+        - Hermes 版本
+        - Codex 版本
+        - 安装或升级
+        - 文档
+        - 隐私或安全
+        - 其他
     validations:
       required: false

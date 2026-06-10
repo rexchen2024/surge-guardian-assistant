@@ -1,14 +1,14 @@
-name: Sanitized feedback
-description: Share a sanitized problem report or improvement idea.
-title: "Feedback: "
+name: 使用反馈
+description: 提交脱敏后的问题反馈或改进建议。
+title: "反馈："
 labels: ["feedback"]
 body:
   - type: markdown
     attributes:
       value: |
-        Please do not paste raw Surge profiles, subscription URLs, node credentials, request logs, DNS dumps, tokens, real domains, or real IPs.
+        请不要粘贴原始 Surge profile、订阅 URL、节点凭据、请求日志、DNS dump、token、真实域名或真实 IP。
 
-        You can generate a local report with:
+        可以先在本地生成一份脱敏报告：
 
         ```bash
         scripts/surge-guardian-assistant feedback --print
@@ -16,22 +16,22 @@ body:
   - type: textarea
     id: summary
     attributes:
-      label: What happened?
-      description: Describe the problem in a few sentences.
+      label: 发生了什么？
+      description: 用几句话描述问题。
     validations:
       required: true
   - type: textarea
     id: report
     attributes:
-      label: Sanitized report
-      description: Paste the output from the feedback command after reviewing it.
+      label: 脱敏报告
+      description: 检查确认后，可以粘贴 feedback 命令生成的内容。
       render: markdown
     validations:
       required: false
   - type: textarea
     id: expected
     attributes:
-      label: What did you expect?
-      description: What should the assistant have done instead?
+      label: 你原本期待什么？
+      description: 你希望守护助手怎么处理？
     validations:
       required: false

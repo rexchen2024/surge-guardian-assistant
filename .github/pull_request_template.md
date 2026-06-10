@@ -1,17 +1,17 @@
-## Summary
+## 变更说明
 
-What changed?
+这次改了什么？
 
-## Test
+## 验证
 
 - [ ] `scripts/check`
 
-## Safety
+## 安全检查
 
-- [ ] No `.env`, Surge profile, subscription URL, node credential, raw log, real domain, real IP, or notification target was added.
-- [ ] Permanent Surge profile changes still require user confirmation.
-- [ ] Healthy runs still stay quiet.
+- [ ] 没有加入 `.env`、Surge profile、订阅 URL、节点凭据、原始日志、真实域名、真实 IP 或通知目标。
+- [ ] 永久 Surge profile 变更仍然需要用户确认。
+- [ ] 健康巡检仍然保持静默。
 
-## Notes
+## 备注
 
-Does this affect install, update, feedback, Hermes Edition, or Codex Edition?
+是否影响安装、升级、反馈、Hermes 版本或 Codex 版本？

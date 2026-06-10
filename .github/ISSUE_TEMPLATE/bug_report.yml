@@ -1,53 +1,53 @@
-name: Bug report
-description: Report a reproducible problem.
-title: "Bug: "
+name: 问题报告
+description: 报告一个可以复现的问题。
+title: "问题："
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        Do not paste raw Surge profiles, subscription URLs, node credentials, request logs, DNS dumps, tokens, real domains, or real IPs.
+        请不要粘贴原始 Surge profile、订阅 URL、节点凭据、请求日志、DNS dump、token、真实域名或真实 IP。
   - type: textarea
     id: summary
     attributes:
-      label: Summary
-      description: What went wrong?
+      label: 简要说明
+      description: 哪里不对？
     validations:
       required: true
   - type: input
     id: version
     attributes:
-      label: Version
-      description: Run `scripts/surge-guardian-assistant version`.
+      label: 版本
+      description: 运行 `scripts/surge-guardian-assistant version`。
       placeholder: "0.1.0"
     validations:
       required: false
   - type: dropdown
     id: edition
     attributes:
-      label: Edition
+      label: 使用方式
       options:
-        - Hermes Edition
-        - Codex Edition
-        - Not sure
+        - Hermes 版本
+        - Codex 版本
+        - 不确定
     validations:
       required: false
   - type: textarea
     id: steps
     attributes:
-      label: Steps to reproduce
-      description: Keep this sanitized.
+      label: 复现步骤
+      description: 注意脱敏。
     validations:
       required: false
   - type: textarea
     id: expected
     attributes:
-      label: Expected behavior
+      label: 预期表现
     validations:
       required: false
   - type: textarea
     id: actual
     attributes:
-      label: Actual behavior
+      label: 实际表现
     validations:
       required: false
