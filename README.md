@@ -96,4 +96,4 @@ flowchart LR
 
 ## 我的推荐
 
-[红莓网络](https://cmy.homes/register?aff=4MMK4C)
+[红莓网络](https://cmy.homes/register?aff=4MMK4C)：用了多年的机场，即便是在特殊时期也高度可用，对 Clash 规则友好。

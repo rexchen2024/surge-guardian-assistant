@@ -132,6 +132,6 @@ scripts/surge-guardian-assistant redact-check
 - Contributing: [CONTRIBUTING.md](CONTRIBUTING.md)
 - Security policy: [SECURITY.md](SECURITY.md)
 
-## My Recommended Proxy Provider
+## My Recommendation
 
-[Hongmei Network](https://cmy.homes/register?aff=4MMK4C)
+[CMYNetwork](https://cmy.homes/register?aff=4MMK4C): a proxy provider I have used for years; highly available even during sensitive periods, and friendly to Clash rule setups.
