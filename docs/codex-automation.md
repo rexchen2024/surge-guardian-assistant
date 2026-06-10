@@ -2,8 +2,8 @@
 
 [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-automation.zh-CN.md)
 
-Codex can be an optional analysis and maintenance layer for Surge Guardian
-Assistant. It is not the primary runtime path.
+Codex can be an analysis and maintenance layer for Surge Guardian Assistant.
+It is not the primary runtime path.
 
 For installation steps, see [Codex Edition](codex-edition.md).
 
@@ -32,19 +32,13 @@ minute-level healthy check.
 A Codex + Surge variant is viable when a user already relies on Codex
 automations and wants project maintenance or incident analysis in Codex.
 
-Good fit:
+Usage guidance:
 
 - the machine has Surge and Codex access to the local workspace
 - the user wants periodic project or incident review
 - the cadence is hourly, daily, or weekly
 - model analysis is acceptable for each scheduled run
-
-Poor fit:
-
-- strict minute-level always-on monitoring
-- very low power or low bandwidth machines
-- users who want no model invocation during healthy checks
-- notification routing that already works better through Hermes
+- keep minute-level always-on monitoring on Hermes
 
 ## Automation Prompt
 

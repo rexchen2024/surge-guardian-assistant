@@ -35,7 +35,7 @@ Also check that your change does not include:
 - Do not upload logs or device data.
 - Do not make permanent Surge profile changes without user confirmation.
 - Keep Hermes as the recommended always-on runtime.
-- Keep Codex as an optional lower-frequency maintenance path.
+- Keep Codex as the lower-frequency maintenance path.
 
 ## Pull Requests
 

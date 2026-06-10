@@ -6,24 +6,35 @@ Surge 守护助手的核心循环只有一套，但有三种实际运行方式�
 
 ## 一键安装
 
-默认装到 `~/.surge-guardian-assistant`：
+这一步会把项目安装到 `~/.surge-guardian-assistant`，检查 Surge 环境，并进入首次配置。
+
+### 1. 在终端运行安装命令
 
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
 ```
 
-如果仓库暂时还是私有的，用 Git：
+安装脚本会自动拉取 GitHub 仓库。以后只要安装目录还是 Git 仓库，就可以继续获取项目更新。
+
+### 2. 验证是否可用
 
 ```bash
-git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-guardian-assistant
 cd ~/.surge-guardian-assistant
-scripts/surge-guardian-assistant setup
 scripts/surge-guardian-assistant doctor
+scripts/surge-guardian-assistant tick
 ```
 
-安装目录是 Git 仓库时，守护助手可以从 GitHub 获取后续更新。详细说明见 [升级](updating.zh-CN.md)。
+`doctor` 用来检查 Surge 命令、日志和本地配置。`tick` 是一次正式巡检；健康时只会输出 `{"wakeAgent": false}`。
 
-## 推荐：Surge + Hermes
+### 3. 选择运行方式
+
+- 要常驻巡检和通知：继续看 [Hermes 版本](hermes-edition.zh-CN.md)。
+- 要低频审查和项目维护：继续看 [Codex 版本](codex-edition.zh-CN.md)。
+- 只想本地运行：用 launchd、cron 或其他调度器定时运行 `tick`。
+
+自动更新说明见 [升级](updating.zh-CN.md)。
+
+## 1. 推荐 Hermes Agent
 
 适合希望获得自治检查、模型分析和 Hermes 通知投递的用户。
 
@@ -41,7 +52,7 @@ Guardian 核心不需要自己承担这些职责。
 
 安装步骤见 [Hermes 版本](hermes-edition.zh-CN.md)。
 
-## 本地模式：只有 Surge，没有 Hermes
+## 2. 极简本地
 
 适合机器上只有 Surge、没有 Hermes 的用户。
 
@@ -79,7 +90,7 @@ Guardian 核心不需要自己承担这些职责。
 这个模式刻意保持简单：保留确定性的安全自治能力，但不假装替代完整 agent
 运行时。
 
-## Codex 辅助模式
+## 3. Codex 版本
 
 Codex 适合在用户主动发起时检查仓库、审查本地状态、分析异常日志。
 它很适合维护和深度排障，但不应该默认当成常驻分钟级调度器。

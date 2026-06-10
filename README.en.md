@@ -64,14 +64,6 @@ Default install path: `~/.surge-guardian-assistant`
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
 ```
 
-If the repository is still private, use Git:
-
-```bash
-git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-guardian-assistant
-cd ~/.surge-guardian-assistant
-scripts/surge-guardian-assistant setup --print-hermes-command
-```
-
 Prompt for Hermes:
 
 ```text
@@ -90,7 +82,7 @@ Install https://github.com/rexchen2024/surge-guardian-assistant locally as my Su
 
 [Install Hermes Edition](docs/hermes-edition.md)
 
-**Codex Edition** is optional. It is useful for daily or weekly repository checks, incident review, and project maintenance.
+**Codex Edition** is useful for daily or weekly repository checks, incident review, and project maintenance.
 
 [Install Codex Edition](docs/codex-edition.md)
 

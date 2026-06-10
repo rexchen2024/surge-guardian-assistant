@@ -10,14 +10,6 @@ Hermes Edition is the recommended setup. It is for always-on monitoring: quiet w
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
 ```
 
-If the repository is still private:
-
-```bash
-git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-guardian-assistant
-cd ~/.surge-guardian-assistant
-scripts/surge-guardian-assistant setup --print-hermes-command
-```
-
 Setup finds the Surge command, log directory, profiles, and policy groups. It writes only local `.env`; it does not edit Surge profiles.
 
 ## Prompt For Hermes

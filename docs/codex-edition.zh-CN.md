@@ -6,28 +6,29 @@ Codex 版本适合低频检查、分析异常包、维护仓库。不建议用�
 
 ## 一键安装
 
+这一步会安装项目、检查 Surge 环境，并准备给 Codex 使用的本地仓库。
+
+### 1. 在终端运行安装命令
+
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
 ```
 
-如果仓库还是私有的：
+安装脚本会把项目放到 `~/.surge-guardian-assistant`。
+
+### 2. 验证是否可用
 
 ```bash
-git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-guardian-assistant
 cd ~/.surge-guardian-assistant
-scripts/surge-guardian-assistant setup
 scripts/surge-guardian-assistant doctor
+scripts/check
 ```
 
-## 直接复制给 Codex
+`doctor` 检查本机 Surge 环境。`scripts/check` 检查项目测试、基础安全和脱敏规则。
 
-```text
-请把 https://github.com/rexchen2024/surge-guardian-assistant 安装到本地，作为 Surge 守护助手项目使用。请运行 doctor 和 scripts/check，然后根据 codex/automation-prompts/surge-guardian-review.md 创建或建议一个安全的 Codex 自动化。不要在未确认前编辑 Surge profile 或执行永久网络变更。
-```
+### 3. 交给 Codex 创建自动化
 
-## 创建 Codex 自动化
-
-自动化的工作目录选这个仓库：
+让 Codex 使用这个工作目录：
 
 ```text
 ~/.surge-guardian-assistant
@@ -38,6 +39,14 @@ Prompt 模板：
 ```text
 codex/automation-prompts/surge-guardian-review.md
 ```
+
+## 直接复制给 Codex
+
+```text
+请把 https://github.com/rexchen2024/surge-guardian-assistant 安装到本地，作为 Surge 守护助手项目使用。请运行 doctor 和 scripts/check，然后根据 codex/automation-prompts/surge-guardian-review.md 创建或建议一个安全的 Codex 自动化。不要在未确认前编辑 Surge profile 或执行永久网络变更。
+```
+
+## 创建 Codex 自动化
 
 推荐频率：
 

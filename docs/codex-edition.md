@@ -2,21 +2,12 @@
 
 [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.zh-CN.md)
 
-Codex Edition is optional. Use it for lower-frequency checks, incident review, and repository maintenance. Do not use it for minute-level monitoring.
+Codex Edition is for lower-frequency checks, incident review, and repository maintenance. Do not use it for minute-level monitoring.
 
 ## One-Command Install
 
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
-```
-
-If the repository is still private:
-
-```bash
-git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-guardian-assistant
-cd ~/.surge-guardian-assistant
-scripts/surge-guardian-assistant setup
-scripts/surge-guardian-assistant doctor
 ```
 
 ## Prompt For Codex

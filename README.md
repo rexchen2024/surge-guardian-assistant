@@ -12,9 +12,11 @@
 ## 目录
 
 - [亮点](#亮点)
-- [安装方式](#安装方式)
 - [工作方式](#工作方式)
+- [安装方式](#安装方式)
 - [文档](#文档)
+- [项目资料](#项目资料)
+- [我推荐的机场](#我推荐的机场)
 
 
 ---
@@ -27,25 +29,6 @@
 - **必要时再用 AI**：重复、复杂或未恢复的问题才交给 Hermes/Codex；重要问题再通过聊天工具推送。
 - **可持续沉淀**：Hermes 版本可利用 Hermes 的记忆和技能机制，把重复问题变成后续处理经验。
 - **自动更新、隐私优先**：可从 GitHub 拉取新版本；本地有改动不覆盖；不自动上传日志或使用数据。
-
-
----
-
-## 安装方式
-
-**极简本地**  
-只想在本机终端检查 Surge。最轻量，脚本直接调用 `surge-cli`，适合手动检查或本地调度。  
-[一键安装和本地运行说明](docs/runtime-options.zh-CN.md)
-
-**⭐ Hermes Agent 推荐**  
-适合常驻巡检、异常通知和持续学习。健康时完全静默，重要问题再唤醒 AI，也可以通过聊天工具推送。  
-[一键安装和 Hermes 任务说明](docs/hermes-edition.zh-CN.md)
-
-**Codex 版本**  
-适合低频检查仓库、复盘异常、维护项目。不建议做每分钟巡检。  
-[一键安装和 Codex 自动化说明](docs/codex-edition.zh-CN.md)
-
-脚本直接调用 Surge 的 `surge-cli`。一键安装、自动更新、任务频率和安全边界，都在对应说明里。
 
 
 ---
@@ -67,6 +50,25 @@ flowchart LR
 
 ---
 
+## 安装方式
+
+**1. 极简本地**  
+只想在本机终端检查 Surge。最轻量，脚本直接调用 `surge-cli`，适合手动检查或本地调度。  
+[一键安装和本地运行说明](docs/runtime-options.zh-CN.md)
+
+**2. 推荐 Hermes Agent ⭐**  
+常驻巡检、异常通知、持续学习的首选方式。健康时完全静默，重要问题再唤醒 AI，也可以通过聊天工具推送。  
+[一键安装和 Hermes 任务说明](docs/hermes-edition.zh-CN.md)
+
+**3. Codex 版本**  
+适合低频检查仓库、复盘异常、维护项目。不建议做每分钟巡检。  
+[一键安装和 Codex 自动化说明](docs/codex-edition.zh-CN.md)
+
+脚本直接调用 Surge 的 `surge-cli`。一键安装、自动更新、任务频率和安全边界，都在对应说明里。
+
+
+---
+
 ## 文档
 
 - [Hermes 版本](docs/hermes-edition.zh-CN.md)
@@ -82,11 +84,12 @@ flowchart LR
 
 ---
 
-## 项目规则
+## 项目资料
 
 - 许可证：[MIT](LICENSE)
 - 贡献说明：[CONTRIBUTING.md](CONTRIBUTING.md)
 - 安全策略：[SECURITY.md](SECURITY.md)
+- 行为准则：[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 
 
 ---
