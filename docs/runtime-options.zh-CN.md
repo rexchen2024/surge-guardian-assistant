@@ -34,6 +34,10 @@ scripts/surge-guardian-assistant tick
 
 自动更新说明见 [升级](updating.zh-CN.md)。
 
+## 安全边界
+
+不管选择哪种运行方式，守护助手都只默认执行低风险动作。永久 profile 编辑、证书、DNS 记录、服务器、MITM、Rewrite、Scripting、Replica、reload、restart、profile 选择和策略组选择，都必须先得到用户确认。
+
 ## 1. 推荐 Hermes Agent
 
 适合希望获得自治检查、模型分析和 Hermes 通知投递的用户。

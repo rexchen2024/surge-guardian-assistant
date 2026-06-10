@@ -60,6 +60,10 @@ Hermes 任务会持续运行 `tick`。只要安装目录是 Git 仓库，守护�
 AUTO_UPDATE=0
 ```
 
+## 安全边界
+
+Hermes 可以负责调度、分析和通知，但不应该直接执行永久 Surge 变更。涉及永久 profile 编辑、证书、DNS 记录、服务器、MITM、Rewrite、Scripting、Replica、reload、restart、profile 选择或策略组选择时，先让 Hermes 通知并等待用户确认。
+
 ## 常用命令
 
 ```bash

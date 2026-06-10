@@ -27,3 +27,4 @@ First complete release.
 - Simplified Chinese homepage install section now presents local, Hermes Agent recommended, and Codex paths with detail links.
 - Simplified Chinese homepage now keeps install and update details in secondary docs to reduce clutter.
 - Simplified Chinese install docs now use clearer step-by-step setup and remove private-repository fallback wording.
+- Simplified Chinese install docs now include explicit safety boundaries, and the homepage recommendation section was renamed.

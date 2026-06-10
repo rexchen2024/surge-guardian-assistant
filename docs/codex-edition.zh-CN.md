@@ -73,6 +73,6 @@ scripts/surge-guardian-assistant update
 
 ## 安全边界
 
-Codex 不应该直接编辑 Surge profiles、证书、DNS、MITM、Rewrite、Scripting、Replica、profile 选择、策略组选择、reload 或 restart。
+Codex 不应该直接编辑 Surge profiles、证书、DNS 记录、服务器、MITM、Rewrite、Scripting、Replica、profile 选择、策略组选择、reload 或 restart。
 
 如果这些动作看起来有必要，先问用户。
