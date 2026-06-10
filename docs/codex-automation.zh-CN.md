@@ -1,6 +1,6 @@
 # Codex 自动化说明
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-automation.md)
+[繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-automation.zh-TW.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-automation.md)
 
 Codex 可以作为 Surge 守护助手的分析和维护层，但不应该作为主要运行时。
 

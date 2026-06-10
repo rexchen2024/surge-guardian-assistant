@@ -1,5 +1,7 @@
 # GitHub Release Checklist
 
+[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/github-checklist.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/github-checklist.zh-TW.md)
+
 Use this checklist before publishing a release or making the repository public.
 
 ## Repository

@@ -1,6 +1,6 @@
 # 更新日志
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.md)
+[繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.zh-TW.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.md)
 
 ## 0.1.0
 

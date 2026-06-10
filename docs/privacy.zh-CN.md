@@ -1,6 +1,6 @@
 # 隐私说明
 
-[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/privacy.md)
+[繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/privacy.zh-TW.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/privacy.md)
 
 请把以下内容视为敏感信息：
 

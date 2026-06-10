@@ -1,6 +1,6 @@
 # FAQ
 
-[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/faq.zh-CN.md)
+[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/faq.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/faq.zh-TW.md)
 
 ## Is This A Surge Profile Repository?
 

@@ -83,11 +83,11 @@ flowchart LR
 - [Codex 版本](docs/codex-edition.zh-TW.md)
 - [執行方式](docs/runtime-options.zh-TW.md)
 - [升級](docs/updating.zh-TW.md)
-- [自治模型](docs/autonomy.zh-CN.md)
-- [故障排查](docs/troubleshooting.zh-CN.md)
-- [常見問題](docs/faq.zh-CN.md)
-- [隱私說明](docs/privacy.zh-CN.md)
-- [更新日誌](CHANGELOG.zh-CN.md)
+- [自治模型](docs/autonomy.zh-TW.md)
+- [故障排查](docs/troubleshooting.zh-TW.md)
+- [常見問題](docs/faq.zh-TW.md)
+- [隱私說明](docs/privacy.zh-TW.md)
+- [更新日誌](CHANGELOG.zh-TW.md)
 
 
 ---
