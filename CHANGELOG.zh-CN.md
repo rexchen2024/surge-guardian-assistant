@@ -19,3 +19,6 @@
 - `version`、`update`、`doctor`、`feedback` 和 `redact-check` 命令。
 - 本地 `.env` 和 state 文件私有权限。
 - 隐私扫描和脱敏反馈报告。
+- GitHub Actions 自动检查。
+- License、Contributing、Security、Code of Conduct、Issue 模板和 PR 模板。
+- 快速上手、故障排查和发布检查清单。

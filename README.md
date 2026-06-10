@@ -1,5 +1,8 @@
 # Surge Guardian Assistant
 
+[![Release](https://img.shields.io/github/v/release/rexchen2024/surge-guardian-assistant?label=release)](https://github.com/rexchen2024/surge-guardian-assistant/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
 [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-CN.md)
 
 Current version: **0.1.0**
@@ -17,6 +20,28 @@ https://github.com/rexchen2024/surge-guardian-assistant
 - [Surge](https://nssurge.com/) is a network and proxy tool for macOS and iOS. This project watches Surge.
 - [Hermes](https://github.com/NousResearch/hermes-agent) runs scheduled jobs, analyzes incidents, and sends messages. It is the recommended always-on runtime.
 - [Codex](https://openai.com/codex/) is OpenAI's coding assistant. It is useful for lower-frequency project checks, incident review, and maintenance.
+
+## Requirements
+
+- Surge is installed and running on macOS.
+- Git is available.
+- Python 3.10 or newer.
+- Hermes Edition requires Hermes.
+- Codex Edition requires Codex access to the local repository.
+
+## How It Works
+
+```mermaid
+flowchart LR
+  Surge["Surge logs and events"] --> Tick["tick check"]
+  Tick --> Fix["low-risk self-healing"]
+  Fix --> Healthy{"important incident left?"}
+  Healthy -->|no| Quiet["emit wakeAgent:false"]
+  Healthy -->|yes| Review["Hermes or Codex review"]
+  Review --> Confirm["ask before risky changes"]
+```
+
+The assistant only performs low-risk, reversible actions: external-resource retry, DNS flush, policy retest, and temporary runtime rules. Permanent Surge profile edits, service restarts, certificates, DNS, MITM, Rewrite, and Scripting changes require user confirmation.
 
 ## One-Command Install
 
@@ -125,6 +150,7 @@ scripts/surge-guardian-assistant redact-check
 - [Codex Edition](docs/codex-edition.md)
 - [Updating](docs/updating.md)
 - [Autonomy model](docs/autonomy.md)
+- [Troubleshooting](docs/troubleshooting.md)
 - [Privacy notes](docs/privacy.md)
 - [Changelog](CHANGELOG.md)
 

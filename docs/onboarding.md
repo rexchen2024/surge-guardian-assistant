@@ -6,11 +6,11 @@ This guide assumes Surge for macOS is already installed. Hermes is recommended
 for scheduled model-assisted operation, but the local `doctor` and `tick`
 commands can run without Hermes.
 
-## 1. Clone
+## 1. Get The Project
 
 ```bash
-git clone <repo-url>
-cd surge-guardian-assistant
+git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-guardian-assistant
+cd ~/.surge-guardian-assistant
 ```
 
 ## 2. Run Setup
@@ -57,5 +57,7 @@ local scheduler and review any output that is not `{"wakeAgent": false}`. See
 ## 5. Operate
 
 - Use `doctor` for a manual sanitized status check.
+- Use `update --check` to check GitHub for newer code.
+- Use `feedback` to create a sanitized feedback report.
 - Use `redact-check` or `scripts/check` before committing changes.
 - Keep `.env`, logs, state, profiles, and real infrastructure identifiers out of Git.

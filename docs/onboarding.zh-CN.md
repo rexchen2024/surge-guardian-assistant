@@ -1,15 +1,15 @@
-# 新手上手
+# 快速上手
 
 [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/onboarding.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/onboarding.zh-CN.md)
 
 本指南假设你已经安装了 Surge for macOS。Hermes 是推荐的定时模型辅助运行方式，
 但本地 `doctor` 和 `tick` 命令不依赖 Hermes，也可以单独运行。
 
-## 1. Clone
+## 1. 获取项目
 
 ```bash
-git clone <repo-url>
-cd surge-guardian-assistant
+git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-guardian-assistant
+cd ~/.surge-guardian-assistant
 ```
 
 ## 2. 运行 Setup
@@ -55,5 +55,7 @@ Hermes 会根据用户现有的 Hermes 配置处理消息投递。如果还没�
 ## 5. 日常使用
 
 - 使用 `doctor` 手动查看脱敏后的状态摘要。
+- 使用 `update --check` 检查 GitHub 是否有新版本。
+- 使用 `feedback` 生成脱敏反馈报告。
 - 提交更改前运行 `redact-check` 或 `scripts/check`。
 - 不要把 `.env`、日志、state、profiles 或真实基础设施标识提交到 Git。

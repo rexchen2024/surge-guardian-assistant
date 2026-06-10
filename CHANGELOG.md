@@ -19,3 +19,6 @@ First complete release.
 - `version`, `update`, `doctor`, `feedback`, and `redact-check` commands.
 - Private permissions for local `.env` and state files.
 - Privacy scanning and sanitized feedback reports.
+- GitHub Actions checks.
+- License, contributing guide, security policy, code of conduct, issue templates, and PR template.
+- Onboarding, troubleshooting, and release checklist docs.
