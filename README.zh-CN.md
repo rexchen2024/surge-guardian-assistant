@@ -1,16 +1,18 @@
 # Surge 守护助手
 
-[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/README.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/README.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-CN.md)
 
 Surge 守护助手是一个面向 macOS [Surge](https://nssurge.com/) 用户的轻量级自治运维助手。它会观察 Surge 信号，执行安全范围内的恢复动作，在健康状态下保持静默，并且在高风险动作前请求用户确认。
 
 仓库主页仍然是：
 
 ```text
-https://github.com/rexchen2024/surge-hermes-guardian
+https://github.com/rexchen2024/surge-guardian-assistant
 ```
 
-为了保持历史链接稳定，仓库 slug 暂时保留 `surge-hermes-guardian`，但对外项目名调整为 **Surge 守护助手**。
+仓库 slug 已经和对外项目名对齐为 `surge-guardian-assistant`。
+
+旧脚本入口会保留为兼容包装，但新安装建议使用 `scripts/surge-guardian-assistant`。
 
 ## 选择版本
 
@@ -55,9 +57,9 @@ https://github.com/rexchen2024/surge-hermes-guardian
 - `redact-check`：提交或推送 GitHub 前的仓库扫描。
 
 ```bash
-scripts/surge-hermes-guardian setup --print-hermes-command
-scripts/surge-hermes-guardian doctor
-scripts/surge-hermes-guardian tick
+scripts/surge-guardian-assistant setup --print-hermes-command
+scripts/surge-guardian-assistant doctor
+scripts/surge-guardian-assistant tick
 ```
 
 健康状态下的 `tick` 输出是：

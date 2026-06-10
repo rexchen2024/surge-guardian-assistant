@@ -1,6 +1,6 @@
 # Runtime Options
 
-[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/runtime-options.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/runtime-options.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.zh-CN.md)
 
 Surge Guardian Assistant has one core loop and three practical ways to run it.
 
@@ -9,7 +9,7 @@ Surge Guardian Assistant has one core loop and three practical ways to run it.
 Use this when you want autonomous checks, model analysis, and delivery through
 your existing Hermes channels.
 
-- `scripts/surge-hermes-guardian tick` performs the deterministic local check.
+- `scripts/surge-guardian-assistant tick` performs the deterministic local check.
 - Healthy output is exactly `{"wakeAgent": false}`.
 - Non-silent output becomes the evidence package for Hermes.
 - Hermes decides whether to stay silent, report an already-handled issue, or ask
@@ -53,7 +53,7 @@ Run it from launchd, cron, or another local scheduler. A minimal launchd job can
 call:
 
 ```bash
-/path/to/surge-hermes-guardian/scripts/surge-hermes-guardian tick >> "$HOME/Library/Logs/surge-hermes-guardian.log" 2>&1
+/path/to/surge-guardian-assistant/scripts/surge-guardian-assistant tick >> "$HOME/Library/Logs/surge-guardian-assistant.log" 2>&1
 ```
 
 In local-only mode, monitor the log for any line that is not:

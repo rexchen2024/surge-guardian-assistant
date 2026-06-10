@@ -1,6 +1,6 @@
 # Hermes 版本
 
-[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/hermes-edition.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/hermes-edition.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/hermes-edition.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/hermes-edition.zh-CN.md)
 
 Hermes 版本是 Surge 守护助手推荐的生产部署方式。
 
@@ -25,9 +25,9 @@ Hermes 版本是 Surge 守护助手推荐的生产部署方式。
 ## 安装
 
 ```bash
-git clone https://github.com/rexchen2024/surge-hermes-guardian.git
-cd surge-hermes-guardian
-scripts/surge-hermes-guardian setup --print-hermes-command
+git clone https://github.com/rexchen2024/surge-guardian-assistant.git
+cd surge-guardian-assistant
+scripts/surge-guardian-assistant setup --print-hermes-command
 ```
 
 Setup 会自动发现：
@@ -42,8 +42,8 @@ Setup 会自动发现：
 ## 验证
 
 ```bash
-scripts/surge-hermes-guardian doctor
-scripts/surge-hermes-guardian tick
+scripts/surge-guardian-assistant doctor
+scripts/surge-guardian-assistant tick
 ```
 
 健康输出：

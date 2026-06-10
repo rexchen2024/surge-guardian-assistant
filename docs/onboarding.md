@@ -1,6 +1,6 @@
 # Onboarding
 
-[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/onboarding.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/onboarding.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/onboarding.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/onboarding.zh-CN.md)
 
 This guide assumes Surge for macOS is already installed. Hermes is recommended
 for scheduled model-assisted operation, but the local `doctor` and `tick`
@@ -10,13 +10,13 @@ commands can run without Hermes.
 
 ```bash
 git clone <repo-url>
-cd surge-hermes-guardian
+cd surge-guardian-assistant
 ```
 
 ## 2. Run Setup
 
 ```bash
-scripts/surge-hermes-guardian setup --print-hermes-command
+scripts/surge-guardian-assistant setup --print-hermes-command
 ```
 
 Setup discovers:
@@ -31,8 +31,8 @@ It writes `.env` in the repository root. It does not edit Surge profiles.
 ## 3. Verify Locally
 
 ```bash
-scripts/surge-hermes-guardian doctor
-scripts/surge-hermes-guardian tick
+scripts/surge-guardian-assistant doctor
+scripts/surge-guardian-assistant tick
 ```
 
 Healthy `tick` output is:

@@ -89,7 +89,7 @@ def command_setup(args: argparse.Namespace) -> int:
         "MAC_PROFILE": mac_profile,
         "EXPECTED_POLICIES": expected,
         "PROXY_POLICY": proxy_policy,
-        "STATE_DIR": "${HOME}/.hermes/state/surge-hermes-guardian",
+        "STATE_DIR": "${HOME}/.hermes/state/surge-guardian-assistant",
         "DIRECT_FAIL_WINDOW_SECONDS": "900",
         "TEMP_RULE_REVIEW_SECONDS": "43200",
         "EXTERNAL_RESOURCE_FAIL_THRESHOLD": "2",
@@ -108,7 +108,7 @@ def command_setup(args: argparse.Namespace) -> int:
     print(f"\nWrote {env_path}")
 
     if args.print_hermes_command or args.install_hermes:
-        script = root / "scripts" / "surge-hermes-guardian"
+        script = root / "scripts" / "surge-guardian-assistant"
         prompt_path = root / "hermes" / "job-prompts" / "guardian.md"
         cmd = [
             "hermes",
@@ -186,7 +186,7 @@ def command_redact_check(_args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="surge-hermes-guardian")
+    parser = argparse.ArgumentParser(prog="surge-guardian-assistant")
     sub = parser.add_subparsers(dest="command", required=True)
 
     setup = sub.add_parser("setup", help="interactive first-run setup")

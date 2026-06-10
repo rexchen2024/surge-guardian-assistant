@@ -1,6 +1,6 @@
 # Hermes Edition
 
-[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/hermes-edition.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/hermes-edition.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/hermes-edition.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/hermes-edition.zh-CN.md)
 
 Hermes Edition is the recommended production deployment for Surge Guardian
 Assistant.
@@ -26,9 +26,9 @@ another platform supported by the user's Hermes setup.
 ## Install
 
 ```bash
-git clone https://github.com/rexchen2024/surge-hermes-guardian.git
-cd surge-hermes-guardian
-scripts/surge-hermes-guardian setup --print-hermes-command
+git clone https://github.com/rexchen2024/surge-guardian-assistant.git
+cd surge-guardian-assistant
+scripts/surge-guardian-assistant setup --print-hermes-command
 ```
 
 Setup discovers:
@@ -43,8 +43,8 @@ It writes local `.env` only. It does not edit Surge profiles.
 ## Verify
 
 ```bash
-scripts/surge-hermes-guardian doctor
-scripts/surge-hermes-guardian tick
+scripts/surge-guardian-assistant doctor
+scripts/surge-guardian-assistant tick
 ```
 
 Healthy output:

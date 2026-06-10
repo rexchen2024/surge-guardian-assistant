@@ -1,6 +1,6 @@
 # Codex 版本
 
-[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/codex-edition.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/codex-edition.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.zh-CN.md)
 
 Codex 版本是可选部署方式，适合希望用 Codex 检查项目、分析非静默异常、并提出改进的用户。
 
@@ -24,10 +24,10 @@ Codex 版本是可选部署方式，适合希望用 Codex 检查项目、分析�
 ## 安装
 
 ```bash
-git clone https://github.com/rexchen2024/surge-hermes-guardian.git
-cd surge-hermes-guardian
-scripts/surge-hermes-guardian setup --print-hermes-command
-scripts/surge-hermes-guardian doctor
+git clone https://github.com/rexchen2024/surge-guardian-assistant.git
+cd surge-guardian-assistant
+scripts/surge-guardian-assistant setup --print-hermes-command
+scripts/surge-guardian-assistant doctor
 ```
 
 setup 仍然写入同一份本地 `.env`，因为两个版本共享确定性守护逻辑。

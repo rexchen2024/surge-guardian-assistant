@@ -1,6 +1,6 @@
 # 同步流程
 
-[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/sync-workflow.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/sync-workflow.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/sync-workflow.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/sync-workflow.zh-CN.md)
 
 当本地 Surge 脚本继续演进，并且 GitHub 项目需要吸收这些能力时，使用这个流程。
 

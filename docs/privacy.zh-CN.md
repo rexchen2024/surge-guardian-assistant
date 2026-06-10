@@ -1,6 +1,6 @@
 # 隐私说明
 
-[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/privacy.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/privacy.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/privacy.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/privacy.zh-CN.md)
 
 请把以下内容视为敏感信息：
 
@@ -17,5 +17,5 @@
 - 用示例值替换真实域名和 IP。
 - 分享前检查截图和终端日志。
 - 优先分享摘要，不要分享原始 dump。
-- 每次提交前运行 `scripts/surge-hermes-guardian redact-check`。
+- 每次提交前运行 `scripts/surge-guardian-assistant redact-check`。
 

@@ -1,6 +1,6 @@
 # 运行方式
 
-[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/runtime-options.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/runtime-options.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.zh-CN.md)
 
 Surge 守护助手的核心循环只有一套，但有三种实际运行方式。
 
@@ -8,7 +8,7 @@ Surge 守护助手的核心循环只有一套，但有三种实际运行方式�
 
 适合希望获得自治检查、模型分析和 Hermes 通知投递的用户。
 
-- `scripts/surge-hermes-guardian tick` 执行本地确定性检查。
+- `scripts/surge-guardian-assistant tick` 执行本地确定性检查。
 - 健康输出必须精确为 `{"wakeAgent": false}`。
 - 非静默输出会成为 Hermes 的现场证据包。
 - Hermes 再判断应该保持静默、报告已经处理的问题，还是在高风险动作前请求确认。
@@ -48,7 +48,7 @@ Guardian 核心不需要自己承担这些职责。
 可以用 launchd、cron 或其他本地调度器运行。最小 launchd 任务可以调用：
 
 ```bash
-/path/to/surge-hermes-guardian/scripts/surge-hermes-guardian tick >> "$HOME/Library/Logs/surge-hermes-guardian.log" 2>&1
+/path/to/surge-guardian-assistant/scripts/surge-guardian-assistant tick >> "$HOME/Library/Logs/surge-guardian-assistant.log" 2>&1
 ```
 
 本地模式下，只需要关注日志中不等于下面内容的输出：

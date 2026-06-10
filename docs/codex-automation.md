@@ -1,6 +1,6 @@
 # Codex Automation Notes
 
-[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/codex-automation.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/codex-automation.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-automation.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-automation.zh-CN.md)
 
 Codex can be an optional analysis and maintenance layer for Surge Guardian
 Assistant. It is not the primary runtime path.

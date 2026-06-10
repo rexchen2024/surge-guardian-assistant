@@ -1,6 +1,6 @@
 # Codex Edition
 
-[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/codex-edition.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/codex-edition.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.zh-CN.md)
 
 Codex Edition is an optional deployment style for users who want Codex to review
 the project, inspect non-silent incidents, and suggest improvements.
@@ -26,10 +26,10 @@ minute-level quiet monitoring.
 ## Install
 
 ```bash
-git clone https://github.com/rexchen2024/surge-hermes-guardian.git
-cd surge-hermes-guardian
-scripts/surge-hermes-guardian setup --print-hermes-command
-scripts/surge-hermes-guardian doctor
+git clone https://github.com/rexchen2024/surge-guardian-assistant.git
+cd surge-guardian-assistant
+scripts/surge-guardian-assistant setup --print-hermes-command
+scripts/surge-guardian-assistant doctor
 ```
 
 The setup command still writes the same local `.env`, because the deterministic

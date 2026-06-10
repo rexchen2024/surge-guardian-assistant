@@ -1,6 +1,6 @@
 # 新手上手
 
-[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/onboarding.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/onboarding.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/onboarding.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/onboarding.zh-CN.md)
 
 本指南假设你已经安装了 Surge for macOS。Hermes 是推荐的定时模型辅助运行方式，
 但本地 `doctor` 和 `tick` 命令不依赖 Hermes，也可以单独运行。
@@ -9,13 +9,13 @@
 
 ```bash
 git clone <repo-url>
-cd surge-hermes-guardian
+cd surge-guardian-assistant
 ```
 
 ## 2. 运行 Setup
 
 ```bash
-scripts/surge-hermes-guardian setup --print-hermes-command
+scripts/surge-guardian-assistant setup --print-hermes-command
 ```
 
 Setup 会自动发现：
@@ -30,8 +30,8 @@ Setup 会自动发现：
 ## 3. 本地验证
 
 ```bash
-scripts/surge-hermes-guardian doctor
-scripts/surge-hermes-guardian tick
+scripts/surge-guardian-assistant doctor
+scripts/surge-guardian-assistant tick
 ```
 
 健康状态下的 `tick` 输出是：

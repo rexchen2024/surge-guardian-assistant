@@ -1,6 +1,6 @@
 # Sync Workflow
 
-[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/sync-workflow.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/sync-workflow.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/sync-workflow.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/sync-workflow.zh-CN.md)
 
 Use this flow when local Surge scripts evolve and the GitHub project should learn
 from them.

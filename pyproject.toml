@@ -1,5 +1,5 @@
 [project]
-name = "surge-hermes-guardian"
+name = "surge-guardian-assistant"
 version = "0.1.0"
 description = "Lightweight autonomous Surge guardian assistant with Hermes and Codex editions"
 requires-python = ">=3.10"

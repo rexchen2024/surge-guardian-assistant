@@ -1,6 +1,6 @@
 # Privacy Notes
 
-[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/privacy.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/privacy.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/privacy.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/privacy.zh-CN.md)
 
 Treat these as sensitive:
 
@@ -17,4 +17,4 @@ Before publishing:
 - Replace real domains and IPs with examples.
 - Review screenshots and terminal logs before sharing.
 - Prefer summarized results over raw dumps.
-- Run `scripts/surge-hermes-guardian redact-check` before every commit.
+- Run `scripts/surge-guardian-assistant redact-check` before every commit.

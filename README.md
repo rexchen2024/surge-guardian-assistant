@@ -1,6 +1,6 @@
 # Surge Guardian Assistant
 
-[English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/README.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/README.zh-CN.md)
+[English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-CN.md)
 
 Surge Guardian Assistant is a lightweight autonomous operations assistant for
 people who run [Surge](https://nssurge.com/) on macOS. It watches Surge signals,
@@ -10,11 +10,14 @@ confirmation before risky changes.
 The repository URL remains:
 
 ```text
-https://github.com/rexchen2024/surge-hermes-guardian
+https://github.com/rexchen2024/surge-guardian-assistant
 ```
 
-The project keeps the original repository slug for stable links, but the public
-product name is now **Surge Guardian Assistant**.
+The repository slug is now aligned with the public product name:
+`surge-guardian-assistant`.
+
+The old script entrypoint remains as a compatibility wrapper, but new installs
+should use `scripts/surge-guardian-assistant`.
 
 ## Choose A Version
 
@@ -64,9 +67,9 @@ provided prompt to review non-silent incidents or propose improvements.
 - `redact-check`: repository scan before commit or GitHub push.
 
 ```bash
-scripts/surge-hermes-guardian setup --print-hermes-command
-scripts/surge-hermes-guardian doctor
-scripts/surge-hermes-guardian tick
+scripts/surge-guardian-assistant setup --print-hermes-command
+scripts/surge-guardian-assistant doctor
+scripts/surge-guardian-assistant tick
 ```
 
 Healthy `tick` output is:

@@ -37,7 +37,7 @@ def read_env(path: Path) -> dict[str, str]:
 
 
 def write_env(path: Path, values: dict[str, str]) -> None:
-    lines = ["# Local config for surge-hermes-guardian. Do not commit this file.", ""]
+    lines = ["# Local config for surge-guardian-assistant. Do not commit this file.", ""]
     for key in sorted(values):
         value = values[key]
         if any(ch.isspace() for ch in value):
@@ -83,7 +83,7 @@ class GuardianConfig:
             env_path=env_path,
             surge_cli=env.get("SURGE_CLI") or shutil.which("surge-cli") or DEFAULT_SURGE_CLI,
             surge_log_dir=Path(_expand(env.get("SURGE_LOG_DIR", "${HOME}/Library/Logs/Surge"))),
-            state_dir=Path(_expand(env.get("STATE_DIR", "${HOME}/.hermes/state/surge-hermes-guardian"))),
+            state_dir=Path(_expand(env.get("STATE_DIR", "${HOME}/.hermes/state/surge-guardian-assistant"))),
             expected_policies=split_csv(env.get("EXPECTED_POLICIES", "")),
             proxy_policy=env.get("PROXY_POLICY", "Proxy"),
             check_domain=env.get("CHECK_DOMAIN", ""),
