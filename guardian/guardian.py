@@ -327,7 +327,7 @@ class SurgeGuardian:
     def tick(self) -> str:
         missing = self.config.missing_required()
         if missing:
-            return "Surge Hermes Guardian 配置缺失：" + ", ".join(missing)
+            return "Surge Guardian Assistant 配置缺失：" + ", ".join(missing)
 
         state = self.store.load()
         events, _event_raw = self.client.dump_events()
@@ -382,7 +382,7 @@ class SurgeGuardian:
 
     def render_incident(self, incidents: list[Incident], actions: list[str], diagnostics: list[str], log_path: Path | None) -> str:
         lines = [
-            "Surge Hermes Guardian 发现需要分析的异常",
+            "Surge Guardian Assistant 发现需要分析的异常",
             "",
             f"时间：{time.strftime('%Y-%m-%d %H:%M:%S')}",
             f"日志：{log_path.name if log_path else 'N/A'}",

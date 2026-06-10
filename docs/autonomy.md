@@ -2,7 +2,7 @@
 
 [English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/autonomy.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/autonomy.zh-CN.md)
 
-Surge Hermes Guardian uses layered autonomy.
+Surge Guardian Assistant uses layered autonomy.
 
 ## Automatic
 

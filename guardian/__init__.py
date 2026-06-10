@@ -1,4 +1,3 @@
-"""Surge Hermes Guardian."""
+"""Surge Guardian Assistant."""
 
 __version__ = "0.1.0"
-

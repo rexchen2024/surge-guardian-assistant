@@ -1,6 +1,6 @@
 # Surge Guardian Codex Review
 
-You are reviewing Surge Hermes Guardian as a Codex automation.
+You are reviewing Surge Guardian Assistant as a Codex automation.
 
 Default runtime assumption:
 

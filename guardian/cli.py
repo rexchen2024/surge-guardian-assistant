@@ -64,7 +64,7 @@ def discover_policies(surge_cli: str) -> list[str]:
 def command_setup(args: argparse.Namespace) -> int:
     root = project_root()
     env_path = root / ".env"
-    print("Surge Hermes Guardian setup")
+    print("Surge Guardian Assistant setup")
     print("This writes local .env only. It will not be committed.\n")
 
     surge_cli = prompt("surge-cli path", discover_surge_cli())
@@ -117,7 +117,7 @@ def command_setup(args: argparse.Namespace) -> int:
             "*/1 * * * *",
             prompt_path.read_text(),
             "--name",
-            "Surge Hermes Guardian",
+            "Surge Guardian Assistant",
             "--script",
             str(script),
             "--workdir",
@@ -142,7 +142,7 @@ def command_tick(_args: argparse.Namespace) -> int:
 def command_doctor(_args: argparse.Namespace) -> int:
     config = GuardianConfig.load(project_root())
     client = SurgeClient(config.surge_cli)
-    print("Surge Hermes Guardian doctor")
+    print("Surge Guardian Assistant doctor")
     print("")
     print(f"Config: {'present' if config.env_path.exists() else 'missing .env'}")
     print(f"surge-cli: {config.surge_cli} ({'ok' if os.path.exists(config.surge_cli) else 'not found'})")

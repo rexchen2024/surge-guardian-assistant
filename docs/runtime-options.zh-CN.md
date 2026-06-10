@@ -2,7 +2,7 @@
 
 [English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/runtime-options.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/runtime-options.zh-CN.md)
 
-Surge Hermes Guardian 的核心循环只有一套，但有三种实际运行方式。
+Surge 守护助手的核心循环只有一套，但有三种实际运行方式。
 
 ## 推荐：Surge + Hermes
 
@@ -19,6 +19,8 @@ Guardian 核心不需要自己承担这些职责。
 生产使用时，建议继续把它作为默认部署方式。Guardian 的
 `{"wakeAgent": false}` 合同就是为 Hermes cron 设计的：健康检查可以不调用模型，
 只有有证据的问题包才唤醒 agent。
+
+安装步骤见 [Hermes 版本](hermes-edition.zh-CN.md)。
 
 ## 本地模式：只有 Surge，没有 Hermes
 
@@ -68,8 +70,8 @@ Codex 适合在用户主动发起时检查仓库、审查本地状态、分析�
 也避免把每分钟检查都变成模型任务。
 
 Codex 自动化也可以运行定时 workspace 任务。建议把它用于较低频的审查工作，
-比如每日仓库检查、每周隐私扫描，或非静默异常复盘。详见
-[Codex 自动化选项](codex-automation.zh-CN.md)。
+比如每日仓库检查、每周隐私扫描，或非静默异常复盘。安装步骤见
+[Codex 版本](codex-edition.zh-CN.md)。
 
 ## 简单判断
 

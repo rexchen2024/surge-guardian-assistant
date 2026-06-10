@@ -1,51 +1,61 @@
-# Surge Hermes Guardian
+# Surge 守护助手
 
 [English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/README.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/README.zh-CN.md)
 
-Surge Hermes Guardian 是一个轻量级自治运维 agent，面向在 macOS
-上运行 [Surge](https://nssurge.com/) 的用户。它可以在只安装 Surge
-的情况下作为本地确定性守护脚本运行，也可以使用 Hermes 获得推荐的定时
-agent、模型分析和通知工作流。
+Surge 守护助手是一个面向 macOS [Surge](https://nssurge.com/) 用户的轻量级自治运维助手。它会观察 Surge 信号，执行安全范围内的恢复动作，在健康状态下保持静默，并且在高风险动作前请求用户确认。
 
-它的目标不是制造更多提醒，而是让 Surge 尽可能保持健康，减少重复网络错误，
-从长期模式中学习，并且只在问题被有效处理、或高风险动作需要用户确认时通知用户。
+仓库主页仍然是：
 
-## 为什么使用它
-
-- **快速上手**：运行一条 setup 命令，检查生成的 Hermes 命令，然后创建守护任务。
-- **默认静默**：健康运行返回 `{"wakeAgent": false}`，Hermes 不调用模型，也不发送消息。
-- **安全自治**：可自动更新外部资源、刷新 DNS、复测策略，并添加窄范围临时运行时规则。
-- **需要时调用模型**：非静默事件会唤醒 Hermes，使用用户已配置的模型和通知渠道。
-- **可选 Codex 分析路径**：Codex 自动化可以用于定时仓库检查或异常复盘，
-  但分钟级静默巡检仍推荐交给 Hermes。
-- **Hermes 不是本地检查的硬依赖**：没有 Hermes 的用户也可以用 launchd
-  或其他本地调度器运行 `tick`，再手动查看异常日志。
-- **隐私优先**：真实域名、IP、profile 路径、策略名称、日志和状态只保存在本地 `.env` 与本地 state 文件中。
-
-## 推荐安装方式
-
-前提条件：
-
-- 已安装并运行 Surge for macOS。
-- 已安装 Hermes，且 Hermes gateway/cron 系统可用。
-- 如果希望收到通知，Hermes 中应已有可用投递目标。它可以是 Telegram、
-  Discord、Matrix、微信、飞书、Signal，或你的 Hermes 安装支持的其他平台。
-  Guardian 不绑定某一种固定社交渠道。
-
-安装：
-
-```bash
-git clone <repo-url>
-cd surge-hermes-guardian
-scripts/surge-hermes-guardian setup --print-hermes-command
+```text
+https://github.com/rexchen2024/surge-hermes-guardian
 ```
 
-配置向导会自动发现 `surge-cli`、Surge 日志、profile 候选项和运行时策略候选项，
-然后写入本地 `.env`。它不会编辑 Surge profile。
+为了保持历史链接稳定，仓库 slug 暂时保留 `surge-hermes-guardian`，但对外项目名调整为 **Surge 守护助手**。
 
-接着运行本地检查：
+## 选择版本
+
+### Hermes 版本
+
+适合生产使用。Hermes 负责分钟级守护循环，健康检查通过 `{"wakeAgent": false}` 跳过模型工作，只有脚本输出异常包时才唤醒已配置模型。
+
+- 推荐用于常驻巡检。
+- 日常噪音最低，健康状态下模型消耗最低。
+- 使用 Hermes cron、memory、模型分析和消息投递渠道。
+- 最适合已经安装 Hermes 和 Surge 的用户。
+
+[安装 Hermes 版本](docs/hermes-edition.zh-CN.md)
+
+### Codex 版本
+
+适合定期审查、项目维护和异常复盘。Codex 可以针对这个仓库运行较低频 workspace 自动化，并使用内置 prompt 分析非静默异常或提出改进。
+
+- 可选版本，不是默认生产运行时。
+- 适合每日/每周检查、隐私扫描、代码和文档维护。
+- 适合已经依赖 Codex 自动化的用户。
+- 不建议替代 Hermes 做分钟级静默巡检。
+
+[安装 Codex 版本](docs/codex-edition.zh-CN.md)
+
+## 共享能力
+
+- 本地读取 Surge event 和日志信号。
+- 安全时自动重试外部资源。
+- 重复 DNS 异常后刷新 DNS。
+- 升级前先复测策略。
+- 对重复 DIRECT 失败添加窄范围运行时临时规则。
+- 后续复查和移除运行时临时规则。
+- 本地 `.env` 和 state 文件强制使用 `0600` 权限。
+- 永久 Surge profile、DNS、证书、服务器、MITM、Rewrite、Scripting、Replica、reload 或 restart 变更都必须先获得用户确认。
+
+## 命令
+
+- `setup`：交互式首次配置；只写入本地 `.env`。
+- `tick`：执行一次轻量守护。
+- `doctor`：脱敏后的手动诊断摘要。
+- `redact-check`：提交或推送 GitHub 前的仓库扫描。
 
 ```bash
+scripts/surge-hermes-guardian setup --print-hermes-command
 scripts/surge-hermes-guardian doctor
 scripts/surge-hermes-guardian tick
 ```
@@ -56,46 +66,7 @@ scripts/surge-hermes-guardian tick
 {"wakeAgent": false}
 ```
 
-最后，检查并运行 setup 打印出的 Hermes cron 命令。推荐调度频率是每分钟一次。
-
-## 命令
-
-- `setup`：交互式首次配置；只写入本地 `.env`。
-- `tick`：供 Hermes cron 调用的一次轻量守护运行。
-- `doctor`：脱敏后的手动诊断摘要。
-- `redact-check`：提交或推送 GitHub 前的仓库扫描。
-
-## Hermes 如何参与
-
-Guardian 脚本在本地完成确定性工作。没有重要事件时，它返回
-`{"wakeAgent": false}`，Hermes 不会调用模型。
-
-当脚本输出事件包时，Hermes 会唤醒已配置的模型，并使用
-`hermes/job-prompts/guardian.md` 判断应该保持静默、报告已处理的问题，
-还是请求用户确认高风险动作。消息投递由 Hermes 根据用户当前配置完成。
-
-## 自治边界
-
-自动允许：
-
-- 更新外部资源
-- 刷新 DNS
-- 复测策略和策略组
-- 窄范围临时运行时规则
-- 重复错误计数和抑制
-- 后续复查/移除临时规则
-
-需要用户确认：
-
-- 写入永久 profile
-- 编辑 `.conf` 或 `.sgmodule`
-- 重启、停止、reload 或切换 Surge profile
-- 长期策略组变更
-- MITM、Rewrite、Scripting、Replica 或抓包变更
-- 证书、DNS 记录、服务器或账号变更
-- 大范围删除临时规则
-
-## 隐私与发布
+## 隐私
 
 永远不要提交：
 
@@ -113,11 +84,11 @@ Guardian 脚本在本地完成确定性工作。没有重要事件时，它返�
 scripts/check
 ```
 
-更多文档：
+## 更多文档
 
-- [新手上手](docs/onboarding.zh-CN.md)
+- [Hermes 版本](docs/hermes-edition.zh-CN.md)
+- [Codex 版本](docs/codex-edition.zh-CN.md)
 - [运行方式](docs/runtime-options.zh-CN.md)
-- [Codex 自动化选项](docs/codex-automation.zh-CN.md)
 - [自治模型](docs/autonomy.zh-CN.md)
 - [隐私说明](docs/privacy.zh-CN.md)
 - [同步流程](docs/sync-workflow.zh-CN.md)

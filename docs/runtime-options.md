@@ -2,7 +2,7 @@
 
 [English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/runtime-options.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/runtime-options.zh-CN.md)
 
-Surge Hermes Guardian has one core loop and three practical ways to run it.
+Surge Guardian Assistant has one core loop and three practical ways to run it.
 
 ## Recommended: Surge + Hermes
 
@@ -23,6 +23,8 @@ For production use, keep this as the default deployment path. The guardian's
 `{"wakeAgent": false}` contract is designed for Hermes cron: healthy checks can
 complete without a model call, while incident packages wake the agent only when
 evidence justifies it.
+
+For installation steps, see [Hermes Edition](hermes-edition.md).
 
 ## Local-Only: Surge Without Hermes
 
@@ -76,7 +78,8 @@ model task.
 
 Codex automations can also run scheduled workspace jobs. Use them for lower
 frequency review work, such as daily repository checks, weekly privacy scans, or
-non-silent incident analysis. See [Codex automation option](codex-automation.md).
+non-silent incident analysis. For installation steps, see
+[Codex Edition](codex-edition.md).
 
 ## Rule Of Thumb
 

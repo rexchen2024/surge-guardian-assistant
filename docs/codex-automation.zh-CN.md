@@ -1,8 +1,10 @@
-# Codex 自动化选项
+# Codex 自动化说明
 
 [English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/codex-automation.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/codex-automation.zh-CN.md)
 
-Codex 可以作为这个项目的可选分析和维护层，但不应该作为主要运行时。
+Codex 可以作为 Surge 守护助手的可选分析和维护层，但不应该作为主要运行时。
+
+安装步骤见 [Codex 版本](codex-edition.zh-CN.md)。
 
 ## 推荐边界
 

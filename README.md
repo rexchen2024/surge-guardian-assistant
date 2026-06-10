@@ -1,61 +1,70 @@
-# Surge Hermes Guardian
+# Surge Guardian Assistant
 
 [English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/README.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/README.zh-CN.md)
 
-Surge Hermes Guardian is a lightweight autonomous operations agent for people
-who run [Surge](https://nssurge.com/) on macOS. It can run as a local
-deterministic guardian with only Surge installed, and it can use Hermes for the
-recommended scheduled-agent, model-analysis, and notification workflow.
+Surge Guardian Assistant is a lightweight autonomous operations assistant for
+people who run [Surge](https://nssurge.com/) on macOS. It watches Surge signals,
+handles safe recovery steps, keeps healthy checks quiet, and asks for user
+confirmation before risky changes.
 
-The goal is not to produce more alerts. The goal is to keep Surge healthy,
-reduce repeated network errors, learn from recurring patterns, and notify the
-user only when something was meaningfully handled or when a risky decision needs
-confirmation.
+The repository URL remains:
 
-## Why Use It
-
-- **Fast to start**: run one setup command, review the generated Hermes command,
-  and schedule the guardian.
-- **Quiet by default**: healthy runs return `{"wakeAgent": false}`, so Hermes
-  skips the model and sends nothing.
-- **Autonomous where safe**: the guardian can update external resources, flush
-  DNS, retest policies, and add narrow temporary runtime rules.
-- **Model-assisted when needed**: non-silent incidents wake Hermes, which uses
-  the user's configured model and delivery channel.
-- **Optional Codex analysis path**: Codex automations can be used for scheduled
-  repository or incident review, while Hermes remains the recommended runtime
-  for minute-level quiet checks.
-- **Hermes optional for local checks**: users without Hermes can run `tick` from
-  launchd or another local scheduler and review incident logs manually.
-- **Privacy-first**: real domains, IPs, profile paths, policy names, logs, and
-  state stay in local `.env` and local state files.
-
-## Recommended Setup
-
-Prerequisites:
-
-- Surge for macOS is installed and running.
-- Hermes is installed and its gateway/cron system works.
-- Hermes already has a delivery target if you want notifications. This can be
-  Telegram, Discord, Matrix, Weixin, Feishu, Signal, or another platform your
-  Hermes installation supports. The guardian does not require a specific social
-  channel.
-
-Install:
-
-```bash
-git clone <repo-url>
-cd surge-hermes-guardian
-scripts/surge-hermes-guardian setup --print-hermes-command
+```text
+https://github.com/rexchen2024/surge-hermes-guardian
 ```
 
-The setup wizard discovers `surge-cli`, Surge logs, profile candidates, and
-runtime policy candidates, then writes a local `.env`. It does not edit Surge
-profiles.
+The project keeps the original repository slug for stable links, but the public
+product name is now **Surge Guardian Assistant**.
 
-Next, run a local check:
+## Choose A Version
+
+### Hermes Edition
+
+Best for production use. Hermes runs the minute-level guardian loop, skips model
+work on healthy checks with `{"wakeAgent": false}`, and wakes the configured
+model only when the script emits an incident package.
+
+- Recommended for always-on monitoring.
+- Lowest noise and lowest routine model usage.
+- Uses Hermes cron, memory, model reasoning, and delivery channels.
+- Best fit when the user already has Hermes and Surge.
+
+[Install Hermes Edition](docs/hermes-edition.md)
+
+### Codex Edition
+
+Best for scheduled review, project maintenance, and incident analysis. Codex can
+run lower-frequency workspace automations against this repository and use the
+provided prompt to review non-silent incidents or propose improvements.
+
+- Optional, not the default production runtime.
+- Good for daily/weekly review, privacy scans, and code/documentation upkeep.
+- Useful for users who already rely on Codex automations.
+- Not recommended as a replacement for Hermes minute-level quiet checks.
+
+[Install Codex Edition](docs/codex-edition.md)
+
+## Shared Capabilities
+
+- Reads Surge event and log signals locally.
+- Retries external resources when safe.
+- Flushes DNS after repeated DNS failures.
+- Retests policies before escalating.
+- Adds narrow temporary runtime rules for repeated DIRECT failures.
+- Reviews and removes temporary runtime rules later.
+- Keeps local `.env` and state files private with `0600` permissions.
+- Refuses permanent Surge profile, DNS, certificate, server, MITM, Rewrite,
+  Scripting, Replica, reload, or restart changes without user confirmation.
+
+## Commands
+
+- `setup`: interactive first-run setup; writes local `.env` only.
+- `tick`: one lightweight guardian run.
+- `doctor`: sanitized manual diagnostic summary.
+- `redact-check`: repository scan before commit or GitHub push.
 
 ```bash
+scripts/surge-hermes-guardian setup --print-hermes-command
 scripts/surge-hermes-guardian doctor
 scripts/surge-hermes-guardian tick
 ```
@@ -66,48 +75,7 @@ Healthy `tick` output is:
 {"wakeAgent": false}
 ```
 
-Finally, review and run the Hermes cron command printed by setup. The
-recommended schedule is once per minute.
-
-## Commands
-
-- `setup`: interactive first-run setup; writes local `.env` only.
-- `tick`: one lightweight guardian run for Hermes cron.
-- `doctor`: sanitized manual diagnostic summary.
-- `redact-check`: repository scan before commit or GitHub push.
-
-## How Hermes Is Used
-
-The guardian script handles deterministic work locally. When there is nothing
-important, it returns `{"wakeAgent": false}` and Hermes does not call a model.
-
-When the script emits an incident package, Hermes wakes the configured model and
-uses `hermes/job-prompts/guardian.md` to decide whether to stay silent, report
-that an issue was handled, or ask the user to confirm a risky action. Delivery is
-handled by Hermes according to the user's current Hermes configuration.
-
-## Autonomy Boundary
-
-Automatically allowed:
-
-- external resource updates
-- DNS flush
-- policy and group retests
-- narrow temporary runtime rules
-- repeated-error counters and suppression
-- later review/removal of temporary rules
-
-Requires user confirmation:
-
-- writing permanent profiles
-- editing `.conf` or `.sgmodule`
-- restarting, stopping, reloading, or switching Surge profiles
-- long-term policy-group changes
-- MITM, Rewrite, Scripting, Replica, or capture changes
-- certificate, DNS record, server, or account changes
-- broad temp-rule deletion
-
-## Privacy And Publishing
+## Privacy
 
 Never commit:
 
@@ -125,11 +93,11 @@ Run this before every commit:
 scripts/check
 ```
 
-More docs:
+## More Docs
 
-- [Onboarding](docs/onboarding.md)
+- [Hermes Edition](docs/hermes-edition.md)
+- [Codex Edition](docs/codex-edition.md)
 - [Runtime options](docs/runtime-options.md)
-- [Codex automation option](docs/codex-automation.md)
 - [Autonomy model](docs/autonomy.md)
 - [Privacy notes](docs/privacy.md)
 - [Sync workflow](docs/sync-workflow.md)

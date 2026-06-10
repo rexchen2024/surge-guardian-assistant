@@ -2,7 +2,7 @@
 
 [English](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/autonomy.md) | [简体中文](https://github.com/rexchen2024/surge-hermes-guardian/blob/main/docs/autonomy.zh-CN.md)
 
-Surge Hermes Guardian 使用分层自治模型。
+Surge 守护助手使用分层自治模型。
 
 ## 自动执行
 
@@ -27,4 +27,3 @@ Surge Hermes Guardian 使用分层自治模型。
 - MITM、Rewrite、Scripting、Replica 或抓包变更
 - 证书、DNS 记录、服务器或账号变更
 - 大范围删除临时规则
-
