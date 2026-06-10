@@ -29,6 +29,20 @@ https://github.com/rexchen2024/surge-guardian-assistant
 - Hermes 版本需要已安裝 Hermes。
 - Codex 版本需要 Codex 可存取本地儲存庫。
 
+## 適合誰
+
+- 已經在用 Surge，並希望有人持續檢查日誌、事件和策略狀態。
+- 希望健康時保持安靜，異常時再收到清晰摘要。
+- 希望低風險問題先自動處理，例如外部資源重試、DNS 刷新、策略複測。
+- 希望透過 Hermes 做常駐巡檢，或透過 Codex 做低頻維護。
+
+## 不適合誰
+
+- 只想找 Surge 配置、模組、規則集或訂閱連結。
+- 希望工具自動修改永久 Surge profile。
+- 希望把所有網絡問題都交給模型判斷。
+- 不希望安裝 Git 或在本機執行腳本。
+
 ## 工作方式
 
 ```mermaid
@@ -42,6 +56,12 @@ flowchart LR
 ```
 
 守護助手只做低風險、可回退的處理，例如重試外部資源、刷新 DNS、複測策略、加入運行時臨時規則。永久修改 Surge profile、重啟服務、證書、DNS、MITM、Rewrite、Scripting 等操作都需要用戶確認。
+
+## 項目邊界
+
+本項目不是 Surge 配置庫、規則集、模組合集或機場推薦。它只負責在你已有 Surge 配置的基礎上做巡檢、自愈和異常回饋。
+
+所有自動處理都盡量保持小範圍、運行時、可回退。涉及永久配置、證書、DNS、MITM、Rewrite、Scripting、策略組選擇、重載或重啟的操作，都應該由用戶確認後再執行。
 
 ## 一鍵安裝
 
@@ -151,6 +171,7 @@ scripts/surge-guardian-assistant redact-check
 - [升級](docs/updating.zh-CN.md)
 - [自治模型](docs/autonomy.zh-CN.md)
 - [故障排查](docs/troubleshooting.zh-CN.md)
+- [常見問題](docs/faq.zh-CN.md)
 - [私隱說明](docs/privacy.zh-CN.md)
 - [更新日誌](CHANGELOG.zh-CN.md)
 

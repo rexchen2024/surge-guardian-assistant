@@ -29,6 +29,20 @@ https://github.com/rexchen2024/surge-guardian-assistant
 - Hermes Edition requires Hermes.
 - Codex Edition requires Codex access to the local repository.
 
+## Good Fit
+
+- You already use Surge and want continuous checks for logs, events, and policy state.
+- You want healthy runs to stay quiet and real incidents to produce a clear summary.
+- You want low-risk issues handled first, such as external-resource retry, DNS flush, and policy retest.
+- You want Hermes for always-on monitoring or Codex for lower-frequency maintenance.
+
+## Not A Fit
+
+- You are looking for Surge profiles, modules, rule sets, or subscription links.
+- You want a tool to edit permanent Surge profiles automatically.
+- You want every network issue to be judged by a model.
+- You do not want to install Git or run local scripts.
+
 ## How It Works
 
 ```mermaid
@@ -42,6 +56,12 @@ flowchart LR
 ```
 
 The assistant only performs low-risk, reversible actions: external-resource retry, DNS flush, policy retest, and temporary runtime rules. Permanent Surge profile edits, service restarts, certificates, DNS, MITM, Rewrite, and Scripting changes require user confirmation.
+
+## Project Boundary
+
+This project is not a Surge profile library, rule set, module collection, or proxy provider recommendation. It only adds monitoring, self-healing, and incident feedback on top of an existing Surge setup.
+
+Automatic actions are intentionally narrow, runtime-only, and reversible where possible. Permanent profile changes, certificates, DNS, MITM, Rewrite, Scripting, policy-group selection, reload, or restart actions should happen only after user confirmation.
 
 ## One-Command Install
 
@@ -151,6 +171,7 @@ scripts/surge-guardian-assistant redact-check
 - [Updating](docs/updating.md)
 - [Autonomy model](docs/autonomy.md)
 - [Troubleshooting](docs/troubleshooting.md)
+- [FAQ](docs/faq.md)
 - [Privacy notes](docs/privacy.md)
 - [Changelog](CHANGELOG.md)
 

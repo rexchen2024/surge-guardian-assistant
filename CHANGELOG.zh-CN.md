@@ -23,3 +23,4 @@
 - License、Contributing、Security、Code of Conduct、Issue 模板和 PR 模板。
 - 快速上手、故障排查和发布检查清单。
 - 默认简体中文主页，并提供香港繁中、台湾繁中和英文主页。
+- 面向 Surge 用户补充适用边界和常见问题。
