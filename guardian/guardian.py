@@ -21,9 +21,11 @@ CAUTIOUS_DIRECT_SUFFIXES = (
     ".alidns.com",
     ".aliyuncs.com",
     ".apple.com",
+    ".apple-cloudkit.com",
     ".icloud.com",
     ".meituan.net",
     ".mi.com",
+    ".microsoft.com",
     ".qq.com",
     ".163.com",
 )
@@ -111,8 +113,44 @@ class SurgeGuardian:
         return host
 
     @staticmethod
+    def is_direct_ip_failure(line: str) -> bool:
+        return bool(
+            re.search(
+                r"Connection setup failed .*? to \d{1,3}(?:\.\d{1,3}){3}(?::\d+)? via DIRECT",
+                line,
+            )
+        )
+
+    @staticmethod
     def should_skip_temp_proxy(host: str) -> bool:
         return host in CAUTIOUS_DIRECT_EXACT_HOSTS or host.endswith(CAUTIOUS_DIRECT_SUFFIXES)
+
+    def record_background_noise(self, state: dict[str, Any], lines: list[str]) -> None:
+        counts: dict[str, int] = {}
+        for line in lines:
+            if "Unknown VIF virtual IP" in line:
+                counts["unknown_vif_virtual_ip"] = counts.get("unknown_vif_virtual_ip", 0) + 1
+            elif self.is_direct_ip_failure(line):
+                counts["direct_ip_connection_failure"] = counts.get("direct_ip_connection_failure", 0) + 1
+        if not counts:
+            return
+        day = time.strftime("%Y-%m-%d")
+        noise = state.setdefault("background_noise", {})
+        if noise.get("day") != day:
+            noise.clear()
+            noise["day"] = day
+            noise["counts"] = {}
+        stored = noise.setdefault("counts", {})
+        for key, count in counts.items():
+            stored[key] = int(stored.get(key, 0) or 0) + count
+        noise["updated_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+
+    @staticmethod
+    def trim_state_lists(state: dict[str, Any]) -> None:
+        if isinstance(state.get("suppressed"), list):
+            state["suppressed"] = state["suppressed"][-50:]
+        if isinstance(state.get("temp_rule_reviews"), list):
+            state["temp_rule_reviews"] = state["temp_rule_reviews"][-50:]
 
     @staticmethod
     def classify_event(event: dict[str, Any]) -> Incident | None:
@@ -337,6 +375,7 @@ class SurgeGuardian:
         if not state.get("initialized"):
             state["initialized"] = True
             state["seen_events"] = current_event_keys[-200:]
+            self.trim_state_lists(state)
             self.store.save(state)
             return '{"wakeAgent": false}'
 
@@ -350,6 +389,7 @@ class SurgeGuardian:
             if item:
                 incidents.append(item)
             seen.add(key)
+        self.record_background_noise(state, lines)
         incidents.extend(item for line in lines for item in [self.classify_log(line)] if item)
 
         actions: list[str] = []
@@ -366,6 +406,7 @@ class SurgeGuardian:
         if suppress_proxy and {item.kind for item in important} == {"proxy"}:
             state["seen_events"] = list(seen)[-200:]
             state.setdefault("suppressed", []).append({"time": time.strftime("%Y-%m-%d %H:%M:%S"), "reason": "proxy recovered during verification"})
+            self.trim_state_lists(state)
             self.store.save(state)
             return '{"wakeAgent": false}'
 
@@ -373,10 +414,12 @@ class SurgeGuardian:
 
         if not important:
             state["seen_events"] = list(seen)[-200:]
+            self.trim_state_lists(state)
             self.store.save(state)
             return '{"wakeAgent": false}'
 
         state["seen_events"] = list(seen)[-200:]
+        self.trim_state_lists(state)
         self.store.save(state)
         return self.render_incident(important, actions, diagnostics, log_path)
 
@@ -404,6 +447,7 @@ class SurgeGuardian:
             "【分析要求】",
             "- 判断这是临时波动、已自动修复的问题，还是需要用户决策的问题。",
             "- 如果无需通知用户，最终回复必须只包含 [SILENT] 六个字符，不能附加解释、代码块或大小写变体。",
+            "- 不要写“说明 + [SILENT]”；只要除 [SILENT] 之外还有任何字符，系统就可能把它投递给用户。",
             "- 永久修改 profile、重启 Surge、修改证书/DNS/服务器时，只能给方案并请求确认。",
             "- 需要通知时，用简短中文标题开头，下面写 2-4 条要点；只说发生了什么、已处理什么、是否需要确认。",
             "- 不要加入格式说明、任务管理提示或括号里的解释性后缀。",

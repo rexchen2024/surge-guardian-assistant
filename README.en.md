@@ -1,13 +1,13 @@
 # Surge Guardian Assistant
 
-[![Release](https://img.shields.io/badge/release-v0.1.0-blue.svg)](https://github.com/rexchen2024/surge-guardian-assistant/releases/tag/v0.1.0)
+[![Release](https://img.shields.io/badge/release-v0.1.1-blue.svg)](https://github.com/rexchen2024/surge-guardian-assistant/releases/tag/v0.1.1)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-TW.md)
 
 A quiet monitoring and self-healing assistant for Surge users. It uses Surge's official runtime capabilities and `surge-cli` to check logs, events, policies, and external resources. Healthy checks stay silent; incidents are handled with low-risk actions first; only important cases are handed to Hermes, Codex, or chat delivery.
 
-**Current version: 0.1.0**
+**Current version: 0.1.1**
 
 This project is still in early testing. Trial use and feedback are welcome, and future updates will continue to follow real-world usage.
 

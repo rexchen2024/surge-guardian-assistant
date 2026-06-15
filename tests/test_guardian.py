@@ -34,8 +34,25 @@ class GuardianParsingTest(unittest.TestCase):
     def test_cautious_direct_hosts_skip_temp_proxy(self):
         self.assertTrue(SurgeGuardian.should_skip_temp_proxy("dns.alidns.com"))
         self.assertTrue(SurgeGuardian.should_skip_temp_proxy("api.io.mi.com"))
+        self.assertTrue(SurgeGuardian.should_skip_temp_proxy("api.apple-cloudkit.com"))
         self.assertTrue(SurgeGuardian.should_skip_temp_proxy("gateway.icloud.com"))
+        self.assertTrue(SurgeGuardian.should_skip_temp_proxy("pti.store.microsoft.com"))
         self.assertFalse(SurgeGuardian.should_skip_temp_proxy("example.com"))
+
+    def test_background_noise_is_recorded_without_incident(self):
+        guardian = SurgeGuardian.__new__(SurgeGuardian)
+        state = {}
+        sample_ip_1 = "198.18." + "0.1"
+        sample_ip_2 = "198.18." + "0.2"
+        guardian.record_background_noise(state, [
+            f"<WARNING> [SGTCPConnectionManager] Unknown VIF virtual IP: {sample_ip_1}",
+            f"<NETWORK-ERROR> [SGConnectionSetupContext] Connection setup failed with error: timeout, to {sample_ip_2}:443 via DIRECT",
+            "<NETWORK-ERROR> [SGConnectionSetupContext] Connection setup failed with error: timeout, to example.com:443 via DIRECT",
+        ])
+        counts = state["background_noise"]["counts"]
+        self.assertEqual(counts["unknown_vif_virtual_ip"], 1)
+        self.assertEqual(counts["direct_ip_connection_failure"], 1)
+        self.assertNotIn("direct_domain_connection_failure", counts)
 
     def test_rule_presence_checks_dump_text(self):
         rules = {"rules": [{"rule": "DOMAIN,example.com,Proxy"}]}

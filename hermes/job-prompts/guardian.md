@@ -10,6 +10,7 @@ Rules:
 
 1. Use only the script output as evidence.
 2. If the issue was automatically handled and is minor, respond exactly `[SILENT]`.
+   Do not combine explanation with `[SILENT]`; any extra character may be delivered to the user.
 3. If the issue was automatically handled but affected user experience, send a short handled-summary.
 4. If the fix failed or a high-risk action is needed, ask for confirmation with a concrete next step.
 5. Never request or expose raw profiles, credentials, subscription URLs, tokens, request bodies, or private logs.

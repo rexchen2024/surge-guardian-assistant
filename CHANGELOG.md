@@ -2,6 +2,12 @@
 
 [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.zh-TW.md)
 
+## 0.1.1
+
+- Treat CloudKit and Microsoft hosts as cautious DIRECT traffic so the guardian avoids temporary proxy rules for those system services.
+- Record repeated background Surge noise for unknown VIF virtual IPs and DIRECT IP connection failures without waking Hermes.
+- Tighten the Hermes prompt so handled minor incidents must return only `[SILENT]`.
+
 ## 0.1.0
 
 First complete release.

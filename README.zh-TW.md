@@ -1,13 +1,13 @@
 # Surge 守護助手
 
-[![Release](https://img.shields.io/badge/release-v0.1.0-blue.svg)](https://github.com/rexchen2024/surge-guardian-assistant/releases/tag/v0.1.0)
+[![Release](https://img.shields.io/badge/release-v0.1.1-blue.svg)](https://github.com/rexchen2024/surge-guardian-assistant/releases/tag/v0.1.1)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.en.md)
 
 面向 Surge 使用者的靜默巡檢和自我修復工具。它基於 Surge 官方執行階段能力和 `surge-cli`，持續檢查日誌、事件、策略和外部資源；健康時不打擾，異常時先自我修復，只有重要問題才交給 Hermes、Codex 或聊天工具繼續處理。
 
-**目前版本：0.1.0**
+**目前版本：0.1.1**
 
 本專案仍在初期測試階段，歡迎試用並提供回饋建議。後續會根據實際使用體驗持續更新。
 

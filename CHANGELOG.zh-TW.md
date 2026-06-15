@@ -2,6 +2,12 @@
 
 [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.zh-CN.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/CHANGELOG.md)
 
+## 0.1.1
+
+- 將 CloudKit 和 Microsoft 主機視為保守 DIRECT 流量，避免守衛為這些系統服務加入臨時代理規則。
+- 記錄 Unknown VIF virtual IP 和 DIRECT IP 連線失敗這類背景噪音，但不因此喚醒 Hermes。
+- 收緊 Hermes 提示詞，已處理的輕微事件必須只回傳 `[SILENT]`。
+
 ## 0.1.0
 
 首個完整版本。
