@@ -1,0 +1,242 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'USAGE'
+Usage:
+  scripts/codex-handoff-pr --title "Short PR title" [options]
+
+Required:
+  --title TEXT              PR title and commit subject suffix
+
+Options:
+  --task-id ID              Stable task id. Defaults to task-YYYYmmdd-HHMMSS
+  --base BRANCH             Base branch. Defaults to origin default branch, then main
+  --branch BRANCH           Branch to create/use when currently on base
+  --summary TEXT            Handoff summary
+  --tests TEXT              Verification performed
+  --risks TEXT              Known risks or "None"
+  --next TEXT               Suggested next action
+  --commit-message TEXT     Commit message. Defaults to "<task-id>: <title>"
+  --files FILE ...          Stage only these files before handoff
+  --draft                   Create draft PR
+  --no-push                 Stop after commit
+  --no-pr                   Push but do not create PR
+  -h, --help                Show help
+
+Safety:
+  This script never runs "git add .". If --files is omitted, it only uses files
+  that are already staged, plus the generated docs/handoff file.
+USAGE
+}
+
+die() {
+  echo "error: $*" >&2
+  exit 1
+}
+
+slugify() {
+  printf '%s' "$1" \
+    | tr '[:upper:]' '[:lower:]' \
+    | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//' \
+    | cut -c 1-48
+}
+
+detect_base_branch() {
+  local base
+  base="$(git remote show origin 2>/dev/null | sed -n 's/.*HEAD branch: //p' | head -n 1 || true)"
+  if [ -n "$base" ]; then
+    printf '%s\n' "$base"
+  else
+    printf '%s\n' "main"
+  fi
+}
+
+title=""
+task_id=""
+base_branch=""
+target_branch=""
+summary=""
+tests=""
+risks=""
+next_action=""
+commit_message=""
+draft=false
+push_enabled=true
+pr_enabled=true
+files=()
+
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --title)
+      shift; [ "$#" -gt 0 ] || die "--title needs a value"; title="$1";;
+    --task-id)
+      shift; [ "$#" -gt 0 ] || die "--task-id needs a value"; task_id="$1";;
+    --base)
+      shift; [ "$#" -gt 0 ] || die "--base needs a value"; base_branch="$1";;
+    --branch)
+      shift; [ "$#" -gt 0 ] || die "--branch needs a value"; target_branch="$1";;
+    --summary)
+      shift; [ "$#" -gt 0 ] || die "--summary needs a value"; summary="$1";;
+    --tests)
+      shift; [ "$#" -gt 0 ] || die "--tests needs a value"; tests="$1";;
+    --risks)
+      shift; [ "$#" -gt 0 ] || die "--risks needs a value"; risks="$1";;
+    --next)
+      shift; [ "$#" -gt 0 ] || die "--next needs a value"; next_action="$1";;
+    --commit-message)
+      shift; [ "$#" -gt 0 ] || die "--commit-message needs a value"; commit_message="$1";;
+    --files)
+      shift
+      while [ "$#" -gt 0 ] && [[ "$1" != --* ]]; do
+        files+=("$1")
+        shift
+      done
+      continue;;
+    --draft)
+      draft=true;;
+    --no-push)
+      push_enabled=false; pr_enabled=false;;
+    --no-pr)
+      pr_enabled=false;;
+    -h|--help)
+      usage; exit 0;;
+    *)
+      die "unknown option: $1";;
+  esac
+  shift
+done
+
+[ -n "$title" ] || die "--title is required"
+
+repo_root="$(git rev-parse --show-toplevel 2>/dev/null)" || die "not inside a git repository"
+cd "$repo_root"
+
+git rev-parse --verify HEAD >/dev/null 2>&1 || die "repository has no commits yet"
+[ ! -f "$(git rev-parse --git-path MERGE_HEAD)" ] || die "merge in progress; finish it first"
+[ ! -d "$(git rev-parse --git-path rebase-merge)" ] || die "rebase in progress; finish it first"
+[ ! -d "$(git rev-parse --git-path rebase-apply)" ] || die "rebase in progress; finish it first"
+
+task_id="${task_id:-task-$(date +%Y%m%d-%H%M%S)}"
+base_branch="${base_branch:-$(detect_base_branch)}"
+title_slug="$(slugify "$title")"
+target_branch="${target_branch:-task/${task_id}-${title_slug:-work}}"
+
+current_branch="$(git branch --show-current)"
+[ -n "$current_branch" ] || die "detached HEAD is not supported"
+
+if [ "$current_branch" = "$base_branch" ]; then
+  git checkout -b "$target_branch"
+  current_branch="$target_branch"
+fi
+
+if [ "${#files[@]}" -gt 0 ]; then
+  for file in "${files[@]}"; do
+    [ -e "$file" ] || [ -e "$(dirname "$file")" ] || die "path does not exist: $file"
+  done
+  git add -- "${files[@]}"
+fi
+
+if git diff --cached --quiet; then
+  echo "No staged files found." >&2
+  echo "Changed files:" >&2
+  git status --short >&2
+  die "stage files first, or pass --files file1 file2"
+fi
+
+handoff_dir="docs/handoff"
+handoff_path="${handoff_dir}/$(date +%Y-%m-%d)-${task_id}.md"
+mkdir -p "$handoff_dir"
+
+changed_files="$(git diff --cached --name-only)"
+diff_stat="$(git diff --cached --stat)"
+
+cat > "$handoff_path" <<EOF
+# ${title}
+
+Task ID: \`${task_id}\`
+Branch: \`${current_branch}\`
+Base: \`${base_branch}\`
+Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+
+## Summary
+
+${summary:-Codex completed the requested code change. Review the PR diff for exact edits.}
+
+## Changed Files
+
+\`\`\`text
+${changed_files}
+\`\`\`
+
+## Diff Stat
+
+\`\`\`text
+${diff_stat}
+\`\`\`
+
+## Verification
+
+${tests:-Not recorded. Add the exact tests or checks that were run before merging.}
+
+## Risks
+
+${risks:-Not recorded. Reviewer should inspect the diff before merging.}
+
+## Next Action
+
+${next_action:-Review the PR diff and decide whether to merge or request changes.}
+EOF
+
+git add -- "$handoff_path"
+
+commit_message="${commit_message:-${task_id}: ${title}}"
+git commit -m "$commit_message"
+
+echo "handoff: $handoff_path"
+
+if [ "$push_enabled" = false ]; then
+  echo "stopped before push (--no-push)"
+  exit 0
+fi
+
+git push -u origin "$current_branch"
+
+if [ "$pr_enabled" = false ]; then
+  echo "stopped before PR creation (--no-pr)"
+  exit 0
+fi
+
+command -v gh >/dev/null 2>&1 || die "GitHub CLI not found; install gh or rerun with --no-pr"
+
+if gh pr view "$current_branch" --json url --jq .url >/tmp/codex-handoff-pr-url 2>/dev/null; then
+  pr_url="$(cat /tmp/codex-handoff-pr-url)"
+  echo "pr: $pr_url"
+  exit 0
+fi
+
+pr_body="$(mktemp)"
+cat > "$pr_body" <<EOF
+## Handoff
+
+See \`${handoff_path}\`.
+
+## Summary
+
+${summary:-Codex completed the requested code change.}
+
+## Verification
+
+${tests:-Not recorded.}
+
+## Risks
+
+${risks:-Not recorded.}
+EOF
+
+pr_args=(pr create --base "$base_branch" --head "$current_branch" --title "$title" --body-file "$pr_body")
+if [ "$draft" = true ]; then
+  pr_args+=(--draft)
+fi
+
+gh "${pr_args[@]}"
