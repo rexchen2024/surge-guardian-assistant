@@ -12,13 +12,14 @@ from pathlib import Path
 from urllib.parse import urlencode
 
 from . import __version__
-from .config import DEFAULT_SURGE_CLI, GuardianConfig, write_env
-from .guardian import SurgeGuardian
+from .config import DEFAULT_SURGE_CLI, SentryConfig, write_env
+from .sentry import SurgeSentry
 from .redact import redact_text, scan
 from .surge import SurgeClient, latest_surge_log
+from .traffic import current_month_db, diff_records, latest_session_db, read_policy_records, records_to_snapshot, total_gb
 
 
-DISPLAY_NAME = "Surge 守护助手"
+DISPLAY_NAME = "Surge Sentry"
 
 
 def project_root() -> Path:
@@ -101,9 +102,19 @@ def write_json_private(path: Path, data: dict) -> None:
     path.chmod(0o600)
 
 
+def split_csv(value: str) -> list[str]:
+    return [item.strip() for item in value.split(",") if item.strip()]
+
+
+def slugify(value: str) -> str:
+    text = "".join(ch.lower() if ch.isalnum() else "-" for ch in value.strip())
+    text = "-".join(part for part in text.split("-") if part)
+    return text[:48] or "default"
+
+
 def build_hermes_cron_command(root: Path) -> list[str]:
-    script = root / "scripts" / "surge-guardian-assistant"
-    prompt_path = root / "hermes" / "job-prompts" / "guardian.md"
+    script = root / "scripts" / "surge-sentry"
+    prompt_path = root / "hermes" / "job-prompts" / "sentry.md"
     return [
         "hermes",
         "cron",
@@ -119,7 +130,7 @@ def build_hermes_cron_command(root: Path) -> list[str]:
     ]
 
 
-def auto_update_if_due(config: GuardianConfig) -> None:
+def auto_update_if_due(config: SentryConfig) -> None:
     if not config.auto_update:
         return
     root = config.root
@@ -211,7 +222,7 @@ def command_setup(args: argparse.Namespace) -> int:
         "MAC_PROFILE": mac_profile,
         "EXPECTED_POLICIES": expected,
         "PROXY_POLICY": proxy_policy,
-        "STATE_DIR": "${HOME}/.hermes/state/surge-guardian-assistant",
+        "STATE_DIR": "${HOME}/.hermes/state/surge-sentry",
         "DIRECT_FAIL_WINDOW_SECONDS": "900",
         "TEMP_RULE_REVIEW_SECONDS": "43200",
         "EXTERNAL_RESOURCE_FAIL_THRESHOLD": "2",
@@ -242,14 +253,123 @@ def command_setup(args: argparse.Namespace) -> int:
 
 
 def command_tick(_args: argparse.Namespace) -> int:
-    config = GuardianConfig.load(project_root())
+    config = SentryConfig.load(project_root())
     auto_update_if_due(config)
-    print(SurgeGuardian(config).tick())
+    print(SurgeSentry(config).tick())
+    return 0
+
+
+def traffic_db_for_scope(config: SentryConfig, scope: str) -> Path | None:
+    if scope == "session":
+        return latest_session_db(config.traffic_stat_dir)
+    return current_month_db(config.traffic_stat_dir) or latest_session_db(config.traffic_stat_dir)
+
+
+def traffic_monitor_path(config: SentryConfig, name: str) -> Path:
+    return config.state_dir / "traffic-monitors" / f"{slugify(name)}.json"
+
+
+def traffic_patterns(config: SentryConfig, raw: str) -> list[str]:
+    patterns = split_csv(raw) if raw else list(config.traffic_policy_patterns)
+    return patterns or ["%"]
+
+
+def read_traffic_snapshot(config: SentryConfig, scope: str, patterns: list[str], limit: int) -> tuple[Path | None, list]:
+    db_path = traffic_db_for_scope(config, scope)
+    if not db_path:
+        return None, []
+    return db_path, read_policy_records(db_path, patterns, limit=limit)
+
+
+def format_monitor_report(state: dict, records: list, *, status: str, top: int) -> str:
+    baseline = state.get("baseline", {}) if isinstance(state.get("baseline"), dict) else {}
+    deltas = diff_records(records, baseline)
+    total = total_gb(deltas)
+    started_at = state.get("started_at", "unknown")
+    name = state.get("name", "default")
+    scope = state.get("scope", "month")
+    lines = [
+        f"Surge Sentry 流量监控：{name}",
+        f"状态：{status}",
+        f"开始：{started_at}",
+        f"范围：{scope}",
+        f"本阶段消耗：{total:.2f}GB",
+    ]
+    note = state.get("note")
+    if note:
+        lines.append(f"备注：{note}")
+    if deltas:
+        by_policy: dict[str, float] = {}
+        for item in deltas:
+            by_policy[item.policy or "(unknown)"] = by_policy.get(item.policy or "(unknown)", 0.0) + item.total_gb
+        lines.extend(["", "按策略汇总："])
+        for policy, value in sorted(by_policy.items(), key=lambda item: item[1], reverse=True)[:top]:
+            lines.append(f"- {policy}: {value:.2f}GB")
+        lines.extend(["", "Top 消耗："])
+        for item in deltas[:top]:
+            host = item.host or item.path or "(unknown)"
+            lines.append(
+                f"- {host}: {item.total_gb:.2f}GB "
+                f"(down {item.down_gb:.2f}GB / up {item.up_gb:.2f}GB, {item.requests} requests, {item.policy or 'unknown'})"
+            )
+    else:
+        lines.extend(["", "暂无新增流量。"])
+    return "\n".join(lines)
+
+
+def command_traffic(args: argparse.Namespace) -> int:
+    config = SentryConfig.load(project_root())
+    patterns = traffic_patterns(config, args.policy_patterns)
+    monitor_path = traffic_monitor_path(config, args.name)
+
+    if args.traffic_command == "start":
+        db_path, records = read_traffic_snapshot(config, args.scope, patterns, args.limit)
+        if not db_path:
+            print("traffic: 未找到 Surge 流量统计库")
+            return 1
+        state = {
+            "name": args.name,
+            "scope": args.scope,
+            "policy_patterns": patterns,
+            "db_path": str(db_path),
+            "started_at": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "note": args.note or "",
+            "baseline": records_to_snapshot(records),
+        }
+        write_json_private(monitor_path, state)
+        print(f"已开始流量监控：{args.name}")
+        print(f"基线库：{db_path.name}")
+        print(f"基线流量：{total_gb(records):.2f}GB")
+        print("后续运行 `scripts/surge-sentry traffic status` 查看进行中结果，结束时运行 `scripts/surge-sentry traffic end`。")
+        return 0
+
+    state = read_json(monitor_path)
+    if not state:
+        print(f"traffic: 未找到监控任务 {args.name}，请先运行 start")
+        return 1
+
+    scope = str(state.get("scope") or args.scope)
+    patterns = list(state.get("policy_patterns") or patterns)
+    db_path, records = read_traffic_snapshot(config, scope, patterns, args.limit)
+    if not db_path:
+        print("traffic: 未找到 Surge 流量统计库")
+        return 1
+
+    status = "进行中" if args.traffic_command == "status" else "已结束"
+    print(format_monitor_report(state, records, status=status, top=args.top))
+    if args.traffic_command == "end":
+        state["ended_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
+        state["final_db_path"] = str(db_path)
+        state["final_total_gb"] = total_gb(diff_records(records, state.get("baseline", {})))
+        archive = monitor_path.with_suffix(f".ended-{int(time.time())}.json")
+        write_json_private(archive, state)
+        monitor_path.unlink(missing_ok=True)
+        print(f"\n记录已归档：{archive}")
     return 0
 
 
 def command_doctor(_args: argparse.Namespace) -> int:
-    config = GuardianConfig.load(project_root())
+    config = SentryConfig.load(project_root())
     client = SurgeClient(config.surge_cli)
     print(f"{DISPLAY_NAME} doctor")
     print("")
@@ -298,7 +418,7 @@ def yesno(value: bool) -> str:
     return "yes" if value else "no"
 
 
-def build_feedback_report(config: GuardianConfig, include_check: bool = False) -> str:
+def build_feedback_report(config: SentryConfig, include_check: bool = False) -> str:
     client = SurgeClient(config.surge_cli)
     latest = latest_surge_log(config.surge_log_dir)
     update_state = read_json(config.state_dir / "update-state.json")
@@ -360,7 +480,7 @@ def build_feedback_report(config: GuardianConfig, include_check: bool = False) -
 
 
 def command_feedback(args: argparse.Namespace) -> int:
-    config = GuardianConfig.load(project_root())
+    config = SentryConfig.load(project_root())
     report = build_feedback_report(config, include_check=args.with_check)
 
     if args.print:
@@ -437,7 +557,7 @@ def command_update(args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="surge-guardian-assistant")
+    parser = argparse.ArgumentParser(prog="surge-sentry")
     parser.add_argument("--version", action="version", version=f"{DISPLAY_NAME} {__version__}")
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -449,8 +569,35 @@ def main(argv: list[str] | None = None) -> int:
     setup.add_argument("--install-hermes", action="store_true", help="create the Hermes cron job after writing .env")
     setup.set_defaults(func=command_setup)
 
-    tick = sub.add_parser("tick", help="one guardian run")
+    tick = sub.add_parser("tick", help="one sentry run")
     tick.set_defaults(func=command_tick)
+
+    traffic = sub.add_parser("traffic", help="start, inspect, or end a focused traffic monitor")
+    traffic_sub = traffic.add_subparsers(dest="traffic_command", required=True)
+
+    traffic_start = traffic_sub.add_parser("start", help="start a focused traffic monitor from the current Surge traffic baseline")
+    traffic_start.add_argument("name", nargs="?", default="default", help="monitor name, for example f1-race or world-cup-fox")
+    traffic_start.add_argument("--scope", choices=["session", "month"], default="month", help="Surge traffic database scope to compare")
+    traffic_start.add_argument("--policy-patterns", default="", help="comma-separated SQL LIKE policy patterns; defaults to configured patterns or all policies")
+    traffic_start.add_argument("--note", default="", help="short local note for this monitor")
+    traffic_start.add_argument("--limit", type=int, default=500, help="maximum rows to read from Surge traffic stats")
+    traffic_start.set_defaults(func=command_traffic)
+
+    traffic_status = traffic_sub.add_parser("status", help="show traffic consumed since monitor start")
+    traffic_status.add_argument("name", nargs="?", default="default", help="monitor name")
+    traffic_status.add_argument("--scope", choices=["session", "month"], default="month", help="fallback scope if monitor state has no scope")
+    traffic_status.add_argument("--policy-patterns", default="", help="fallback policy patterns if monitor state has none")
+    traffic_status.add_argument("--limit", type=int, default=500, help="maximum rows to read from Surge traffic stats")
+    traffic_status.add_argument("--top", type=int, default=8, help="number of top rows to display")
+    traffic_status.set_defaults(func=command_traffic)
+
+    traffic_end = traffic_sub.add_parser("end", help="finish a focused traffic monitor and archive the result")
+    traffic_end.add_argument("name", nargs="?", default="default", help="monitor name")
+    traffic_end.add_argument("--scope", choices=["session", "month"], default="month", help="fallback scope if monitor state has no scope")
+    traffic_end.add_argument("--policy-patterns", default="", help="fallback policy patterns if monitor state has none")
+    traffic_end.add_argument("--limit", type=int, default=500, help="maximum rows to read from Surge traffic stats")
+    traffic_end.add_argument("--top", type=int, default=8, help="number of top rows to display")
+    traffic_end.set_defaults(func=command_traffic)
 
     doctor = sub.add_parser("doctor", help="manual sanitized diagnostic summary")
     doctor.set_defaults(func=command_doctor)

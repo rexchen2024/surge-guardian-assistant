@@ -5,8 +5,8 @@
 先執行：
 
 ```bash
-cd ~/.surge-guardian-assistant
-scripts/surge-guardian-assistant doctor
+cd ~/.surge-sentry
+scripts/surge-sentry doctor
 ```
 
 ## `missing .env`
@@ -14,7 +14,7 @@ scripts/surge-guardian-assistant doctor
 還沒有完成 setup。
 
 ```bash
-scripts/surge-guardian-assistant setup --print-hermes-command
+scripts/surge-sentry setup --print-hermes-command
 ```
 
 ## `surge-cli: not found`
@@ -31,7 +31,7 @@ scripts/surge-guardian-assistant setup --print-hermes-command
 
 ## `expected policies: missing`
 
-需要選擇你希望守護助手複測的策略組。
+需要選擇你希望Surge Sentry 複測的策略組。
 
 重新執行 setup，或在 `.env` 中設定：
 
@@ -56,7 +56,7 @@ EXPECTED_POLICIES=Proxy,ProxyMedia
 手動檢查：
 
 ```bash
-scripts/surge-guardian-assistant update --check
+scripts/surge-sentry update --check
 ```
 
 ## 更新被跳過
@@ -74,7 +74,7 @@ git status --short
 產生脫敏報告：
 
 ```bash
-scripts/surge-guardian-assistant feedback --github-url
+scripts/surge-sentry feedback --github-url
 ```
 
 提交前請先檢查報告內容，不要貼原始 Surge profile、訂閱 URL、節點憑據、請求日誌、真實網域或真實 IP。

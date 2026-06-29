@@ -17,7 +17,7 @@
 - 用範例值替換真實網域和 IP。
 - 分享前檢查截圖和終端日誌。
 - 優先分享摘要，不要分享原始 dump。
-- 每次提交前執行 `scripts/surge-guardian-assistant redact-check`。
+- 每次提交前執行 `scripts/surge-sentry redact-check`。
 
 ## 回饋報告
 
@@ -26,7 +26,7 @@
 使用者可以主動產生一份脫敏報告：
 
 ```bash
-scripts/surge-guardian-assistant feedback
+scripts/surge-sentry feedback
 ```
 
 報告預設寫到本機 state 目錄，權限是 `0600`。分享前請先打開看一遍。
@@ -34,7 +34,7 @@ scripts/surge-guardian-assistant feedback
 如果想複製到 GitHub issue：
 
 ```bash
-scripts/surge-guardian-assistant feedback --github-url
+scripts/surge-sentry feedback --github-url
 ```
 
 這只是產生連結，不會自動提交。

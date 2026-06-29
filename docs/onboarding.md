@@ -9,14 +9,14 @@ commands can run without Hermes.
 ## 1. Get The Project
 
 ```bash
-git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-guardian-assistant
-cd ~/.surge-guardian-assistant
+git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-sentry
+cd ~/.surge-sentry
 ```
 
 ## 2. Run Setup
 
 ```bash
-scripts/surge-guardian-assistant setup --print-hermes-command
+scripts/surge-sentry setup --print-hermes-command
 ```
 
 Setup discovers:
@@ -31,8 +31,8 @@ It writes `.env` in the repository root. It does not edit Surge profiles.
 ## 3. Verify Locally
 
 ```bash
-scripts/surge-guardian-assistant doctor
-scripts/surge-guardian-assistant tick
+scripts/surge-sentry doctor
+scripts/surge-sentry tick
 ```
 
 Healthy `tick` output is:
@@ -48,7 +48,7 @@ run it. The recommended schedule is once per minute.
 
 Hermes handles delivery according to the user's existing Hermes configuration.
 If no delivery target is configured, set up a Hermes-supported platform first.
-The guardian does not require Telegram specifically.
+The sentry does not require Telegram specifically.
 
 For a Surge-only machine without Hermes, run `tick` from launchd or another
 local scheduler and review any output that is not `{"wakeAgent": false}`. See

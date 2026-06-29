@@ -24,19 +24,19 @@ AUTO_UPDATE_INTERVAL_SECONDS=86400
 查看版本：
 
 ```bash
-scripts/surge-guardian-assistant version
+scripts/surge-sentry version
 ```
 
 只檢查：
 
 ```bash
-scripts/surge-guardian-assistant update --check
+scripts/surge-sentry update --check
 ```
 
 立刻升級：
 
 ```bash
-scripts/surge-guardian-assistant update
+scripts/surge-sentry update
 ```
 
 關閉自動更新：在安裝目錄的 `.env` 裡寫入：

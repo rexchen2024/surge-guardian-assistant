@@ -18,13 +18,13 @@
 
 可以執行 `doctor` 和 `tick`，也可以用本機排程器定時執行。
 
-但推薦使用 Hermes 版本，因為 Hermes 更適合做常駐排程、模型分析和訊息通知。
+可以。Hermes 適合常駐排程和訊息通知；Codex 適合開源專案式的檢查、診斷、回顧和維護。你可以按自己的工作流選擇其中一種。
 
 ## Codex 適合做什麼？
 
-適合低頻檢查儲存庫、回顧異常包、更新文件和持續改進專案。
+適合安裝檢查、Surge 設定診斷、回顧異常包、解讀流量監控結果、更新文件和持續改進專案。
 
-不建議用 Codex 做每分鐘健康巡檢。健康路徑應該盡量輕，不需要每次都啟動模型任務。
+不需要讓 Codex 每分鐘做健康巡檢。健康路徑應該盡量輕，由本機腳本執行；需要解釋、判斷或改進時再交給 Codex。
 
 ## 自動更新會覆蓋我的修改嗎？
 
@@ -33,7 +33,7 @@
 如果使用者改過受 Git 管理的檔案，自動更新會跳過。你可以手動執行：
 
 ```bash
-scripts/surge-guardian-assistant update --check
+scripts/surge-sentry update --check
 ```
 
 ## 會上傳日誌或使用資料嗎？
@@ -43,5 +43,5 @@ scripts/surge-guardian-assistant update --check
 回饋報告需要使用者主動產生，並且可以先在本機檢查：
 
 ```bash
-scripts/surge-guardian-assistant feedback --print
+scripts/surge-sentry feedback --print
 ```

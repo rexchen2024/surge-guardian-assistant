@@ -33,8 +33,8 @@ Run:
 
 ```bash
 scripts/check
-scripts/surge-guardian-assistant version
-scripts/surge-guardian-assistant feedback --print
+scripts/surge-sentry version
+scripts/surge-sentry feedback --print
 ```
 
 Then check:
@@ -47,13 +47,13 @@ gh release list --repo rexchen2024/surge-guardian-assistant --limit 5
 
 ## Messaging
 
-Describe the project as a Surge guardian assistant, not a Surge profile or proxy subscription.
+Describe the project as a Surge Sentry assistant, not a Surge profile or proxy subscription.
 
 Keep the promise narrow:
 
 - quiet healthy checks
 - safe self-healing
-- Hermes Edition for always-on monitoring
-- Codex Edition for lower-frequency maintenance
+- Hermes path for always-on monitoring, low-noise delivery, and background learning
+- Codex path for install checks, Surge config diagnostics, incident review, traffic-monitor interpretation, and project maintenance
 - no automatic telemetry
 - no permanent Surge changes without confirmation

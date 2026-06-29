@@ -5,8 +5,8 @@
 Start with:
 
 ```bash
-cd ~/.surge-guardian-assistant
-scripts/surge-guardian-assistant doctor
+cd ~/.surge-sentry
+scripts/surge-sentry doctor
 ```
 
 ## `missing .env`
@@ -14,7 +14,7 @@ scripts/surge-guardian-assistant doctor
 Setup has not been completed.
 
 ```bash
-scripts/surge-guardian-assistant setup --print-hermes-command
+scripts/surge-sentry setup --print-hermes-command
 ```
 
 ## `surge-cli: not found`
@@ -56,7 +56,7 @@ Check three things:
 Check manually:
 
 ```bash
-scripts/surge-guardian-assistant update --check
+scripts/surge-sentry update --check
 ```
 
 ## Update Was Skipped
@@ -74,7 +74,7 @@ git status --short
 Create a sanitized report:
 
 ```bash
-scripts/surge-guardian-assistant feedback --github-url
+scripts/surge-sentry feedback --github-url
 ```
 
 Review the report before sending it. Do not paste raw Surge profiles, subscription URLs, node credentials, request logs, real domains, or real IPs.

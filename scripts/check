@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
-bash -n install.sh scripts/surge-guardian-assistant scripts/surge-health-check.sh scripts/surge-realtime-guardian.sh
-python3 -m compileall guardian tests >/dev/null
+bash -n install.sh scripts/surge-sentry scripts/surge-health-check.sh scripts/surge-realtime-sentry.sh
+python3 -m compileall surge_sentry tests >/dev/null
 python3 -m unittest discover -s tests
-scripts/surge-guardian-assistant redact-check
+scripts/surge-sentry redact-check

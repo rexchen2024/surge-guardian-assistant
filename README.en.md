@@ -1,13 +1,13 @@
-# Surge Guardian Assistant
+# Surge Sentry
 
-[![Release](https://img.shields.io/badge/release-v0.1.1-blue.svg)](https://github.com/rexchen2024/surge-guardian-assistant/releases/tag/v0.1.1)
+[![Release](https://img.shields.io/badge/release-v0.2.0-blue.svg)](https://github.com/rexchen2024/surge-guardian-assistant/releases/tag/v0.2.0)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-TW.md)
 
-A quiet monitoring and self-healing assistant for Surge users. It uses Surge's official runtime capabilities and `surge-cli` to check logs, events, policies, and external resources. Healthy checks stay silent; incidents are handled with low-risk actions first; only important cases are handed to Hermes, Codex, or chat delivery.
+A Cron guard branch under the broader Surge Assistant framework for quiet Surge monitoring and self-healing. It uses Surge's official runtime capabilities and `surge-cli` to check startup health, logs, events, policies, config sync, and traffic risk. Healthy checks stay silent; incidents are handled with low-risk actions first; only important cases are handed to Hermes, Codex, or chat delivery.
 
-**Current version: 0.1.1**
+**Current version: 0.2.0**
 
 This project is still in early testing. Trial use and feedback are welcome, and future updates will continue to follow real-world usage.
 
@@ -27,9 +27,10 @@ This project is still in early testing. Trial use and feedback are welcome, and 
 
 - **Quiet and low-power**: healthy checks emit only `{"wakeAgent": false}`; routine work stays on local scripts and Surge runtime APIs where possible.
 - **Native Surge checks**: reads events, retests policies, flushes DNS, updates external resources, and adds temporary runtime rules.
+- **Event traffic monitors**: ask Sentry to watch one F1 race, a World Cup Fox stream, or an Apple TV session and get clear start, in-progress, and final traffic reports.
 - **Safe self-healing first**: low-risk issues are handled first; actions stay narrow, runtime-only, and reversible where possible. Permanent config, certificates, DNS records, servers, MITM, Rewrite, Scripting, reload, or restart require confirmation.
+- **Choose Hermes or Codex**: the Hermes path is good for always-on guarding, low-noise delivery, and background learning; the Codex path is good for open-source users who want install checks, Surge config diagnostics, incident review, docs maintenance, and safe change planning.
 - **AI only when useful**: repeated, complex, or unresolved incidents can be reviewed by Hermes or Codex.
-- **Learns through Hermes**: Hermes Edition can use Hermes memory and skills to turn repeated incidents into future handling experience.
 - **Automatic updates and privacy-first defaults**: installed copies can pull updates from GitHub; local tracked edits are not overwritten; logs and usage data are not uploaded automatically.
 
 
@@ -60,15 +61,15 @@ For users who only want to check Surge from the local terminal. This is the ligh
 
 [One-command install and local run notes](docs/runtime-options.md)
 
-**2. 🌟 Recommended - Hermes Agent**
+**2. Hermes Agent**
 
-Best for always-on monitoring, incident notifications, and learning from repeated patterns. Healthy checks stay fully silent; important issues can wake AI and notify you through chat.
+Best when you want an always-on background guard. Healthy checks stay fully silent; important issues can wake AI and notify you through chat.
 
 [One-command install and Hermes task setup](docs/hermes-edition.md)
 
 **3. Codex**
 
-Best for lower-frequency repository checks, incident review, and project maintenance. It is not recommended for minute-level monitoring.
+Best when you want to manage Surge Sentry through an open-source project and a local workspace. Codex is strong at install checks, Surge config diagnostics, traffic-monitor interpretation, incident review, privacy checks, docs maintenance, and safe change proposals; healthy checks still run through local scripts so every check does not start a model task.
 
 [One-command install and Codex automation setup](docs/codex-edition.md)
 

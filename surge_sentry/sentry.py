@@ -8,9 +8,10 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from .config import GuardianConfig
+from .config import SentryConfig
 from .state import StateStore
 from .surge import SurgeClient, latest_surge_log
+from .traffic import analyze_traffic, current_month_db, find_direct_leak_records, format_top_records, latest_session_db, read_policy_records
 
 
 CAUTIOUS_DIRECT_EXACT_HOSTS = {
@@ -29,6 +30,7 @@ CAUTIOUS_DIRECT_SUFFIXES = (
     ".qq.com",
     ".163.com",
 )
+RECURRING_NOISE_KINDS = {"dns", "direct_domain_failure", "proxy"}
 
 
 def short_text(result: dict[str, Any], limit: int = 420) -> str:
@@ -48,13 +50,14 @@ class Incident:
     severity: str
     message: str
     host: str = ""
+    bypass_cooldown: bool = False
 
 
-class SurgeGuardian:
-    def __init__(self, config: GuardianConfig):
+class SurgeSentry:
+    def __init__(self, config: SentryConfig):
         self.config = config
         self.client = SurgeClient(config.surge_cli)
-        self.store = StateStore(config.state_dir / "guardian-state.json")
+        self.store = StateStore(config.state_dir / "sentry-state.json")
 
     def read_new_log_lines(self, state: dict[str, Any]) -> tuple[list[str], Path | None]:
         path = latest_surge_log(self.config.surge_log_dir)
@@ -125,6 +128,46 @@ class SurgeGuardian:
     def should_skip_temp_proxy(host: str) -> bool:
         return host in CAUTIOUS_DIRECT_EXACT_HOSTS or host.endswith(CAUTIOUS_DIRECT_SUFFIXES)
 
+    @staticmethod
+    def in_maintenance_window(window: dict[str, Any], local_time: time.struct_time | None = None) -> bool:
+        current = local_time or time.localtime()
+        minute = current.tm_hour * 60 + current.tm_min
+        start = int(window.get("start_minute", 0) or 0)
+        end = int(window.get("end_minute", 0) or 0)
+        if start <= end:
+            in_range = start <= minute < end
+        else:
+            in_range = minute >= start or minute < end
+        return current.tm_wday == int(window.get("weekday", -1)) and in_range
+
+    @staticmethod
+    def remember_suppressed(state: dict[str, Any], entry: dict[str, Any], cooldown_seconds: int = 900) -> None:
+        now = int(time.time())
+        key = str(entry.get("suppress_key") or f"{entry.get('reason', '')}:{entry.get('host', '')}")
+        cooldowns = state.setdefault("suppressed_cooldowns", {})
+        info = cooldowns.setdefault(key, {"count": 0, "first": now, "last": 0})
+        if now - int(info.get("first", now) or now) > 86400:
+            info.clear()
+            info.update({"count": 0, "first": now, "last": 0})
+        info["count"] = int(info.get("count", 0) or 0) + 1
+        info["last"] = now
+
+        suppressed = state.setdefault("suppressed", [])
+        if suppressed and now - int(info.get("last_appended", 0) or 0) < cooldown_seconds:
+            for item in reversed(suppressed):
+                if item.get("suppress_key") == key:
+                    item.update(entry)
+                    item["suppress_key"] = key
+                    item["count"] = info["count"]
+                    item["last_time"] = time.strftime("%Y-%m-%d %H:%M:%S")
+                    return
+
+        item = dict(entry)
+        item["suppress_key"] = key
+        item["count"] = info["count"]
+        suppressed.append(item)
+        info["last_appended"] = now
+
     def record_background_noise(self, state: dict[str, Any], lines: list[str]) -> None:
         counts: dict[str, int] = {}
         for line in lines:
@@ -145,12 +188,108 @@ class SurgeGuardian:
             stored[key] = int(stored.get(key, 0) or 0) + count
         noise["updated_at"] = time.strftime("%Y-%m-%d %H:%M:%S")
 
+    def suppress_configured_maintenance_noise(self, state: dict[str, Any], incidents: list[Incident]) -> list[Incident]:
+        if not self.config.maintenance_windows or not incidents:
+            return incidents
+        kept: list[Incident] = []
+        for item in incidents:
+            suppressed = False
+            for window in self.config.maintenance_windows:
+                kinds = set(window.get("kinds") or [])
+                if item.kind in kinds and self.in_maintenance_window(window):
+                    self.remember_suppressed(state, {
+                        "time": time.strftime("%Y-%m-%d %H:%M:%S"),
+                        "reason": "configured recurring maintenance window; transient Surge noise suppressed",
+                        "kind": item.kind,
+                        "host": item.host,
+                        "suppress_key": f"configured maintenance:{window.get('weekday')}:{window.get('start_minute')}:{item.kind}:{item.host}",
+                    })
+                    suppressed = True
+                    break
+            if not suppressed:
+                kept.append(item)
+        return kept
+
+    def record_recurring_noise_candidates(
+        self,
+        state: dict[str, Any],
+        incidents: list[Incident],
+        local_time: time.struct_time | None = None,
+    ) -> list[Incident]:
+        candidates: list[Incident] = []
+        relevant = [item for item in incidents if item.kind in RECURRING_NOISE_KINDS]
+        if not relevant:
+            return candidates
+
+        now = int(time.time())
+        current = local_time or time.localtime(now)
+        bucket_size = max(1, int(self.config.recurring_noise_bucket_minutes or 10))
+        bucket = (current.tm_hour * 60 + current.tm_min) // bucket_size * bucket_size
+        today = time.strftime("%Y-%m-%d", current)
+        cutoff = now - int(self.config.recurring_noise_history_days or 35) * 86400
+        patterns = state.setdefault("recurring_noise_patterns", {})
+
+        for item in relevant:
+            host_key = item.host or "_"
+            key = f"{current.tm_wday}:{bucket}:{item.kind}:{host_key}"
+            pattern = patterns.setdefault(key, {
+                "weekday": current.tm_wday,
+                "bucket_minute": bucket,
+                "kind": item.kind,
+                "host": item.host,
+                "dates": [],
+                "first": now,
+                "last": 0,
+                "last_reported": 0,
+            })
+            dates = [entry for entry in pattern.get("dates", []) if int(entry.get("ts", 0) or 0) >= cutoff]
+            if not any(entry.get("date") == today for entry in dates):
+                dates.append({"date": today, "ts": now})
+            pattern["dates"] = dates[-12:]
+            pattern["last"] = now
+
+            enough = len(pattern["dates"]) >= max(2, int(self.config.recurring_noise_min_occurrences or 3))
+            report_cooldown_ok = now - int(pattern.get("last_reported", 0) or 0) > 7 * 86400
+            if enough and report_cooldown_ok:
+                pattern["last_reported"] = now
+                hour, minute = divmod(bucket, 60)
+                host_text = f"，主机 {item.host}" if item.host else ""
+                candidates.append(Incident(
+                    "recurring_noise_pattern",
+                    "medium",
+                    f"{item.kind}{host_text} 已在相同星期/时间窗口附近出现 {len(pattern['dates'])} 次；这可能是路由器、上游网络或固定维护窗口导致。建议先确认是否存在定时重启/维护；确认后可在 MAINTENANCE_WINDOWS 中配置静默窗口。",
+                ))
+                self.remember_suppressed(state, {
+                    "time": time.strftime("%Y-%m-%d %H:%M:%S"),
+                    "reason": "recurring noise pattern detected",
+                    "kind": item.kind,
+                    "host": item.host,
+                    "weekday": current.tm_wday,
+                    "time_bucket": f"{hour:02d}:{minute:02d}",
+                    "occurrences": len(pattern["dates"]),
+                    "suppress_key": f"recurring pattern:{key}",
+                })
+
+        state["recurring_noise_patterns"] = {
+            key: value
+            for key, value in patterns.items()
+            if int(value.get("last", 0) or 0) >= cutoff
+        }
+        return candidates
+
     @staticmethod
     def trim_state_lists(state: dict[str, Any]) -> None:
         if isinstance(state.get("suppressed"), list):
             state["suppressed"] = state["suppressed"][-50:]
         if isinstance(state.get("temp_rule_reviews"), list):
             state["temp_rule_reviews"] = state["temp_rule_reviews"][-50:]
+        if isinstance(state.get("suppressed_cooldowns"), dict):
+            now = int(time.time())
+            state["suppressed_cooldowns"] = {
+                key: value
+                for key, value in state["suppressed_cooldowns"].items()
+                if now - int(value.get("last", 0) or 0) < 86400
+            }
 
     @staticmethod
     def classify_event(event: dict[str, Any]) -> Incident | None:
@@ -178,7 +317,7 @@ class SurgeGuardian:
         actions.append(f"已尝试更新全部外部资源：{'成功' if result['ok'] else '失败'} {short_text(result)}")
         if result["ok"]:
             counters["external_resource"] = 0
-            state.setdefault("suppressed", []).append({
+            self.remember_suppressed(state, {
                 "time": time.strftime("%Y-%m-%d %H:%M:%S"),
                 "reason": "external resource recovered after retry",
             })
@@ -205,7 +344,7 @@ class SurgeGuardian:
             if not result["ok"] or int(counters["dns_flush_repeats"]) >= 2:
                 important.append(Incident("dns", "medium", f"DNS errors reached consecutive score {counters['dns']}"))
             else:
-                state.setdefault("suppressed", []).append({
+                self.remember_suppressed(state, {
                     "time": time.strftime("%Y-%m-%d %H:%M:%S"),
                     "reason": "dns errors handled by one successful flush",
                     "score": counters["dns"],
@@ -220,11 +359,11 @@ class SurgeGuardian:
 
     def reconcile_temp_rules(self, state: dict[str, Any]) -> None:
         temp_rules = state.setdefault("temp_rules", {})
-        legacy_temp_rules = state.get("temp_proxy_rules")
+        legacy_temp_rules = state.get("temp_sentry_rules")
         if isinstance(legacy_temp_rules, dict):
             for host, info in legacy_temp_rules.items():
                 temp_rules.setdefault(host, info)
-            state.pop("temp_proxy_rules", None)
+            state.pop("temp_sentry_rules", None)
         if not temp_rules:
             return
         rules_dump, result = self.client.dump_rules()
@@ -250,11 +389,11 @@ class SurgeGuardian:
         now = int(time.time())
         failures = state.setdefault("direct_failures", {})
         temp_rules = state.setdefault("temp_rules", {})
-        legacy_temp_rules = state.get("temp_proxy_rules")
+        legacy_temp_rules = state.get("temp_sentry_rules")
         if isinstance(legacy_temp_rules, dict):
             for host, info in legacy_temp_rules.items():
                 temp_rules.setdefault(host, info)
-            state.pop("temp_proxy_rules", None)
+            state.pop("temp_sentry_rules", None)
         escalated: list[Incident] = []
         active_hosts = {item.host for item in incidents if item.kind == "direct_domain_failure" and item.host}
         self.reconcile_temp_rules(state)
@@ -294,7 +433,7 @@ class SurgeGuardian:
 
             if self.should_skip_temp_proxy(host):
                 if info["count"] >= self.config.direct_fail_threshold:
-                    state.setdefault("suppressed", []).append({
+                    self.remember_suppressed(state, {
                         "time": time.strftime("%Y-%m-%d %H:%M:%S"),
                         "reason": "direct failure on cautious infrastructure host; no temp proxy rule added",
                         "host": host,
@@ -343,18 +482,104 @@ class SurgeGuardian:
         counters["proxy_recovered_count"] = 0
         return False
 
+    def analyze_traffic_usage(self, diagnostics: list[str]) -> list[Incident]:
+        if not self.config.traffic_analysis_enabled:
+            return []
+        if not self.config.traffic_policy_patterns or self.config.traffic_monthly_cap_gb <= 0:
+            diagnostics.append("流量分析已开启，但缺少 TRAFFIC_POLICY_PATTERNS 或 TRAFFIC_MONTHLY_CAP_GB")
+            return []
+
+        # ── 检查 Emby 策略组的当前运行时选择 ──
+        emby_on_proxy = False
+        emby_policy = ""
+        env_data, _env_result = self.client.dump_environment()
+        if isinstance(env_data, dict):
+            proxy_selection = env_data.get("environment", {}).get("ProxyGroupSelection", {})
+            emby_policy = proxy_selection.get("Emby", "")
+            if emby_policy and emby_policy.upper() != "DIRECT":
+                emby_on_proxy = True
+
+        session_db = latest_session_db(self.config.traffic_stat_dir)
+        month_db = current_month_db(self.config.traffic_stat_dir)
+        if not session_db:
+            diagnostics.append("流量分析未找到 Surge Session 统计库")
+            return []
+
+        session_records = read_policy_records(session_db, self.config.traffic_policy_patterns)
+        monthly_records = read_policy_records(month_db, self.config.traffic_policy_patterns) if month_db else []
+
+        if emby_on_proxy:
+            # Emby 正在走代理 → 必须提醒，绕过冷却
+            # 查当天和月度的 Emby 直连优先域名走代理的记录
+            direct_leaks = find_direct_leak_records(
+                session_records,
+                self.config.traffic_direct_host_patterns,
+                self.config.traffic_direct_leak_min_gb,
+            )
+            if not direct_leaks and monthly_records:
+                direct_leaks = find_direct_leak_records(
+                    monthly_records,
+                    self.config.traffic_direct_host_patterns,
+                    max(self.config.traffic_direct_leak_min_gb * 3, 5.0),
+                )
+            if direct_leaks:
+                top = format_top_records(direct_leaks)
+                total_gb = sum(r.total_gb for r in direct_leaks)
+                incidents: list[Incident] = []
+                incidents.append(Incident(
+                    "traffic", "high",
+                    f"Emby 当前走代理（{emby_policy}）消耗 {total_gb:.1f}GB。Top: {top}",
+                    host="emby-on-proxy",
+                    bypass_cooldown=True,
+                ))
+                return incidents
+
+            # 没有实际走代理的记录，但仍然在代理策略上 → 提示
+            incidents: list[Incident] = []
+            incidents.append(Incident(
+                "traffic", "medium",
+                f"Emby 策略组当前选用了代理节点（{emby_policy}），暂未捕获到显著流量",
+                host="emby-on-proxy",
+                bypass_cooldown=True,
+            ))
+            return incidents
+
+        # Emby 当前是 DIRECT → 只查当天有无漏走代理，不查历史月份
+        risks = analyze_traffic(
+            session_records,
+            [],  # 不传月度数据，避免历史月份永久报警
+            monthly_cap_gb=self.config.traffic_monthly_cap_gb,
+            reset_day=self.config.traffic_reset_day,
+            daily_warn_ratio=self.config.traffic_daily_warn_ratio,
+            daily_critical_ratio=self.config.traffic_daily_critical_ratio,
+            direct_host_patterns=self.config.traffic_direct_host_patterns,
+            direct_leak_min_gb=self.config.traffic_direct_leak_min_gb,
+        )
+        incidents: list[Incident] = []
+        for risk in risks:
+            top = format_top_records(risk.top_records)
+            message = risk.message if not top else f"{risk.message} Top: {top}"
+            host = "direct-preferred-media" if "直连优先" in risk.message else "daily-budget"
+            incidents.append(Incident("traffic", risk.severity, message, host=host))
+        return incidents
+
     def apply_alert_cooldown(self, state: dict[str, Any], incidents: list[Incident]) -> list[Incident]:
         now = int(time.time())
         cooldowns = state.setdefault("alert_cooldowns", {})
         kept: list[Incident] = []
         for item in incidents:
+            if item.bypass_cooldown:
+                # 标记为 bypass_cooldown 的事件不受冷却限制
+                kept.append(item)
+                continue
             key = f"{item.kind}:{item.host or item.message[:120]}"
             prior = int(cooldowns.get(key, 0) or 0)
             if prior and now - prior < self.config.alert_cooldown_seconds:
-                state.setdefault("suppressed", []).append({
+                self.remember_suppressed(state, {
                     "time": time.strftime("%Y-%m-%d %H:%M:%S"),
                     "reason": "alert cooldown",
                     "key": key,
+                    "suppress_key": f"alert cooldown:{key}",
                 })
                 continue
             cooldowns[key] = now
@@ -365,7 +590,7 @@ class SurgeGuardian:
     def tick(self) -> str:
         missing = self.config.missing_required()
         if missing:
-            return "Surge 守护助手配置缺失：" + ", ".join(missing)
+            return "Surge Sentry 配置缺失：" + ", ".join(missing)
 
         state = self.store.load()
         events, _event_raw = self.client.dump_events()
@@ -391,6 +616,8 @@ class SurgeGuardian:
             seen.add(key)
         self.record_background_noise(state, lines)
         incidents.extend(item for line in lines for item in [self.classify_log(line)] if item)
+        incidents = self.suppress_configured_maintenance_noise(state, incidents)
+        incidents.extend(self.record_recurring_noise_candidates(state, incidents))
 
         actions: list[str] = []
         diagnostics: list[str] = []
@@ -401,11 +628,12 @@ class SurgeGuardian:
         self.update_external_resource_state(state, incidents, actions, important)
         self.update_dns_state(state, incidents, actions, important)
         important.extend(self.update_direct_failure_state(state, incidents, actions))
+        important.extend(self.analyze_traffic_usage(diagnostics))
 
         suppress_proxy = self.verify_proxy_incidents(state, important, diagnostics)
         if suppress_proxy and {item.kind for item in important} == {"proxy"}:
             state["seen_events"] = list(seen)[-200:]
-            state.setdefault("suppressed", []).append({"time": time.strftime("%Y-%m-%d %H:%M:%S"), "reason": "proxy recovered during verification"})
+            self.remember_suppressed(state, {"time": time.strftime("%Y-%m-%d %H:%M:%S"), "reason": "proxy recovered during verification"})
             self.trim_state_lists(state)
             self.store.save(state)
             return '{"wakeAgent": false}'
@@ -425,7 +653,7 @@ class SurgeGuardian:
 
     def render_incident(self, incidents: list[Incident], actions: list[str], diagnostics: list[str], log_path: Path | None) -> str:
         lines = [
-            "Surge 守护助手发现需要分析的异常",
+            "Surge Sentry 发现需要分析的异常",
             "",
             f"时间：{time.strftime('%Y-%m-%d %H:%M:%S')}",
             f"日志：{log_path.name if log_path else 'N/A'}",

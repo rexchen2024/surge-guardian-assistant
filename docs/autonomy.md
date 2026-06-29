@@ -2,7 +2,7 @@
 
 [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/autonomy.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/autonomy.zh-TW.md)
 
-Surge Guardian Assistant uses layered autonomy.
+Surge Sentry uses layered autonomy.
 
 ## Automatic
 
@@ -15,7 +15,7 @@ Surge Guardian Assistant uses layered autonomy.
 
 ## Conditional
 
-- temporary policy switching can be added after the guardian has enough evidence
+- temporary policy switching can be added after the sentry has enough evidence
   that the target policy is healthy and the current policy is repeatedly failing
 
 ## Confirmation Required

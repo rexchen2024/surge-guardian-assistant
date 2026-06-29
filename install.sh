@@ -1,8 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
-REPO_URL="${SGA_REPO_URL:-https://github.com/rexchen2024/surge-guardian-assistant.git}"
-INSTALL_DIR="${SGA_HOME:-$HOME/.surge-guardian-assistant}"
+REPO_URL="${SURGE_SENTRY_REPO_URL:-${SGA_REPO_URL:-https://github.com/rexchen2024/surge-guardian-assistant.git}}"
+INSTALL_DIR="${SURGE_SENTRY_HOME:-${SGA_HOME:-$HOME/.surge-sentry}}"
 RUN_SETUP=0
 
 while [ "$#" -gt 0 ]; do
@@ -23,7 +23,7 @@ while [ "$#" -gt 0 ]; do
 done
 
 if ! command -v git >/dev/null 2>&1; then
-  echo "git is required to install Surge 守护助手" >&2
+  echo "git is required to install Surge Sentry" >&2
   exit 1
 fi
 
@@ -37,27 +37,27 @@ else
 fi
 
 cd "$INSTALL_DIR"
-scripts/surge-guardian-assistant version
-scripts/surge-guardian-assistant doctor || true
+scripts/surge-sentry version
+scripts/surge-sentry doctor || true
 
 if [ "$RUN_SETUP" -eq 1 ]; then
-  scripts/surge-guardian-assistant setup --print-hermes-command
+  scripts/surge-sentry setup --print-hermes-command
 else
   cat <<EOF
 
 Next:
   cd "$INSTALL_DIR"
-  scripts/surge-guardian-assistant setup --print-hermes-command
+  scripts/surge-sentry setup --print-hermes-command
 
 Automatic updates:
   Normal tick runs check GitHub once a day.
 
 Manual update:
   cd "$INSTALL_DIR"
-  scripts/surge-guardian-assistant update
+  scripts/surge-sentry update
 
 Send feedback:
   cd "$INSTALL_DIR"
-  scripts/surge-guardian-assistant feedback --github-url
+  scripts/surge-sentry feedback --github-url
 EOF
 fi

@@ -17,7 +17,7 @@ Before publishing:
 - Replace real domains and IPs with examples.
 - Review screenshots and terminal logs before sharing.
 - Prefer summarized results over raw dumps.
-- Run `scripts/surge-guardian-assistant redact-check` before every commit.
+- Run `scripts/surge-sentry redact-check` before every commit.
 
 ## Feedback Reports
 
@@ -26,7 +26,7 @@ The project does not upload logs, usage data, or device data by itself.
 Users can create a sanitized report:
 
 ```bash
-scripts/surge-guardian-assistant feedback
+scripts/surge-sentry feedback
 ```
 
 The report is written to the local state directory with `0600` permissions. Review it before sharing.
@@ -34,7 +34,7 @@ The report is written to the local state directory with `0600` permissions. Revi
 To copy it into a GitHub issue:
 
 ```bash
-scripts/surge-guardian-assistant feedback --github-url
+scripts/surge-sentry feedback --github-url
 ```
 
 This only creates a link. It does not submit anything.

@@ -9,7 +9,7 @@ Hermes Edition is the recommended setup. It is for always-on monitoring: quiet w
 If you already use Hermes, send it this prompt:
 
 ```text
-Install Surge Guardian Assistant from https://github.com/rexchen2024/surge-guardian-assistant, run setup, check the Surge environment, and show me the generated Hermes cron command. Do not create the job until I confirm it. Do not edit Surge profiles, certificates, DNS, servers, MITM, Rewrite, Scripting, or Replica, and do not run reload or restart without asking me first.
+Install Surge Sentry from https://github.com/rexchen2024/surge-guardian-assistant, run setup, check the Surge environment, and show me the generated Hermes cron command. Do not create the job until I confirm it. Do not edit Surge profiles, certificates, DNS, servers, MITM, Rewrite, Scripting, or Replica, and do not run reload or restart without asking me first.
 ```
 
 Hermes should do three things:
@@ -28,14 +28,14 @@ If you prefer doing it yourself in Terminal, run:
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
 ```
 
-The project installs to `~/.surge-guardian-assistant`. Setup finds the Surge command, log directory, profiles, and policy groups. It writes only local `.env`; it does not edit Surge profiles.
+The project installs to `~/.surge-sentry`. Setup finds the Surge command, log directory, profiles, and policy groups. It writes only local `.env`; it does not edit Surge profiles.
 
 ## 3. Verify The Local Check
 
 ```bash
-cd ~/.surge-guardian-assistant
-scripts/surge-guardian-assistant doctor
-scripts/surge-guardian-assistant tick
+cd ~/.surge-sentry
+scripts/surge-sentry doctor
+scripts/surge-sentry tick
 ```
 
 Healthy output is:
@@ -50,14 +50,14 @@ That means nothing needs model attention.
 
 Setup prints a Hermes cron command. Check three things first:
 
-1. The job name is `Surge 守护助手`.
-2. The working directory points to `~/.surge-guardian-assistant`.
+1. The job name is `Surge Sentry`.
+2. The working directory points to `~/.surge-sentry`.
 3. The frequency is what you want. Once per minute is recommended.
 
 Run the command only after confirming it. The model-analysis prompt is:
 
 ```text
-hermes/job-prompts/guardian.md
+hermes/job-prompts/sentry.md
 ```
 
 ## 5. Automatic Updates
@@ -79,8 +79,8 @@ Permanent profile edits, certificates, DNS records, servers, MITM, Rewrite, Scri
 ## 7. Useful Commands
 
 ```bash
-scripts/surge-guardian-assistant version
-scripts/surge-guardian-assistant update --check
-scripts/surge-guardian-assistant update
-scripts/surge-guardian-assistant feedback
+scripts/surge-sentry version
+scripts/surge-sentry update --check
+scripts/surge-sentry update
+scripts/surge-sentry feedback
 ```

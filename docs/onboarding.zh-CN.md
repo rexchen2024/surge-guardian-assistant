@@ -8,14 +8,14 @@
 ## 1. 获取项目
 
 ```bash
-git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-guardian-assistant
-cd ~/.surge-guardian-assistant
+git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-sentry
+cd ~/.surge-sentry
 ```
 
 ## 2. 运行 Setup
 
 ```bash
-scripts/surge-guardian-assistant setup --print-hermes-command
+scripts/surge-sentry setup --print-hermes-command
 ```
 
 Setup 会自动发现：
@@ -30,8 +30,8 @@ Setup 会自动发现：
 ## 3. 本地验证
 
 ```bash
-scripts/surge-guardian-assistant doctor
-scripts/surge-guardian-assistant tick
+scripts/surge-sentry doctor
+scripts/surge-sentry tick
 ```
 
 健康状态下的 `tick` 输出是：
@@ -46,7 +46,7 @@ scripts/surge-guardian-assistant tick
 推荐调度频率是每分钟一次。
 
 Hermes 会根据用户现有的 Hermes 配置处理消息投递。如果还没有配置投递目标，
-请先配置一个 Hermes 支持的平台。Guardian 不要求必须使用 Telegram。
+请先配置一个 Hermes 支持的平台。Surge Sentry 不要求必须使用 Telegram。
 
 如果这台机器只有 Surge、没有 Hermes，可以用 launchd 或其他本地调度器运行
 `tick`，然后只查看不等于 `{"wakeAgent": false}` 的输出。详见

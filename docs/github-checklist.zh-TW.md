@@ -33,8 +33,8 @@
 
 ```bash
 scripts/check
-scripts/surge-guardian-assistant version
-scripts/surge-guardian-assistant feedback --print
+scripts/surge-sentry version
+scripts/surge-sentry feedback --print
 ```
 
 然後檢查：
@@ -47,13 +47,13 @@ gh release list --repo rexchen2024/surge-guardian-assistant --limit 5
 
 ## 對外描述
 
-把專案描述為 Surge 守護助手，而不是 Surge profile 或代理訂閱。
+把專案描述為 Surge Sentry，而不是 Surge profile 或代理訂閱。
 
 承諾保持收窄：
 
 - 健康巡檢靜默
 - 安全自我修復
-- Hermes 版本用於常駐巡檢
-- Codex 版本用於低頻維護
+- Hermes 路線用於常駐巡檢、低噪音通知和背景沉澱
+- Codex 路線用於安裝檢查、Surge 設定診斷、異常回顧、流量監控解讀和專案維護
 - 不自動遙測
 - 沒有使用者確認，不做永久 Surge 變更

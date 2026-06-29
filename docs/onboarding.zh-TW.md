@@ -8,14 +8,14 @@
 ## 1. 取得專案
 
 ```bash
-git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-guardian-assistant
-cd ~/.surge-guardian-assistant
+git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-sentry
+cd ~/.surge-sentry
 ```
 
 ## 2. 執行 Setup
 
 ```bash
-scripts/surge-guardian-assistant setup --print-hermes-command
+scripts/surge-sentry setup --print-hermes-command
 ```
 
 Setup 會自動發現：
@@ -30,8 +30,8 @@ Setup 會自動發現：
 ## 3. 本機驗證
 
 ```bash
-scripts/surge-guardian-assistant doctor
-scripts/surge-guardian-assistant tick
+scripts/surge-sentry doctor
+scripts/surge-sentry tick
 ```
 
 健康狀態下的 `tick` 輸出是：
@@ -46,7 +46,7 @@ scripts/surge-guardian-assistant tick
 推薦排程頻率是每分鐘一次。
 
 Hermes 會根據使用者現有的 Hermes 設定處理訊息投遞。如果還沒有設定投遞目標，
-請先設定一個 Hermes 支援的平台。Guardian 不要求必須使用 Telegram。
+請先設定一個 Hermes 支援的平台。Surge Sentry 不要求必須使用 Telegram。
 
 如果這台機器只有 Surge、沒有 Hermes，可以用 launchd 或其他本機排程器執行
 `tick`，然後只查看不等於 `{"wakeAgent": false}` 的輸出。詳見

@@ -15,13 +15,13 @@ Useful safe details:
 - installed version
 - operating system
 - whether Hermes Edition or Codex Edition is used
-- sanitized output from `scripts/surge-guardian-assistant feedback --print`
+- sanitized output from `scripts/surge-sentry feedback --print`
 - what action you expected
 - what action actually happened
 
 ## Project Security Boundaries
 
-Surge Guardian Assistant should:
+Surge Sentry should:
 
 - keep healthy checks silent
 - avoid automatic telemetry

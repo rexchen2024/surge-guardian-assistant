@@ -24,19 +24,19 @@ If local tracked files were changed, the update skips instead of overwriting any
 Show the version:
 
 ```bash
-scripts/surge-guardian-assistant version
+scripts/surge-sentry version
 ```
 
 Check only:
 
 ```bash
-scripts/surge-guardian-assistant update --check
+scripts/surge-sentry update --check
 ```
 
 Update now:
 
 ```bash
-scripts/surge-guardian-assistant update
+scripts/surge-sentry update
 ```
 
 Turn automatic updates off by writing this in the install directory's `.env`:

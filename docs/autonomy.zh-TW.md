@@ -2,7 +2,7 @@
 
 [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/autonomy.zh-CN.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/autonomy.md)
 
-Surge 守護助手使用分層自治模型。
+Surge Sentry 使用分層自治模型。
 
 ## 自動執行
 
@@ -15,7 +15,7 @@ Surge 守護助手使用分層自治模型。
 
 ## 條件執行
 
-- 當 guardian 有足夠證據證明目標策略健康、目前策略反覆失敗時，
+- 當 sentry 有足夠證據證明目標策略健康、目前策略反覆失敗時，
   後續可以加入臨時策略切換能力
 
 ## 需要確認

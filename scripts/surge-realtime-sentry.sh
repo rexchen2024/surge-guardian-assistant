@@ -2,5 +2,4 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-cd "$ROOT_DIR"
-exec /usr/bin/python3 -m guardian.cli "$@"
+exec "${ROOT_DIR}/scripts/surge-sentry" tick

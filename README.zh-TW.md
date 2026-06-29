@@ -1,13 +1,13 @@
-# Surge 守護助手
+# Surge Sentry
 
-[![Release](https://img.shields.io/badge/release-v0.1.1-blue.svg)](https://github.com/rexchen2024/surge-guardian-assistant/releases/tag/v0.1.1)
+[![Release](https://img.shields.io/badge/release-v0.2.0-blue.svg)](https://github.com/rexchen2024/surge-guardian-assistant/releases/tag/v0.2.0)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 [简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.en.md)
 
-面向 Surge 使用者的靜默巡檢和自我修復工具。它基於 Surge 官方執行階段能力和 `surge-cli`，持續檢查日誌、事件、策略和外部資源；健康時不打擾，異常時先自我修復，只有重要問題才交給 Hermes、Codex 或聊天工具繼續處理。
+Surge Assistant 大框架下的 Cron 守護分支，面向 Surge 使用者做靜默巡檢和自我修復。它基於 Surge 官方執行階段能力和 `surge-cli`，持續檢查啟動情況、日誌、事件、策略、設定同步和流量風險；健康時不打擾，異常時先自我修復，只有重要問題才交給 Hermes、Codex 或聊天工具繼續處理。
 
-**目前版本：0.1.1**
+**目前版本：0.2.0**
 
 本專案仍在初期測試階段，歡迎試用並提供回饋建議。後續會根據實際使用體驗持續更新。
 
@@ -27,9 +27,10 @@
 
 - **極致靜默、低功耗**：健康巡檢只輸出 `{"wakeAgent": false}`，日常路徑走本機腳本和 Surge 執行階段介面，盡量不啟動 AI。
 - **Surge 原生巡檢**：讀取事件、複測策略、刷新 DNS、更新外部資源、加入執行階段臨時規則。
+- **賽事/觀影流量監控**：可以讓 Sentry 盯一場 F1、世界盃 Fox 直播或 Apple TV 觀影，從開始、進行中到結束輸出清晰的實際流量報告。
 - **安全自我修復優先**：低風險問題先自動處理；動作盡量小範圍、執行階段、可回復；永久設定、憑證、DNS 記錄、伺服器、MITM、Rewrite、Scripting、重載或重啟都需要確認。
+- **任選 Hermes 或 Codex**：Hermes 路線適合常駐守護、低噪音通知和背景沉澱；Codex 路線適合開源使用者做安裝檢查、Surge 設定診斷、異常回顧、文件維護和安全變更協作。
 - **必要時再用 AI**：重複、複雜或未恢復的問題才交給 Hermes/Codex；重要問題再透過聊天工具推送。
-- **可持續沉澱**：Hermes 版本可利用 Hermes 的記憶和技能機制，把重複問題變成後續處理經驗。
 - **自動更新、隱私優先**：可從 GitHub 拉取新版本；本機有改動不覆蓋；不自動上傳日誌或使用資料。
 
 
@@ -60,15 +61,15 @@ flowchart LR
 
 [一鍵安裝和本機執行說明](docs/runtime-options.zh-TW.md)
 
-**2. 🌟推薦 - Hermes Agent**
+**2. Hermes Agent**
 
-常駐巡檢、異常通知、持續學習的首選方式。健康時完全靜默，重要問題再喚醒 AI，也可以透過聊天工具推送。
+適合想要常駐背景守護的人。健康時完全靜默，重要問題再喚醒 AI，也可以透過聊天工具推送。
 
 [一鍵安裝和 Hermes 任務說明](docs/hermes-edition.zh-TW.md)
 
 **3. Codex**
 
-適合低頻檢查儲存庫、回顧異常、維護專案。不建議做每分鐘巡檢。
+適合想用開源專案和本機工作區管理 Surge Sentry 的人。Codex 擅長安裝檢查、Surge 設定診斷、流量監控解讀、異常回顧、隱私檢查、文件維護和安全改動建議；健康巡檢仍走本機腳本，避免每次檢查都啟動模型任務。
 
 [一鍵安裝和 Codex 自動化說明](docs/codex-edition.zh-TW.md)
 

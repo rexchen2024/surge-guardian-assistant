@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for improving Surge Guardian Assistant.
+Thanks for improving Surge Sentry.
 
 This project is small on purpose. Changes should keep the assistant quiet on healthy runs, safe around permanent Surge configuration, and careful with private network data.
 

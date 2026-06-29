@@ -18,13 +18,13 @@ It only performs low-risk runtime actions, such as external-resource retry, DNS 
 
 You can run `doctor` and `tick`, and you can schedule `tick` with a local scheduler.
 
-Hermes Edition is still recommended because Hermes is better for always-on scheduling, model analysis, and message delivery.
+Yes. Hermes is strong for always-on scheduling and message delivery; Codex is strong for open-source project-style checks, diagnostics, review, and maintenance. Choose the path that fits your workflow.
 
 ## What Is Codex Edition For?
 
-Codex Edition is for lower-frequency repository checks, incident review, documentation updates, and ongoing maintenance.
+Codex Edition is for install checks, Surge config diagnostics, incident review, traffic-monitor interpretation, documentation updates, and ongoing maintenance.
 
-It is not recommended for minute-level health checks. The healthy path should stay lightweight and should not start a model task every time.
+Codex does not need to run every minute. Keep healthy checks lightweight on local scripts; use Codex when you need explanation, judgment, or improvement.
 
 ## Can Automatic Updates Overwrite My Changes?
 
@@ -33,7 +33,7 @@ No.
 If local tracked files were changed, automatic updates skip. You can check manually:
 
 ```bash
-scripts/surge-guardian-assistant update --check
+scripts/surge-sentry update --check
 ```
 
 ## Does It Upload Logs Or Usage Data?
@@ -43,5 +43,5 @@ No automatic upload happens.
 Feedback reports are generated only when the user asks, and can be reviewed locally first:
 
 ```bash
-scripts/surge-guardian-assistant feedback --print
+scripts/surge-sentry feedback --print
 ```
