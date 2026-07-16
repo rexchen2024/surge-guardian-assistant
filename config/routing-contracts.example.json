@@ -1,0 +1,17 @@
+{
+  "contracts": [
+    {
+      "name": "游戏平台",
+      "target": "游戏平台",
+      "required_sources": [
+        "Ruleset/SteamCN.list",
+        "Ruleset/Steam.list",
+        "Ruleset/Sony.list",
+        "Ruleset/Xbox.list"
+      ],
+      "required_rules": [
+        "DOMAIN,steamcdn-a.akamaihd.net,游戏平台"
+      ]
+    }
+  ]
+}

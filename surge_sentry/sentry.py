@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import SentryConfig
+from .contracts import audit_profile, load_contracts
 from .cdn_watch import consume_pending, is_direct_policy
 from .state import StateStore
 from .surge import SurgeClient, latest_surge_log
@@ -581,6 +582,37 @@ class SurgeSentry:
         state["suppressed"] = state.get("suppressed", [])[-50:]
         return kept
 
+    def audit_routing_contracts(self, state: dict[str, Any]) -> list[Incident]:
+        now = int(time.time())
+        last = int(state.get("routing_contract_audit_at", 0) or 0)
+        if now - last < self.config.routing_contract_audit_interval_seconds:
+            return []
+        state["routing_contract_audit_at"] = now
+        contracts = load_contracts(self.config.routing_contracts_path)
+        if not contracts or not self.config.mac_profile:
+            return []
+        return [Incident("routing_contract", "high", finding) for finding in audit_profile(Path(self.config.mac_profile), contracts)]
+
+    def probe_one_policy(self, state: dict[str, Any]) -> list[Incident]:
+        now = int(time.time())
+        last = int(state.get("policy_probe_at", 0) or 0)
+        if not self.config.expected_policies or now - last < self.config.policy_probe_interval_seconds:
+            return []
+        index = int(state.get("policy_probe_index", 0) or 0) % len(self.config.expected_policies)
+        policy = self.config.expected_policies[index]
+        state["policy_probe_at"] = now
+        state["policy_probe_index"] = index + 1
+        result = self.client.test_policy(policy)
+        ok = bool(result.get("ok")) and bool(result.get("stdout"))
+        failures = state.setdefault("policy_probe_failures", {})
+        if ok:
+            failures.pop(policy, None)
+            return []
+        failures[policy] = int(failures.get(policy, 0) or 0) + 1
+        if failures[policy] < self.config.policy_probe_failure_threshold:
+            return []
+        return [Incident("policy_probe", "high", f"线路 {policy} 连续 {failures[policy]} 次轻量探测失败", host=policy)]
+
     def tick(self) -> str:
         missing = self.config.missing_required()
         if missing:
@@ -612,6 +644,7 @@ class SurgeSentry:
         incidents.extend(item for line in lines for item in [self.classify_log(line)] if item)
         incidents = self.suppress_configured_maintenance_noise(state, incidents)
         incidents.extend(self.record_recurring_noise_candidates(state, incidents))
+        incidents.extend(self.audit_routing_contracts(state))
 
         actions: list[str] = []
         diagnostics: list[str] = []
@@ -623,6 +656,7 @@ class SurgeSentry:
         self.update_dns_state(state, incidents, actions, important)
         important.extend(self.update_direct_failure_state(state, incidents, actions))
         important.extend(self.analyze_traffic_usage(diagnostics))
+        important.extend(self.probe_one_policy(state))
         for pending in consume_pending(self.config):
             service = str(pending.get("service") or "媒体服务")
             host = str(pending.get("host") or "")

@@ -156,6 +156,10 @@ class SentryConfig:
     traffic_direct_leak_min_gb: float
     cdn_watch_enabled: bool
     cdn_watch_config: Path
+    routing_contracts_path: Path
+    routing_contract_audit_interval_seconds: int
+    policy_probe_interval_seconds: int
+    policy_probe_failure_threshold: int
 
     @classmethod
     def load(cls, root: Path) -> "SentryConfig":
@@ -203,6 +207,13 @@ class SentryConfig:
                 "CDN_WATCH_CONFIG",
                 str(root / "config" / "cdn-watch.local.json"),
             ))),
+            routing_contracts_path=Path(_expand(env.get(
+                "ROUTING_CONTRACTS_PATH",
+                str(root / "config" / "routing-contracts.local.json"),
+            ))),
+            routing_contract_audit_interval_seconds=int(env.get("ROUTING_CONTRACT_AUDIT_INTERVAL_SECONDS", "86400") or "86400"),
+            policy_probe_interval_seconds=int(env.get("POLICY_PROBE_INTERVAL_SECONDS", "900") or "900"),
+            policy_probe_failure_threshold=int(env.get("POLICY_PROBE_FAILURE_THRESHOLD", "3") or "3"),
         )
 
     def missing_required(self) -> list[str]:

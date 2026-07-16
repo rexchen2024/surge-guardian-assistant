@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 import surge_sentry
 from surge_sentry.config import SentryConfig, parse_maintenance_windows, write_env
+from surge_sentry.contracts import audit_profile, load_contracts
 from surge_sentry.cli import build_feedback_report, build_hermes_cron_command
 from surge_sentry.cdn_watch import (
     AutoFixSpec,
@@ -32,6 +33,16 @@ from surge_sentry.traffic import TrafficRecord, analyze_traffic, budget_day, dif
 
 
 class SentryParsingTest(unittest.TestCase):
+    def test_routing_contract_audit_detects_wrong_target(self):
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            profile = root / "Rex.conf"
+            profile.write_text("RULE-SET,https://example/SteamCN.list,全球直连\n")
+            contract = root / "contracts.json"
+            contract.write_text('{"contracts":[{"name":"游戏平台","target":"游戏平台","required_sources":["SteamCN.list"],"required_rules":["DOMAIN,steamcdn-a.akamaihd.net,游戏平台"]}]}')
+            findings = audit_profile(profile, load_contracts(contract))
+            self.assertEqual(len(findings), 2)
+            self.assertIn("未指向 游戏平台", findings[0])
     def test_adaptive_active_request_poll_marks_target_playback(self):
         client = SurgeClient("/tmp/not-used")
         client.raw_json = lambda *_args, **_kwargs: ({"requests": [{
