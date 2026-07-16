@@ -401,8 +401,10 @@ class SentryParsingTest(unittest.TestCase):
                 "vod-ap-aoc.tv.apple.com", "fastly", "直连", "Apple TV", 100,
             ))
             state = StateStore(state_dir / "cdn-watch-state.json").load()
-            self.assertEqual(state["services"]["apple-tv"]["phase"], "awaiting_restart")
+            self.assertEqual(state["services"]["apple-tv"]["phase"], "verifying")
             self.assertEqual(len(notifier.messages), 2)
+            self.assertIn("自动修复完成", notifier.messages[-1])
+            self.assertIn("仍有卡顿，重启 App", notifier.messages[-1])
             self.assertIn("vod-ap-aoc.tv.apple.com = server:1.1.1.1", profile.read_text())
             self.assertNotIn("hls-amt.itunes.apple.com = server:1.1.1.1", profile.read_text())
 
@@ -440,7 +442,7 @@ class SentryParsingTest(unittest.TestCase):
                 "vod-ap-aoc.tv.apple.com", "apple", "直连", "Apple TV", 199,
             )
             daemon.handle_outcome(old)
-            self.assertEqual(StateStore(state_dir / "cdn-watch-state.json").load()["services"]["apple-tv"]["phase"], "awaiting_restart")
+            self.assertEqual(StateStore(state_dir / "cdn-watch-state.json").load()["services"]["apple-tv"]["phase"], "verifying")
             self.assertEqual(notifier.messages, [])
             daemon.handle_outcome(HealthOutcome(
                 "healthy", "apple-tv", "Apple TV", 32, 30, 36, 12, 25,
@@ -448,7 +450,7 @@ class SentryParsingTest(unittest.TestCase):
             ))
             state = StateStore(state_dir / "cdn-watch-state.json").load()
             self.assertEqual(state["services"]["apple-tv"]["phase"], "healthy")
-            self.assertEqual(len(notifier.messages), 1)
+            self.assertEqual(len(notifier.messages), 0)
 
     def test_cdn_watch_new_wrong_cdn_connection_waits_for_confirmed_restart(self):
         class FakeClient:
@@ -484,7 +486,7 @@ class SentryParsingTest(unittest.TestCase):
                 "vod-ap-aoc.tv.apple.com", "fastly", "直连", "Apple TV", 201,
             ))
             state = StateStore(state_dir / "cdn-watch-state.json").load()
-            self.assertEqual(state["services"]["apple-tv"]["phase"], "awaiting_restart")
+            self.assertEqual(state["services"]["apple-tv"]["phase"], "verifying")
             self.assertEqual(notifier.messages, [])
             self.assertEqual(list((state_dir / "cdn-watch-pending").glob("*.json")), [])
 
@@ -510,7 +512,7 @@ class SentryParsingTest(unittest.TestCase):
                 client=FakeClient(), notifier=FakeNotifier(), clock=lambda: 250.0,
             )
             StateStore(state_dir / "cdn-watch-state.json").save({"services": {"apple-tv": {
-                "phase": "awaiting_restart", "repair_at": 200, "restart_reminded_at": 220,
+                "phase": "verifying", "repair_at": 200, "failure_verification_after": 220,
                 "expected_cdn": "apple",
             }}})
             daemon.handle_outcome(HealthOutcome(
@@ -543,7 +545,7 @@ class SentryParsingTest(unittest.TestCase):
                 client=FakeClient(), notifier=FakeNotifier(), clock=lambda: 250.0,
             )
             StateStore(state_dir / "cdn-watch-state.json").save({"services": {"apple-tv": {
-                "phase": "awaiting_restart", "repair_at": 200, "restart_reminded_at": 220,
+                "phase": "verifying", "repair_at": 200, "failure_verification_after": 220,
                 "expected_cdn": "apple",
             }}})
             daemon.handle_outcome(HealthOutcome(
@@ -591,7 +593,7 @@ class SentryParsingTest(unittest.TestCase):
             self.assertFalse(pending.exists())
             self.assertEqual(len(list((state_dir / "cdn-watch-quarantine").glob("*.json"))), 1)
 
-    def test_cdn_watch_reminds_once_while_waiting_for_restart(self):
+    def test_cdn_watch_waits_silently_for_post_repair_traffic(self):
         class FakeNotifier:
             def __init__(self):
                 self.messages = []
@@ -615,7 +617,7 @@ class SentryParsingTest(unittest.TestCase):
                 client=object(), notifier=notifier, clock=lambda: 400.0,
             )
             StateStore(state_dir / "cdn-watch-state.json").save({"services": {"apple-tv": {
-                "phase": "awaiting_restart", "repair_at": 100.25,
+                "phase": "verifying", "repair_at": 100.25,
             }}})
             idle = HealthOutcome(
                 "idle", "apple-tv", "Apple TV", 0, 0, 0, 0, 0,
@@ -623,9 +625,9 @@ class SentryParsingTest(unittest.TestCase):
             )
             daemon.handle_outcome(idle)
             daemon.handle_outcome(idle)
-            self.assertEqual(len(notifier.messages), 1)
+            self.assertEqual(len(notifier.messages), 0)
             state = StateStore(state_dir / "cdn-watch-state.json").load()
-            self.assertEqual(state["services"]["apple-tv"]["restart_reminded_at"], 400)
+            self.assertEqual(state["services"]["apple-tv"]["phase"], "verifying")
 
     def test_parse_direct_failure_host(self):
         line = "<NETWORK-ERROR> Connection setup failed foo to example.com:443 via DIRECT"

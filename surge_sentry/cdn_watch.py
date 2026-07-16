@@ -30,7 +30,7 @@ MAX_HISTORY_LINES = 2000
 MAX_BACKUPS = 12
 MAX_PROCESSED_EVENTS = 100
 PENDING_RETRY_SECONDS = 600
-RESTART_REMINDER_SECONDS = 60
+POST_REPAIR_FAILURE_GRACE_SECONDS = 60
 FASTLY_NETWORKS = tuple(ipaddress.ip_network(item) for item in (
     "146.75.0.0/16",
     "151.101.0.0/16",
@@ -744,27 +744,6 @@ class CdnWatchDaemon:
         self._write_pending(outcome, f"Telegram direct notification failed; {reason}")
         return False
 
-    def _remind_restart_if_needed(
-        self,
-        outcome: HealthOutcome,
-        prior: dict[str, Any],
-        now: float,
-    ) -> None:
-        repair_at = _safe_float(prior.get("repair_at"))
-        reminded_at = _safe_float(prior.get("restart_reminded_at"))
-        if not repair_at or reminded_at or now - repair_at < RESTART_REMINDER_SECONDS:
-            return
-        self._notify_or_escalate(
-            outcome,
-            f"⏳ {outcome.service_name}自动修复正在等待新连接复验\n请完全退出 App 后重新打开播放，后台会自动确认结果。",
-            "waiting for a post-repair connection",
-        )
-        self._save_service_state(outcome.service_id, {
-            "phase": "awaiting_restart",
-            "status": outcome.status,
-            "restart_reminded_at": int(now),
-        })
-
     def _dns_context(self, host: str, fallback_cdn: str) -> tuple[str, str]:
         data, result = self.client.dump_dns()
         if not result.get("ok"):
@@ -845,26 +824,18 @@ class CdnWatchDaemon:
         now_float = self.clock()
         now = int(now_float)
 
-        if phase == "awaiting_restart":
+        if phase in {"verifying", "awaiting_restart"}:
             if outcome.status in {"idle", "observing"}:
-                self._remind_restart_if_needed(outcome, prior, now_float)
-                self._save_service_state(outcome.service_id, {"phase": phase, "status": outcome.status})
+                self._save_service_state(outcome.service_id, {"phase": "verifying", "status": outcome.status})
                 return
             repair_at = _safe_float(prior.get("repair_at"))
             if outcome.newest_start_date <= repair_at:
-                self._remind_restart_if_needed(outcome, prior, now_float)
-                self._save_service_state(outcome.service_id, {"phase": phase, "status": outcome.status})
+                self._save_service_state(outcome.service_id, {"phase": "verifying", "status": outcome.status})
                 return
             cdn, resolver = self._dns_context(outcome.host, outcome.cdn)
             expected = str(prior.get("expected_cdn") or spec.autofix.expected_cdn)
             cdn_matches = not expected or cdn == expected
             if outcome.status in {"healthy", "usable"} and cdn_matches:
-                quality = "健康" if outcome.status == "healthy" else "可用"
-                self._notify_or_escalate(
-                    outcome,
-                    f"✅ {outcome.service_name}自动修复已通过复验\n新连接已切换到预期 CDN，持续速度约 {outcome.sustained_mbps:.1f} Mbps，状态{quality}。",
-                    "repair verified",
-                )
                 self._record_history(outcome, "repair_verified", resolver)
                 self._save_service_state(outcome.service_id, {
                     "phase": "healthy",
@@ -877,22 +848,16 @@ class CdnWatchDaemon:
                     "repair_detail": "",
                 })
                 return
-            restart_reminded_at = _safe_float(prior.get("restart_reminded_at"))
-            if not restart_reminded_at:
-                # Surge reload can make the TV app reconnect by itself before the
-                # user has had time to follow the restart prompt.  A wrong/slow
-                # connection during that grace period is not proof that the
-                # repair failed.  Remind once, then require a still newer
-                # connection before rollback/escalation.
-                self._remind_restart_if_needed(outcome, prior, now_float)
+            failure_verification_after = _safe_float(prior.get("failure_verification_after"))
+            if not failure_verification_after:
+                failure_verification_after = repair_at + POST_REPAIR_FAILURE_GRACE_SECONDS
+            if outcome.newest_start_date < failure_verification_after:
+                # Surge reload may reconnect the app by itself before its cached
+                # endpoint changes.  Keep the verified fix in place and allow
+                # later app retries to pick it up.  Only a connection created
+                # after the grace window can prove that repair failed.
                 self._save_service_state(outcome.service_id, {
-                    "phase": "awaiting_restart",
-                    "status": outcome.status,
-                })
-                return
-            if outcome.newest_start_date <= restart_reminded_at:
-                self._save_service_state(outcome.service_id, {
-                    "phase": "awaiting_restart",
+                    "phase": "verifying",
                     "status": outcome.status,
                 })
                 return
@@ -928,13 +893,13 @@ class CdnWatchDaemon:
 
         if outcome.status in {"idle", "observing"}:
             self._save_service_state(outcome.service_id, {
-                "phase": phase if phase in {"repairing", "awaiting_restart"} else outcome.status,
+                "phase": phase if phase in {"repairing", "verifying", "awaiting_restart"} else outcome.status,
                 "status": outcome.status,
             })
             return
 
         if outcome.status in {"healthy", "usable"}:
-            if phase in {"suspect", "diagnosing", "repairing", "awaiting_restart", "failed", "needs_analysis"}:
+            if phase in {"suspect", "diagnosing", "repairing", "verifying", "awaiting_restart", "failed", "needs_analysis"}:
                 quality = "健康" if outcome.status == "healthy" else "可用"
                 message = (
                     f"✅ {outcome.service_name}线路已恢复\n"
@@ -956,13 +921,13 @@ class CdnWatchDaemon:
         last_opened = int(prior.get("incident_opened_at", 0) or 0)
         if (
             last_opened
-            and phase not in {"suspect", "diagnosing", "repairing", "awaiting_restart"}
+            and phase not in {"suspect", "diagnosing", "repairing", "verifying", "awaiting_restart"}
             and now - last_opened < spec.cooldown_seconds
         ):
             return
 
         cdn, resolver = self._dns_context(outcome.host, outcome.cdn)
-        if phase not in {"suspect", "diagnosing", "repairing", "awaiting_restart"}:
+        if phase not in {"suspect", "diagnosing", "repairing", "verifying", "awaiting_restart"}:
             message = (
                 f"⚠️ 检测到{outcome.service_name}播放线路异常\n"
                 f"真实媒体速度持续约 {outcome.sustained_mbps:.1f} Mbps，正在后台排查 DNS、CDN 和直连线路。"
@@ -983,19 +948,19 @@ class CdnWatchDaemon:
         fixed, backup, detail = self._attempt_autofix(outcome, spec, cdn)
         if fixed:
             message = (
-                f"🔧 {outcome.service_name}线路已执行精确 DNS/CDN 纠错\n"
-                "Surge缓存已刷新。请退出 Apple TV App 后重新打开播放，后台会继续复验。"
+                f"✅ {outcome.service_name}线路已自动修复完成\n"
+                "已完成精确 DNS/CDN 纠错并刷新 Surge，后台会继续复验；如果仍有卡顿，重启 App 即可让新连接立即生效。"
             )
             self._notify_or_escalate(outcome, message, "repair applied")
             self._record_history(outcome, "repair_applied", resolver)
             self._save_service_state(outcome.service_id, {
-                "phase": "awaiting_restart",
+                "phase": "verifying",
                 "status": outcome.status,
                 "repair_at": now_float,
+                "failure_verification_after": now_float + POST_REPAIR_FAILURE_GRACE_SECONDS,
                 "backup_path": backup,
                 "repair_detail": detail,
                 "expected_cdn": spec.autofix.expected_cdn,
-                "restart_reminded_at": 0,
             })
             return
 

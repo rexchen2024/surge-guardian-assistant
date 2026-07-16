@@ -140,7 +140,7 @@ scripts/surge-sentry cdn-watch status
 
 預設範例只觀察。門檻是：`>=20 Mbps` 健康，`10-20 Mbps` 可用，持續 `<10 Mbps` 異常，持續 `<3 Mbps` 20 秒為嚴重異常。瞬時零速但沒有持續下載不會被當作卡頓。
 
-已驗證的精確網域可以在本機設定中開啟 allowlist 自動糾錯。本機設定必須由目前使用者持有、不是軟連結且權限為 `0600`，resolver 必須是字面 IP。糾錯流程固定為：備份 profile、只改精確 `[Host]`、語法檢查、reload、確認執行階段已生效、刷新 DNS、等待使用者重開 App，並複驗「新連線 + 預期 CDN + 可用速度」；任何一步失敗都會回復並升級分析。大型媒體流量不會自動切到高成本代理。
+已驗證的精確網域可以在本機設定中開啟 allowlist 自動糾錯。本機設定必須由目前使用者持有、不是軟連結且權限為 `0600`，resolver 必須是字面 IP。糾錯流程固定為：備份 profile、只改精確 `[Host]`、語法檢查、reload、確認執行階段已生效、刷新 DNS、通知修復完成，並在背景複驗後續連線是否達到「預期 CDN + 可用速度」。只有仍有卡頓時才建議使用者重開 App，自動修復不會等待這一步；設定變更檢查失敗會立即回復，修復後的失敗結論只接受保護視窗後新建連線的證據。大型媒體流量不會自動切到高成本代理。
 
 升級事件會保留在 inflight，直到 Hermes 成功處理。無需通知使用者時執行 `scripts/surge-sentry cdn-watch ack <event-id>`；需要通知時把訊息透過 stdin 交給 `scripts/surge-sentry cdn-watch resolve <event-id> --file -`，只有投遞成功才會確認。未確認事件會自動重試。
 
