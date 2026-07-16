@@ -1,0 +1,42 @@
+{
+  "poll_interval_seconds": 2,
+  "notify_target": "telegram",
+  "defaults": {
+    "window_seconds": 30,
+    "idle_seconds": 15,
+    "health_mbps": 20,
+    "usable_mbps": 10,
+    "critical_mbps": 3,
+    "degraded_seconds": 30,
+    "critical_seconds": 20,
+    "min_transfer_mb": 0.5,
+    "cooldown_seconds": 900
+  },
+  "services": [
+    {
+      "id": "apple-tv",
+      "name": "Apple TV",
+      "host_patterns": [
+        "vod-*.tv.apple.com",
+        "hls-amt.itunes.apple.com",
+        "linear-*.tv.apple.com"
+      ],
+      "group_names": [
+        "Apple TV"
+      ],
+      "autofix": {
+        "enabled": false,
+        "dns_overrides": {
+          "vod-ap-aoc.tv.apple.com": "1.1.1.1",
+          "hls-amt.itunes.apple.com": "1.1.1.1"
+        },
+        "trigger_cdns": [
+          "fastly"
+        ],
+        "expected_cdn": "apple",
+        "reload": true,
+        "rollback_on_failure": true
+      }
+    }
+  ]
+}

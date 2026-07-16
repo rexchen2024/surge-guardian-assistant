@@ -12,6 +12,18 @@ from pathlib import Path
 from urllib.parse import urlencode
 
 from . import __version__
+from .cdn_watch import (
+    CdnWatchDaemon,
+    ServiceTracker,
+    ack_pending,
+    ensure_daemon,
+    load_watch_settings,
+    pid_path,
+    process_is_watcher,
+    read_pid,
+    resolve_pending,
+    stop_daemon,
+)
 from .config import DEFAULT_SURGE_CLI, SentryConfig, write_env
 from .sentry import SurgeSentry
 from .redact import redact_text, scan
@@ -232,6 +244,8 @@ def command_setup(args: argparse.Namespace) -> int:
         "ALERT_COOLDOWN_SECONDS": "3600",
         "AUTO_UPDATE": "1",
         "AUTO_UPDATE_INTERVAL_SECONDS": "86400",
+        "CDN_WATCH_ENABLED": "0",
+        "CDN_WATCH_CONFIG": str(root / "config" / "cdn-watch.local.json"),
     }
     if mobile_profile:
         values["MOBILE_PROFILE"] = mobile_profile
@@ -255,8 +269,112 @@ def command_setup(args: argparse.Namespace) -> int:
 def command_tick(_args: argparse.Namespace) -> int:
     config = SentryConfig.load(project_root())
     auto_update_if_due(config)
+    if config.cdn_watch_enabled:
+        ok, detail = ensure_daemon(config)
+        if not ok:
+            print(f"Surge Sentry CDN Watch 启动失败：{detail}")
     print(SurgeSentry(config).tick())
     return 0
+
+
+def command_cdn_watch(args: argparse.Namespace) -> int:
+    config = SentryConfig.load(project_root())
+    if args.cdn_watch_command == "ensure":
+        ok, detail = ensure_daemon(config)
+        if not args.quiet:
+            print(f"cdn-watch: {detail}")
+        return 0 if ok else 1
+    if args.cdn_watch_command == "stop":
+        ok, detail = stop_daemon(config)
+        print(f"cdn-watch: {detail}")
+        return 0 if ok else 1
+    if args.cdn_watch_command == "status":
+        state = read_json(config.state_dir / "cdn-watch-state.json")
+        pid = read_pid(config)
+        allowed = {
+            "phase", "status", "updated_at", "last_mbps", "cdn", "host",
+            "watch_state", "last_request_at", "controller_at", "controller_latency_ms", "event_errors",
+        }
+        services = {
+            str(name): {key: value for key, value in info.items() if key in allowed}
+            for name, info in (state.get("services", {}) or {}).items()
+            if isinstance(info, dict)
+        }
+        summary = {
+            "enabled": config.cdn_watch_enabled,
+            "running": process_is_watcher(pid),
+            "pid": pid if process_is_watcher(pid) else 0,
+            "heartbeat": state.get("daemon_heartbeat"),
+            "services": services,
+        }
+        print(json.dumps(summary, ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+    if args.cdn_watch_command == "ack":
+        ok, detail = ack_pending(config, args.event_id)
+        print(f"cdn-watch: {detail}")
+        return 0 if ok else 1
+    if not config.cdn_watch_config.exists():
+        print(f"cdn-watch: config missing: {config.cdn_watch_config}")
+        return 1
+    try:
+        settings = load_watch_settings(config.cdn_watch_config)
+    except Exception as exc:
+        print(f"cdn-watch: invalid config: {exc}")
+        return 1
+    if args.cdn_watch_command == "resolve":
+        if args.file != "-":
+            print("cdn-watch: resolve currently accepts --file - only")
+            return 1
+        ok, detail = resolve_pending(
+            config,
+            args.event_id,
+            sys.stdin.read(),
+            target=settings.notify_target,
+        )
+        print(f"cdn-watch: {detail}")
+        return 0 if ok else 1
+    if args.cdn_watch_command == "once":
+        client = SurgeClient(config.surge_cli)
+        data, result = client.dump_requests()
+        if not result.get("ok"):
+            print("cdn-watch: Surge request data unavailable")
+            return 1
+        now = time.time()
+        trackers = [ServiceTracker(spec) for spec in settings.services]
+        matched = 0
+        rows = []
+        for key in ("active-requests", "recent-requests"):
+            rows.extend(data.get(key, []) if isinstance(data, dict) else [])
+        seen: set[str] = set()
+        for event in rows:
+            key = str(event.get("id"))
+            if key in seen:
+                continue
+            seen.add(key)
+            for tracker in trackers:
+                if tracker.ingest(event, now):
+                    matched += 1
+                    break
+        output = {
+            "matched_requests": matched,
+            "services": [tracker.evaluate(now).__dict__ for tracker in trackers],
+        }
+        print(json.dumps(output, ensure_ascii=False, indent=2, sort_keys=True))
+        return 0
+
+    current = read_pid(config)
+    if current and current != os.getpid() and process_is_watcher(current):
+        print(f"cdn-watch: already running (pid {current})")
+        return 0
+    path = pid_path(config)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(str(os.getpid()) + "\n")
+    path.chmod(0o600)
+    try:
+        return CdnWatchDaemon(config, settings).run(stop_after_seconds=max(0, args.seconds))
+    finally:
+        if read_pid(config) == os.getpid():
+            path.unlink(missing_ok=True)
 
 
 def traffic_db_for_scope(config: SentryConfig, scope: str) -> Path | None:
@@ -598,6 +716,35 @@ def main(argv: list[str] | None = None) -> int:
     traffic_end.add_argument("--limit", type=int, default=500, help="maximum rows to read from Surge traffic stats")
     traffic_end.add_argument("--top", type=int, default=8, help="number of top rows to display")
     traffic_end.set_defaults(func=command_traffic)
+
+    cdn_watch = sub.add_parser("cdn-watch", help="monitor real media request throughput and CDN health")
+    cdn_watch_sub = cdn_watch.add_subparsers(dest="cdn_watch_command", required=True)
+
+    cdn_ensure = cdn_watch_sub.add_parser("ensure", help="start the low-overhead watcher if needed")
+    cdn_ensure.add_argument("--quiet", action="store_true", help="print nothing when healthy")
+    cdn_ensure.set_defaults(func=command_cdn_watch)
+
+    cdn_run = cdn_watch_sub.add_parser("run", help="run the persistent watcher in the foreground")
+    cdn_run.add_argument("--seconds", type=float, default=0, help="optional test duration; zero runs continuously")
+    cdn_run.set_defaults(func=command_cdn_watch)
+
+    cdn_once = cdn_watch_sub.add_parser("once", help="inspect current matching media requests without changing Surge")
+    cdn_once.set_defaults(func=command_cdn_watch)
+
+    cdn_status = cdn_watch_sub.add_parser("status", help="show sanitized watcher state")
+    cdn_status.set_defaults(func=command_cdn_watch)
+
+    cdn_ack = cdn_watch_sub.add_parser("ack", help="archive a Hermes-processed pending media event")
+    cdn_ack.add_argument("event_id", help="event id shown in the Sentry incident")
+    cdn_ack.set_defaults(func=command_cdn_watch)
+
+    cdn_resolve = cdn_watch_sub.add_parser("resolve", help="deliver a handled event and ack only after successful send")
+    cdn_resolve.add_argument("event_id", help="event id shown in the Sentry incident")
+    cdn_resolve.add_argument("--file", default="-", help="read the message from stdin; only '-' is accepted")
+    cdn_resolve.set_defaults(func=command_cdn_watch)
+
+    cdn_stop = cdn_watch_sub.add_parser("stop", help="stop the persistent watcher")
+    cdn_stop.set_defaults(func=command_cdn_watch)
 
     doctor = sub.add_parser("doctor", help="manual sanitized diagnostic summary")
     doctor.set_defaults(func=command_doctor)

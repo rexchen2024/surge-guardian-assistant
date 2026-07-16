@@ -28,6 +28,7 @@ This project is still in early testing. Trial use and feedback are welcome, and 
 - **Quiet and low-power**: healthy checks emit only `{"wakeAgent": false}`; routine work stays on local scripts and Surge runtime APIs where possible.
 - **Native Surge checks**: reads events, retests policies, flushes DNS, updates external resources, and adds temporary runtime rules.
 - **Event traffic monitors**: ask Sentry to watch one F1 race, a World Cup Fox stream, or an Apple TV session and get clear start, in-progress, and final traffic reports.
+- **Real playback CDN health**: incrementally sample Surge active requests at a quiet idle rate and a faster playback rate, detecting media connections that succeed but remain too slow; scripts can notify first and wake a model only for unfamiliar cases.
 - **Safe self-healing first**: low-risk issues are handled first; actions stay narrow, runtime-only, and reversible where possible. Permanent config, certificates, DNS records, servers, MITM, Rewrite, Scripting, reload, or restart require confirmation.
 - **Choose Hermes or Codex**: the Hermes path is good for always-on guarding, low-noise delivery, and background learning; the Codex path is good for open-source users who want install checks, Surge config diagnostics, incident review, docs maintenance, and safe change planning.
 - **AI only when useful**: repeated, complex, or unresolved incidents can be reviewed by Hermes or Codex.

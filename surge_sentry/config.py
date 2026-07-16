@@ -154,6 +154,8 @@ class SentryConfig:
     traffic_daily_critical_ratio: float
     traffic_direct_host_patterns: list[str]
     traffic_direct_leak_min_gb: float
+    cdn_watch_enabled: bool
+    cdn_watch_config: Path
 
     @classmethod
     def load(cls, root: Path) -> "SentryConfig":
@@ -196,6 +198,11 @@ class SentryConfig:
             traffic_daily_critical_ratio=float(env.get("TRAFFIC_DAILY_CRITICAL_RATIO", "2.0") or "2.0"),
             traffic_direct_host_patterns=split_csv(env.get("TRAFFIC_DIRECT_HOST_PATTERNS", "")),
             traffic_direct_leak_min_gb=float(env.get("TRAFFIC_DIRECT_LEAK_MIN_GB", "1") or "1"),
+            cdn_watch_enabled=parse_bool(env.get("CDN_WATCH_ENABLED", "0")),
+            cdn_watch_config=Path(_expand(env.get(
+                "CDN_WATCH_CONFIG",
+                str(root / "config" / "cdn-watch.local.json"),
+            ))),
         )
 
     def missing_required(self) -> list[str]:

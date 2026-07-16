@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from .config import SentryConfig
+from .cdn_watch import consume_pending, is_direct_policy
 from .state import StateStore
 from .surge import SurgeClient, latest_surge_log
 from .traffic import analyze_traffic, current_month_db, find_direct_leak_records, format_top_records, latest_session_db, read_policy_records
@@ -496,7 +497,7 @@ class SurgeSentry:
         if isinstance(env_data, dict):
             proxy_selection = env_data.get("environment", {}).get("ProxyGroupSelection", {})
             emby_policy = proxy_selection.get("Emby", "")
-            if emby_policy and emby_policy.upper() != "DIRECT":
+            if emby_policy and not is_direct_policy(emby_policy):
                 emby_on_proxy = True
 
         session_db = latest_session_db(self.config.traffic_stat_dir)
@@ -534,15 +535,8 @@ class SurgeSentry:
                 ))
                 return incidents
 
-            # 没有实际走代理的记录，但仍然在代理策略上 → 提示
-            incidents: list[Incident] = []
-            incidents.append(Incident(
-                "traffic", "medium",
-                f"Emby 策略组当前选用了代理节点（{emby_policy}），暂未捕获到显著流量",
-                host="emby-on-proxy",
-                bypass_cooldown=True,
-            ))
-            return incidents
+            # 策略选择本身不是事故；没有真实大流量就保持静默。
+            return []
 
         # Emby 当前是 DIRECT → 只查当天有无漏走代理，不查历史月份
         risks = analyze_traffic(
@@ -629,6 +623,24 @@ class SurgeSentry:
         self.update_dns_state(state, incidents, actions, important)
         important.extend(self.update_direct_failure_state(state, incidents, actions))
         important.extend(self.analyze_traffic_usage(diagnostics))
+        for pending in consume_pending(self.config):
+            service = str(pending.get("service") or "媒体服务")
+            host = str(pending.get("host") or "")
+            try:
+                speed = float(pending.get("sustained_mbps", 0) or 0)
+            except (TypeError, ValueError, OverflowError):
+                speed = 0.0
+            cdn = str(pending.get("cdn") or "unknown")
+            policy = str(pending.get("policy") or "unknown")
+            reason = str(pending.get("reason") or "deterministic diagnosis needs escalation")
+            event_id = str(pending.get("event_id") or "unknown")
+            important.append(Incident(
+                "media_health",
+                "high" if str(pending.get("status")) == "critical" else "medium",
+                f"{service} 真实媒体速度约 {speed:.1f} Mbps，CDN={cdn}，策略={policy}；{reason}；事件ID={event_id}。处理完成后执行 scripts/surge-sentry cdn-watch ack {event_id}",
+                host=host,
+                bypass_cooldown=True,
+            ))
 
         suppress_proxy = self.verify_proxy_incidents(state, important, diagnostics)
         if suppress_proxy and {item.kind for item in important} == {"proxy"}:

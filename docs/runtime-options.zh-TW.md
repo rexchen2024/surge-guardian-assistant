@@ -125,8 +125,27 @@ scripts/surge-sentry traffic start apple-tv-movie --note "Apple TV 電影"
 scripts/surge-sentry traffic start f1-race --policy-patterns "%US%,%Proxy%"
 ```
 
-## 8. 安全邊界
+## 8. 真實播放 CDN 健康監控
+
+`cdn-watch` 與累計流量分析分開。它只自適應取樣 Surge 活躍請求（閒置 10 秒、命中播放後 2 秒），只保留脫敏後的網域、策略、CDN 分類和速度摘要；不保留高記憶體 CLI 子程序、不抓包、不保存請求正文，也不讀取 recent-request 歷史。
+
+複製範例並在本機啟用：
+
+```bash
+cp config/cdn-watch.example.json config/cdn-watch.local.json
+# 在 .env 中設定 CDN_WATCH_ENABLED=1 和 CDN_WATCH_CONFIG
+scripts/surge-sentry cdn-watch ensure
+scripts/surge-sentry cdn-watch status
+```
+
+預設範例只觀察。門檻是：`>=20 Mbps` 健康，`10-20 Mbps` 可用，持續 `<10 Mbps` 異常，持續 `<3 Mbps` 20 秒為嚴重異常。瞬時零速但沒有持續下載不會被當作卡頓。
+
+已驗證的精確網域可以在本機設定中開啟 allowlist 自動糾錯。本機設定必須由目前使用者持有、不是軟連結且權限為 `0600`，resolver 必須是字面 IP。糾錯流程固定為：備份 profile、只改精確 `[Host]`、語法檢查、reload、確認執行階段已生效、刷新 DNS、等待使用者重開 App，並複驗「新連線 + 預期 CDN + 可用速度」；任何一步失敗都會回復並升級分析。大型媒體流量不會自動切到高成本代理。
+
+升級事件會保留在 inflight，直到 Hermes 成功處理。無需通知使用者時執行 `scripts/surge-sentry cdn-watch ack <event-id>`；需要通知時把訊息透過 stdin 交給 `scripts/surge-sentry cdn-watch resolve <event-id> --file -`，只有投遞成功才會確認。未確認事件會自動重試。
+
+## 9. 安全邊界
 
 不管選擇哪種執行方式，Surge Sentry 都只預設執行低風險動作。自動動作只包括讀取狀態、更新外部資源、刷新 Surge DNS 快取、策略複測、加入或清理執行階段臨時規則。
 
-永久 profile 編輯、憑證、DNS 記錄、伺服器、MITM、Rewrite、Scripting、Replica、reload、restart、profile 選擇和策略組選擇，都必須先得到使用者確認。
+永久 profile 編輯、憑證、DNS 記錄、伺服器、MITM、Rewrite、Scripting、Replica、reload、restart、profile 選擇和策略組選擇，都必須先得到使用者確認。唯一例外是使用者已在本機 `cdn-watch.local.json` 中明確啟用的精確網域 allowlist；它仍必須通過備份、檢查、複驗和失敗回復。

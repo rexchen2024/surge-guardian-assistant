@@ -17,6 +17,8 @@ Surge Sentry uses layered autonomy.
 
 - temporary policy switching can be added after the sentry has enough evidence
   that the target policy is healthy and the current policy is repeatedly failing
+- exact media hosts explicitly enabled in a local allowlist may use the backup,
+  validate, reload, verify, and rollback repair loop
 
 ## Confirmation Required
 

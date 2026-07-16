@@ -1,5 +1,6 @@
 .env
 *.local.env
+*.local.json
 .DS_Store
 state/
 logs/

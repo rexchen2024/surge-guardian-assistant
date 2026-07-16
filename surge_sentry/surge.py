@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import json
 import subprocess
+import time
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable, Iterator
 
 
 class SurgeClient:
@@ -64,11 +65,29 @@ class SurgeClient:
         data, result = self.raw_json("environment", timeout=10)
         return (data if isinstance(data, dict) else {}), result
 
+    def dump_requests(self) -> tuple[dict[str, Any], dict[str, Any]]:
+        data, result = self.raw_json("dump", "request", timeout=10)
+        return (data if isinstance(data, dict) else {}), result
+
+    def dump_dns(self) -> tuple[dict[str, Any], dict[str, Any]]:
+        data, result = self.raw_json("dump", "dns", timeout=10)
+        return (data if isinstance(data, dict) else {}), result
+
+    def dump_profile_text(self, mode: str = "original") -> tuple[str, dict[str, Any]]:
+        data, result = self.raw_json("dump", "profile", mode, timeout=10)
+        if not isinstance(data, dict):
+            return "", result
+        key = "originalProfile" if mode == "original" else "profile"
+        return str(data.get(key) or data.get("profile") or ""), result
+
     def external_resource_update_all(self) -> dict[str, Any]:
         return self.raw("external-resource", "update", "all", timeout=60)
 
     def flush_dns(self) -> dict[str, Any]:
         return self.raw("flush", "dns", timeout=10)
+
+    def reload(self) -> dict[str, Any]:
+        return self.raw("reload", timeout=20)
 
     def test_policy(self, policy: str) -> dict[str, Any]:
         return self.raw("test-policy", policy, timeout=20)
@@ -81,6 +100,58 @@ class SurgeClient:
 
     def del_temp_rule(self, rule: str) -> dict[str, Any]:
         return self.raw("del-temp-rule", rule, timeout=10)
+
+    def watch_request_updates(
+        self,
+        *,
+        poll_interval: float = 2.0,
+        idle_interval: float = 10.0,
+        reconnect_delay: float = 2.0,
+        is_target: Any = None,
+        should_stop: Callable[[], bool] | None = None,
+    ) -> Iterator[dict[str, Any]]:
+        """Yield active request counters with adaptive, short-lived CLI polls.
+
+        A persistent interactive ``surge-cli`` process retains substantial
+        memory over time. Poll only ``dump active`` instead: use a quiet idle
+        interval, then switch to the faster interval while a configured media
+        request is active. Connection counters remain incremental in trackers.
+        """
+        last_controller_at = 0.0
+        last_controller_latency_ms = 0.0
+        last_request_at = 0.0
+        stop_requested = should_stop or (lambda: False)
+        while not stop_requested():
+            started = time.monotonic()
+            data, result = self.raw_json("dump", "active", timeout=10)
+            now = time.time()
+            rows = data.get("requests", []) if isinstance(data, dict) else []
+            ok = bool(result.get("ok")) and isinstance(rows, list)
+            target_active = False
+            if ok:
+                last_controller_at = now
+                last_controller_latency_ms = (time.monotonic() - started) * 1000
+                for item in rows:
+                    if not isinstance(item, dict):
+                        continue
+                    last_request_at = now
+                    if callable(is_target) and is_target(item):
+                        target_active = True
+                    yield item
+            yield {
+                "_tick": now,
+                "_poll_ok": ok,
+                "_target_active": target_active,
+                "_last_request_at": last_request_at,
+                "_controller_at": last_controller_at,
+                "_controller_latency_ms": last_controller_latency_ms,
+            }
+            delay = max(0.5, poll_interval if target_active else idle_interval)
+            if not ok:
+                delay = max(delay, reconnect_delay)
+            deadline = time.monotonic() + delay
+            while time.monotonic() < deadline and not stop_requested():
+                time.sleep(min(0.2, deadline - time.monotonic()))
 
 
 def latest_surge_log(log_dir: Path) -> Path | None:

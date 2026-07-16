@@ -125,8 +125,27 @@ To focus on selected policies:
 scripts/surge-sentry traffic start f1-race --policy-patterns "%US%,%Proxy%"
 ```
 
-## 8. Safety Boundary
+## 8. Real Playback CDN Health
+
+`cdn-watch` is separate from cumulative traffic analysis. It adaptively samples only Surge active requests (10 seconds while idle, 2 seconds during matching playback) and stores only redacted host, policy, CDN class, and throughput summaries. It does not keep a high-memory CLI child, packet-capture, save request bodies, or download recent-request history.
+
+Copy the example and enable it locally:
+
+```bash
+cp config/cdn-watch.example.json config/cdn-watch.local.json
+# Set CDN_WATCH_ENABLED=1 and CDN_WATCH_CONFIG in .env
+scripts/surge-sentry cdn-watch ensure
+scripts/surge-sentry cdn-watch status
+```
+
+The example is observation-only by default. The initial thresholds are: `>=20 Mbps` healthy, `10-20 Mbps` usable, sustained `<10 Mbps` degraded, and sustained `<3 Mbps` for 20 seconds critical. An idle zero-speed HLS connection is not treated as a stall.
+
+Locally verified exact hosts may opt into allowlisted repair. The local config must be a current-user-owned, non-symlink `0600` file; repair resolvers must be literal IP addresses. The fixed workflow is: backup the profile, edit exact `[Host]` entries only, validate, reload, confirm the override is active at runtime, flush DNS, ask the user to reopen the app, and verify a new connection on the expected CDN at usable speed. Any failed check rolls back and escalates. Large media traffic is never moved to a costly proxy automatically.
+
+Escalated events remain inflight until Hermes successfully handles them. Silent resolutions use `scripts/surge-sentry cdn-watch ack <event-id>`. User-facing resolutions pipe the message to `scripts/surge-sentry cdn-watch resolve <event-id> --file -`; delivery must succeed before the event is acknowledged. Unacknowledged events are retried.
+
+## 9. Safety Boundary
 
 Regardless of runtime, the assistant only performs low-risk actions by default: reading state, updating external resources, flushing the Surge DNS cache, retesting policies, and adding or removing temporary runtime rules.
 
-Permanent profile edits, certificates, DNS records, servers, MITM, Rewrite, Scripting, Replica, reload, restart, profile selection, and policy-group selection require user confirmation.
+Permanent profile edits, certificates, DNS records, servers, MITM, Rewrite, Scripting, Replica, reload, restart, profile selection, and policy-group selection require user confirmation. The only exception is an exact-host allowlist explicitly enabled by the user in local `cdn-watch.local.json`; backup, validation, verification, and rollback still remain mandatory.
