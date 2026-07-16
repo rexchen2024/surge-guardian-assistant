@@ -364,6 +364,7 @@ class SentryParsingTest(unittest.TestCase):
             self.assertEqual(state["services"]["apple-tv"]["phase"], "awaiting_restart")
             self.assertEqual(len(notifier.messages), 2)
             self.assertIn("vod-ap-aoc.tv.apple.com = server:1.1.1.1", profile.read_text())
+            self.assertNotIn("hls-amt.itunes.apple.com = server:1.1.1.1", profile.read_text())
 
     def test_cdn_watch_repair_requires_new_expected_cdn_connection(self):
         class FakeClient:

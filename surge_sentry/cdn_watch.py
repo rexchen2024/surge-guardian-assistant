@@ -812,7 +812,7 @@ class CdnWatchDaemon:
             return False, "", "primary Surge profile is not configured"
         result = self.editor.ensure(
             Path(self.config.mac_profile),
-            fix.dns_overrides,
+            {outcome.host: fix.dns_overrides[outcome.host]},
             reload_profile=fix.reload,
         )
         return result.ok, result.backup_path, result.message

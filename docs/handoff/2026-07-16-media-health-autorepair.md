@@ -10,6 +10,7 @@ Generated: 2026-07-16
 - Added a generic `cdn-watch` service model for real media throughput, CDN classification, policy-group filtering, and per-service thresholds.
 - Replaced the high-memory persistent Surge CLI stream with adaptive `dump active` sampling: 10 seconds while idle and 2 seconds during matching playback.
 - Added the Apple TV local template and exact-host Fastly-to-Apple DNS repair loop with backup, profile validation, runtime verification, DNS flush, new-connection verification, rollback, and restart reminders.
+- Each incident repairs only the exact host that triggered it, allowing VOD and F1 replay to be exercised and verified independently.
 - Added direct Hermes lifecycle notifications without model usage; unresolved events now use event IDs, inflight retry, explicit ack, delivery-confirmed `resolve`, processed archive, and quarantine.
 - Added watcher heartbeat/controller health, code/config signatures, safe restart, private file permissions, bounded logs/history/backups, sanitized status, and per-event exception isolation.
 - Synced English, Simplified Chinese, and Traditional Chinese documentation and the Hermes job prompt.
