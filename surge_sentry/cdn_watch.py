@@ -30,7 +30,7 @@ MAX_HISTORY_LINES = 2000
 MAX_BACKUPS = 12
 MAX_PROCESSED_EVENTS = 100
 PENDING_RETRY_SECONDS = 600
-RESTART_REMINDER_SECONDS = 180
+RESTART_REMINDER_SECONDS = 60
 FASTLY_NETWORKS = tuple(ipaddress.ip_network(item) for item in (
     "146.75.0.0/16",
     "151.101.0.0/16",
@@ -419,22 +419,38 @@ class EditResult:
 
 
 class ProfileEditor:
-    def __init__(self, client: SurgeClient, state_dir: Path):
+    def __init__(
+        self,
+        client: SurgeClient,
+        state_dir: Path,
+        *,
+        verify_attempts: int = 6,
+        verify_delay_seconds: float = 0.5,
+    ):
         self.client = client
         self.backup_dir = state_dir / "cdn-watch-backups"
+        self.verify_attempts = max(1, verify_attempts)
+        self.verify_delay_seconds = max(0.0, verify_delay_seconds)
 
     def _runtime_has_overrides(self, overrides: dict[str, str]) -> tuple[bool, str]:
-        try:
-            text, result = self.client.dump_profile_text("original")
-        except Exception:
-            return False, "active Surge profile could not be inspected"
-        if not result.get("ok") or not text:
-            return False, "active Surge profile could not be inspected"
-        for host, resolver in overrides.items():
-            pattern = rf"(?im)^\s*{re.escape(host)}\s*=\s*server:\s*{re.escape(resolver)}\s*$"
-            if not re.search(pattern, text):
-                return False, f"active Surge profile does not contain verified override for {host}"
-        return True, "active Surge profile contains verified overrides"
+        detail = "active Surge profile could not be inspected"
+        for attempt in range(self.verify_attempts):
+            try:
+                text, result = self.client.dump_profile_text("original")
+            except Exception:
+                text, result = "", {"ok": False}
+            if result.get("ok") and text:
+                missing = []
+                for host, resolver in overrides.items():
+                    pattern = rf"(?im)^\s*{re.escape(host)}\s*=\s*server:\s*{re.escape(resolver)}\s*$"
+                    if not re.search(pattern, text):
+                        missing.append(host)
+                if not missing:
+                    return True, "active Surge profile contains verified overrides"
+                detail = f"active Surge profile does not contain verified override for {missing[0]}"
+            if attempt + 1 < self.verify_attempts and self.verify_delay_seconds:
+                time.sleep(self.verify_delay_seconds)
+        return False, detail
 
     @staticmethod
     def _profile_identity(text: str) -> tuple[tuple[str, str], ...]:
@@ -472,18 +488,22 @@ class ProfileEditor:
         return directives
 
     def _runtime_matches_host_state(self, expected_text: str, hosts: set[str]) -> tuple[bool, str]:
-        try:
-            runtime_text, result = self.client.dump_profile_text("original")
-        except Exception:
-            return False, "active Surge profile could not be inspected after rollback"
-        if not result.get("ok") or not runtime_text:
-            return False, "active Surge profile could not be inspected after rollback"
         expected = self._host_directives(expected_text)
-        runtime = self._host_directives(runtime_text)
-        for host in hosts:
-            if runtime.get(host) != expected.get(host):
-                return False, f"active Surge profile did not restore host state for {host}"
-        return True, "active Surge profile rollback verified"
+        detail = "active Surge profile could not be inspected after rollback"
+        for attempt in range(self.verify_attempts):
+            try:
+                runtime_text, result = self.client.dump_profile_text("original")
+            except Exception:
+                runtime_text, result = "", {"ok": False}
+            if result.get("ok") and runtime_text:
+                runtime = self._host_directives(runtime_text)
+                mismatched = [host for host in hosts if runtime.get(host) != expected.get(host)]
+                if not mismatched:
+                    return True, "active Surge profile rollback verified"
+                detail = f"active Surge profile did not restore host state for {mismatched[0]}"
+            if attempt + 1 < self.verify_attempts and self.verify_delay_seconds:
+                time.sleep(self.verify_delay_seconds)
+        return False, detail
 
     def _restore_text(
         self,
@@ -855,6 +875,25 @@ class CdnWatchDaemon:
                     "verified_connection_started_at": outcome.newest_start_date,
                     "backup_path": "",
                     "repair_detail": "",
+                })
+                return
+            restart_reminded_at = _safe_float(prior.get("restart_reminded_at"))
+            if not restart_reminded_at:
+                # Surge reload can make the TV app reconnect by itself before the
+                # user has had time to follow the restart prompt.  A wrong/slow
+                # connection during that grace period is not proof that the
+                # repair failed.  Remind once, then require a still newer
+                # connection before rollback/escalation.
+                self._remind_restart_if_needed(outcome, prior, now_float)
+                self._save_service_state(outcome.service_id, {
+                    "phase": "awaiting_restart",
+                    "status": outcome.status,
+                })
+                return
+            if outcome.newest_start_date <= restart_reminded_at:
+                self._save_service_state(outcome.service_id, {
+                    "phase": "awaiting_restart",
+                    "status": outcome.status,
                 })
                 return
             if outcome.status not in {"degraded", "critical", "healthy", "usable"}:

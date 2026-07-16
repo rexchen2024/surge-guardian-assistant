@@ -171,7 +171,7 @@ class SentryParsingTest(unittest.TestCase):
                 "vod-ap-aoc.tv.apple.com = server:223.5.5.5\n"
                 "unrelated.example = server:8.8.8.8\n\n[Rule]\nFINAL,DIRECT\n"
             )
-            editor = ProfileEditor(FakeClient(), root / "state")
+            editor = ProfileEditor(FakeClient(), root / "state", verify_delay_seconds=0)
             result = editor.ensure(
                 profile,
                 {
@@ -206,7 +206,7 @@ class SentryParsingTest(unittest.TestCase):
             profile = root / "Mac.conf"
             original = "[Host]\nvod-ap-aoc.tv.apple.com = server:223.5.5.5\n"
             profile.write_text(original)
-            result = ProfileEditor(FakeClient(), root / "state").ensure(
+            result = ProfileEditor(FakeClient(), root / "state", verify_delay_seconds=0).ensure(
                 profile,
                 {"vod-ap-aoc.tv.apple.com": "1.1.1.1"},
                 reload_profile=True,
@@ -234,7 +234,7 @@ class SentryParsingTest(unittest.TestCase):
             profile = root / "Mac.conf"
             original = "[Host]\nvod-ap-aoc.tv.apple.com = server:223.5.5.5\n"
             profile.write_text(original)
-            result = ProfileEditor(FakeClient(), root / "state").ensure(
+            result = ProfileEditor(FakeClient(), root / "state", verify_delay_seconds=0).ensure(
                 profile,
                 {"vod-ap-aoc.tv.apple.com": "1.1.1.1"},
                 reload_profile=True,
@@ -242,6 +242,46 @@ class SentryParsingTest(unittest.TestCase):
             self.assertFalse(result.ok)
             self.assertEqual(profile.read_text(), original)
             self.assertIn("runtime verification failed", result.message)
+
+    def test_profile_editor_retries_until_runtime_override_is_visible(self):
+        class FakeClient:
+            profile_reads = 0
+
+            def dump_profile_text(self, _mode):
+                self.profile_reads += 1
+                if self.profile_reads <= 2:
+                    return original, {"ok": True}
+                return profile.read_text(), {"ok": True}
+
+            def check_profile(self, _path):
+                return {"ok": True}
+
+            def reload(self):
+                return {"ok": True}
+
+            def flush_dns(self):
+                return {"ok": True}
+
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            profile = root / "Mac.conf"
+            original = "[Host]\nvod-ap-aoc.tv.apple.com = server:223.5.5.5\n"
+            profile.write_text(original)
+            client = FakeClient()
+            result = ProfileEditor(
+                client,
+                root / "state",
+                verify_attempts=3,
+                verify_delay_seconds=0,
+            ).ensure(
+                profile,
+                {"vod-ap-aoc.tv.apple.com": "1.1.1.1"},
+                reload_profile=True,
+            )
+            self.assertTrue(result.ok)
+            self.assertTrue(result.changed)
+            self.assertEqual(client.profile_reads, 3)
+            self.assertIn("vod-ap-aoc.tv.apple.com = server:1.1.1.1", profile.read_text())
 
     def test_pending_cdn_watch_events_are_consumed_once(self):
         with TemporaryDirectory() as tmp:
@@ -410,7 +450,45 @@ class SentryParsingTest(unittest.TestCase):
             self.assertEqual(state["services"]["apple-tv"]["phase"], "healthy")
             self.assertEqual(len(notifier.messages), 1)
 
-    def test_cdn_watch_new_wrong_cdn_connection_fails_and_escalates(self):
+    def test_cdn_watch_new_wrong_cdn_connection_waits_for_confirmed_restart(self):
+        class FakeClient:
+            def dump_dns(self):
+                return ({"dnsCache": []}, {"ok": True})
+
+        class FakeNotifier:
+            def __init__(self):
+                self.messages = []
+
+            def send(self, message):
+                self.messages.append(message)
+                return True
+
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            state_dir = root / "state"
+            write_env(root / ".env", {"EXPECTED_POLICIES": "Proxy", "PROXY_POLICY": "Proxy", "STATE_DIR": str(state_dir)})
+            spec = ServiceSpec(
+                "apple-tv", "Apple TV", ("vod-*.tv.apple.com",),
+                autofix=AutoFixSpec(enabled=True, expected_cdn="apple", rollback_on_failure=False),
+            )
+            notifier = FakeNotifier()
+            daemon = CdnWatchDaemon(
+                SentryConfig.load(root), WatchSettings(5, "telegram", (spec,)),
+                client=FakeClient(), notifier=notifier, clock=lambda: 250.0,
+            )
+            StateStore(state_dir / "cdn-watch-state.json").save({"services": {"apple-tv": {
+                "phase": "awaiting_restart", "repair_at": 200, "expected_cdn": "apple",
+            }}})
+            daemon.handle_outcome(HealthOutcome(
+                "healthy", "apple-tv", "Apple TV", 30, 28, 35, 10, 25,
+                "vod-ap-aoc.tv.apple.com", "fastly", "直连", "Apple TV", 201,
+            ))
+            state = StateStore(state_dir / "cdn-watch-state.json").load()
+            self.assertEqual(state["services"]["apple-tv"]["phase"], "awaiting_restart")
+            self.assertEqual(notifier.messages, [])
+            self.assertEqual(list((state_dir / "cdn-watch-pending").glob("*.json")), [])
+
+    def test_cdn_watch_wrong_cdn_after_restart_reminder_fails_and_escalates(self):
         class FakeClient:
             def dump_dns(self):
                 return ({"dnsCache": []}, {"ok": True})
@@ -432,11 +510,12 @@ class SentryParsingTest(unittest.TestCase):
                 client=FakeClient(), notifier=FakeNotifier(), clock=lambda: 250.0,
             )
             StateStore(state_dir / "cdn-watch-state.json").save({"services": {"apple-tv": {
-                "phase": "awaiting_restart", "repair_at": 200, "expected_cdn": "apple",
+                "phase": "awaiting_restart", "repair_at": 200, "restart_reminded_at": 220,
+                "expected_cdn": "apple",
             }}})
             daemon.handle_outcome(HealthOutcome(
                 "healthy", "apple-tv", "Apple TV", 30, 28, 35, 10, 25,
-                "vod-ap-aoc.tv.apple.com", "fastly", "直连", "Apple TV", 201,
+                "vod-ap-aoc.tv.apple.com", "fastly", "直连", "Apple TV", 221,
             ))
             state = StateStore(state_dir / "cdn-watch-state.json").load()
             self.assertEqual(state["services"]["apple-tv"]["phase"], "failed")
@@ -464,11 +543,12 @@ class SentryParsingTest(unittest.TestCase):
                 client=FakeClient(), notifier=FakeNotifier(), clock=lambda: 250.0,
             )
             StateStore(state_dir / "cdn-watch-state.json").save({"services": {"apple-tv": {
-                "phase": "awaiting_restart", "repair_at": 200, "expected_cdn": "apple",
+                "phase": "awaiting_restart", "repair_at": 200, "restart_reminded_at": 220,
+                "expected_cdn": "apple",
             }}})
             daemon.handle_outcome(HealthOutcome(
                 "critical", "apple-tv", "Apple TV", 0.4, 0.3, 0.8, 1, 25,
-                "vod-ap-aoc.tv.apple.com", "apple", "直连", "Apple TV", 201,
+                "vod-ap-aoc.tv.apple.com", "apple", "直连", "Apple TV", 221,
             ))
             state = StateStore(state_dir / "cdn-watch-state.json").load()
             self.assertEqual(state["services"]["apple-tv"]["phase"], "failed")
