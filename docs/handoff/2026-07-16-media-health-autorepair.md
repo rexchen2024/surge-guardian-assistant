@@ -11,6 +11,7 @@ Generated: 2026-07-16
 - Replaced the high-memory persistent Surge CLI stream with adaptive `dump active` sampling: 10 seconds while idle and 2 seconds during matching playback.
 - Added the Apple TV local template and exact-host Fastly-to-Apple DNS repair loop with backup, profile validation, runtime verification retries, DNS flush, silent background connection verification, grace-window rollback, and optional restart advice only when playback still has trouble.
 - Each incident repairs only the exact host that triggered it, allowing VOD and F1 replay to be exercised and verified independently.
+- Cooldowns are scoped to the exact failing host, so a recent ordinary Apple TV repair cannot suppress an independent F1 replay incident in the same service group.
 - Added direct Hermes lifecycle notifications without model usage; unresolved events now use event IDs, inflight retry, explicit ack, delivery-confirmed `resolve`, processed archive, and quarantine.
 - Added watcher heartbeat/controller health, code/config signatures, safe restart, private file permissions, bounded logs/history/backups, sanitized status, and per-event exception isolation.
 - Synced English, Simplified Chinese, and Traditional Chinese documentation and the Hermes job prompt.
@@ -43,21 +44,21 @@ tests/test_sentry.py
 
 ## Verification
 
-- `scripts/check`: 54 tests passed; `redact-check: ok`.
+- `scripts/check`: 55 tests passed; `redact-check: ok`.
 - `scripts/surge-sentry doctor`: Surge environment, policy dump, and both configured profiles passed.
 - `scripts/surge-sentry tick`: healthy result remained `{"wakeAgent": false}`.
 - Forced Hermes cron job `3ff8679091b1`: succeeded with `wakeAgent=false`; repository and inline prompt hashes matched.
 - Live daemon: running, controller response 18–34ms, zero event errors, about 18–22MB RSS, near-zero CPU, and no persistent child process.
 - The ordinary Apple TV live replay reproduced Fastly at about 0.x Mbps, triggered exact-host repair, then verified Apple CDN at usable speed up to about 19.5 Mbps without requiring a manual restart.
-- Active Surge profile identity matched `MAC_PROFILE`; only the triggering ordinary Apple TV Host override was added, while the F1 replay Host remained unchanged for its independent replay.
+- The independent F1 replay reproduced Fastly at about 0.55 Mbps, exposed and fixed a service-wide cooldown bug, triggered only the F1 exact-host repair, then verified Apple CDN at healthy speed above 30 Mbps without requiring a manual restart.
+- Active Surge profile identity matched `MAC_PROFILE`; both exact Host overrides are now present because each one independently triggered and passed its own live replay.
 - Apple and Apple TV policy-group runtime selections remained DIRECT.
 - `git diff --check` passed.
 
 ## Known Risks Or Gaps
 
-- The F1 replay fault loop still needs its independent live replay; ordinary Apple TV has passed.
+- Live F1 `linear-*` behavior is still unverified; the completed F1 replay test covers `hls-amt.itunes.apple.com`, not the live-event path.
 - Only Apple TV is enabled in the private local service config. The engine is generic, but every additional service needs real media domains and calibrated thresholds.
-- Live F1 `linear-*` behavior is still unverified; F1 replay evidence does not prove the live path.
 - Automatic RN takeover and all BWG switching remain intentionally disabled.
 
 ## Intentionally Not Changed
@@ -69,4 +70,4 @@ tests/test_sentry.py
 
 ## Recommended Next Action
 
-Continue with the coordinated Apple TV fault replay while Rex is available. If the full notification, repair, reopen, and verification sequence passes, review and merge the PR; otherwise keep the branch open for the smallest correction.
+Let the normal Mac-to-mobile profile sync propagate the final F1 Host override, then review the Draft PR. Test `linear-*` independently during a future live F1 event before enabling any live-path repair.

@@ -408,6 +408,54 @@ class SentryParsingTest(unittest.TestCase):
             self.assertIn("vod-ap-aoc.tv.apple.com = server:1.1.1.1", profile.read_text())
             self.assertNotIn("hls-amt.itunes.apple.com = server:1.1.1.1", profile.read_text())
 
+    def test_cdn_watch_cooldown_does_not_suppress_a_different_host(self):
+        class FakeClient:
+            def dump_dns(self):
+                return ({"dnsCache": []}, {"ok": True})
+
+        class FakeNotifier:
+            def __init__(self):
+                self.messages = []
+
+            def send(self, message):
+                self.messages.append(message)
+                return True
+
+        with TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            state_dir = root / "state"
+            write_env(root / ".env", {
+                "EXPECTED_POLICIES": "Proxy", "PROXY_POLICY": "Proxy", "STATE_DIR": str(state_dir),
+            })
+            notifier = FakeNotifier()
+            spec = ServiceSpec(
+                "apple-tv",
+                "Apple TV",
+                ("vod-*.tv.apple.com", "hls-amt.itunes.apple.com"),
+                cooldown_seconds=900,
+            )
+            daemon = CdnWatchDaemon(
+                SentryConfig.load(root),
+                WatchSettings(2, "telegram", (spec,)),
+                client=FakeClient(),
+                notifier=notifier,
+                clock=lambda: 200.0,
+            )
+            StateStore(state_dir / "cdn-watch-state.json").save({"services": {"apple-tv": {
+                "phase": "healthy",
+                "host": "vod-ap-aoc.tv.apple.com",
+                "incident_opened_at": 195,
+            }}})
+            daemon.handle_outcome(HealthOutcome(
+                "critical", "apple-tv", "Apple TV", 0.2, 0.2, 0.3, 0.8, 25,
+                "hls-amt.itunes.apple.com", "fastly", "直连", "Apple TV", 190,
+            ))
+            state = StateStore(state_dir / "cdn-watch-state.json").load()
+            self.assertEqual(state["services"]["apple-tv"]["phase"], "needs_analysis")
+            self.assertEqual(state["services"]["apple-tv"]["host"], "hls-amt.itunes.apple.com")
+            self.assertEqual(len(notifier.messages), 1)
+            self.assertEqual(len(list((state_dir / "cdn-watch-pending").glob("*.json"))), 1)
+
     def test_cdn_watch_repair_requires_new_expected_cdn_connection(self):
         class FakeClient:
             def dump_dns(self):

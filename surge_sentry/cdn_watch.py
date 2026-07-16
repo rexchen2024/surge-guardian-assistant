@@ -921,6 +921,7 @@ class CdnWatchDaemon:
         last_opened = int(prior.get("incident_opened_at", 0) or 0)
         if (
             last_opened
+            and extract_host(str(prior.get("host") or "")) == outcome.host
             and phase not in {"suspect", "diagnosing", "repairing", "verifying", "awaiting_restart"}
             and now - last_opened < spec.cooldown_seconds
         ):
