@@ -18,7 +18,6 @@ Surge Assistant 大框架下的 Cron 守护分支，面向 Surge 用户做静默
 - [安装方式](#安装方式)
 - [文档](#文档)
 - [项目资料](#项目资料)
-- [我的推荐](#我的推荐)
 
 
 ---
@@ -102,7 +101,3 @@ flowchart LR
 
 
 ---
-
-## 我的推荐
-
-<img src="assets/brand/cmynetwork-icon.png" alt="红莓网络" width="18" align="absmiddle"> [红莓网络](https://cmy.homes/register?aff=4MMK4C)：用了多年的机场，即便是在特殊时期也高度可用，对 Clash 规则友好。
