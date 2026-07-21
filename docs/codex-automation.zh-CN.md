@@ -1,6 +1,6 @@
 # Codex 自动化说明
 
-[繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-automation.zh-TW.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-automation.md)
+[繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/codex-automation.zh-TW.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/docs/codex-automation.md)
 
 Codex 可以作为 Surge Sentry 的独立使用路线：负责安装、检查、解释、复盘和维护。健康巡检仍由本地脚本完成，Codex 在需要判断和改进时介入。
 

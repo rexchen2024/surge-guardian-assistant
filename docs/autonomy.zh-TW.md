@@ -1,6 +1,6 @@
 # 自治模型
 
-[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/autonomy.zh-CN.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/autonomy.md)
+[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/autonomy.zh-CN.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/docs/autonomy.md)
 
 Surge Sentry 使用分層自治模型。
 

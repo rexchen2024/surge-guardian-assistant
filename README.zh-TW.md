@@ -1,9 +1,9 @@
 # Surge Sentry
 
-[![Release](https://img.shields.io/badge/release-v0.2.0-blue.svg)](https://github.com/rexchen2024/surge-guardian-assistant/releases/tag/v0.2.0)
+[![Release](https://img.shields.io/badge/release-v0.2.0-blue.svg)](https://github.com/rexchen2024/surge-sentry/releases/tag/v0.2.0)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.en.md)
+[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/README.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/README.en.md)
 
 Surge Assistant 大框架下的 Cron 守護分支，面向 Surge 使用者做靜默巡檢和自我修復。它基於 Surge 官方執行階段能力和 `surge-cli`，持續檢查啟動情況、日誌、事件、策略、設定同步和流量風險；健康時不打擾，異常時先自我修復，只有重要問題才交給 Hermes、Codex 或聊天工具繼續處理。
 
@@ -18,7 +18,6 @@ Surge Assistant 大框架下的 Cron 守護分支，面向 Surge 使用者做靜
 - [安裝方式](#安裝方式)
 - [文件](#文件)
 - [專案資料](#專案資料)
-- [我的推薦](#我的推薦)
 
 
 ---
@@ -102,7 +101,3 @@ flowchart LR
 
 
 ---
-
-## 我的推薦
-
-<img src="assets/brand/cmynetwork-icon.png" alt="紅莓網路" width="18" align="absmiddle"> [紅莓網路](https://cmy.homes/register?aff=4MMK4C)：用了多年的機場，即便是在特殊時期也高度可用，對 Clash 規則友好。

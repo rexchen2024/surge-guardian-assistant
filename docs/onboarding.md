@@ -1,6 +1,6 @@
 # Onboarding
 
-[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/onboarding.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/onboarding.zh-TW.md)
+[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/onboarding.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/onboarding.zh-TW.md)
 
 This guide assumes Surge for macOS is already installed. Hermes is recommended
 for scheduled model-assisted operation, but the local `doctor` and `tick`
@@ -9,7 +9,7 @@ commands can run without Hermes.
 ## 1. Get The Project
 
 ```bash
-git clone https://github.com/rexchen2024/surge-guardian-assistant.git ~/.surge-sentry
+git clone https://github.com/rexchen2024/surge-sentry.git ~/.surge-sentry
 cd ~/.surge-sentry
 ```
 

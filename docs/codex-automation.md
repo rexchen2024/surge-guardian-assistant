@@ -1,6 +1,6 @@
 # Codex Automation Notes
 
-[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-automation.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-automation.zh-TW.md)
+[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/codex-automation.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/codex-automation.zh-TW.md)
 
 Codex can be an independent Surge Sentry path for install, checks, explanation, review, and maintenance. Healthy checks still run through local scripts; Codex joins when the work needs judgment or improvement.
 

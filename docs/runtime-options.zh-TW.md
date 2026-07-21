@@ -1,6 +1,6 @@
 # 執行方式
 
-[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.zh-CN.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.md)
+[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/runtime-options.zh-CN.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/docs/runtime-options.md)
 
 Surge Sentry 的核心循環只有一套，但有三種實際執行方式。
 
@@ -25,7 +25,7 @@ Surge Sentry 的核心循環只有一套，但有三種實際執行方式。
 ## 2. 通用一鍵安裝
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-sentry/main/install.sh)" -- --setup
 ```
 
 安裝腳本會把專案安裝到 `~/.surge-sentry`，檢查 Surge 環境，並進入首次設定。

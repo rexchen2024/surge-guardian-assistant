@@ -499,7 +499,7 @@ def command_feedback(args: argparse.Namespace) -> int:
             "title": f"Feedback: {DISPLAY_NAME} issue",
             "body": report,
         })
-        print(f"github issue url: https://github.com/rexchen2024/surge-guardian-assistant/issues/new?{query}")
+        print(f"github issue url: https://github.com/rexchen2024/surge-sentry/issues/new?{query}")
     return 0
 
 

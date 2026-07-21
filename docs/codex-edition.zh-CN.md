@@ -1,6 +1,6 @@
 # Codex 版本
 
-[繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.zh-TW.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.md)
+[繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/codex-edition.zh-TW.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/docs/codex-edition.md)
 
 Codex 是 Surge Sentry 面向开源用户和本地工作区的重要客户端。它适合安装检查、Surge 配置诊断、异常复盘、流量监控结果解读、隐私检查、文档维护和安全改动建议。
 
@@ -11,7 +11,7 @@ Codex 是 Surge Sentry 面向开源用户和本地工作区的重要客户端。
 如果你已经在用 Codex，把下面这段发给 Codex：
 
 ```text
-请把 https://github.com/rexchen2024/surge-guardian-assistant 安装到本地，作为 Surge Sentry 项目使用。请运行 doctor 和 scripts/check，然后根据 codex/automation-prompts/surge-sentry-review.md 创建或建议一个安全的 Codex 自动化。不要在未确认前编辑 Surge profile、证书、DNS、服务器、MITM、Rewrite、Scripting、Replica，也不要执行 reload 或 restart。
+请把 https://github.com/rexchen2024/surge-sentry 安装到本地，作为 Surge Sentry 项目使用。请运行 doctor 和 scripts/check，然后根据 codex/automation-prompts/surge-sentry-review.md 创建或建议一个安全的 Codex 自动化。不要在未确认前编辑 Surge profile、证书、DNS、服务器、MITM、Rewrite、Scripting、Replica，也不要执行 reload 或 restart。
 ```
 
 Codex 应该做四件事：
@@ -26,7 +26,7 @@ Codex 应该做四件事：
 如果你想自己在终端安装，运行：
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-sentry/main/install.sh)" -- --setup
 ```
 
 安装脚本会把项目放到 `~/.surge-sentry`。

@@ -1,6 +1,6 @@
 # 故障排查
 
-[繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/troubleshooting.zh-TW.md) | [English](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/troubleshooting.md)
+[繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/troubleshooting.zh-TW.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/docs/troubleshooting.md)
 
 先运行：
 

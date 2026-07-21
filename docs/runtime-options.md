@@ -1,6 +1,6 @@
 # Runtime Options
 
-[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/runtime-options.zh-TW.md)
+[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/runtime-options.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/runtime-options.zh-TW.md)
 
 Surge Sentry has one core loop and three practical ways to run it.
 
@@ -25,7 +25,7 @@ Best for open-source project-style use: install checks, Surge config diagnostics
 ## 2. Common One-Command Install
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-sentry/main/install.sh)" -- --setup
 ```
 
 The installer puts the project in `~/.surge-sentry`, checks the Surge environment, and starts first-run setup.

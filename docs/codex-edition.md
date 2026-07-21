@@ -1,6 +1,6 @@
 # Codex Edition
 
-[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/docs/codex-edition.zh-TW.md)
+[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/codex-edition.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/codex-edition.zh-TW.md)
 
 Codex is an important Surge Sentry client for open-source users and local workspaces. It is useful for install checks, Surge config diagnostics, incident review, traffic-monitor interpretation, privacy checks, docs maintenance, and safe change proposals.
 
@@ -11,7 +11,7 @@ It does not need to replace the minute-level health gate. Keep the healthy path 
 If you already use Codex, send it this prompt:
 
 ```text
-Install https://github.com/rexchen2024/surge-guardian-assistant locally as my Surge Sentry project. Run doctor and scripts/check, then create or suggest a safe Codex automation using codex/automation-prompts/surge-sentry-review.md. Do not edit Surge profiles, certificates, DNS, servers, MITM, Rewrite, Scripting, or Replica, and do not run reload or restart without asking me first.
+Install https://github.com/rexchen2024/surge-sentry locally as my Surge Sentry project. Run doctor and scripts/check, then create or suggest a safe Codex automation using codex/automation-prompts/surge-sentry-review.md. Do not edit Surge profiles, certificates, DNS, servers, MITM, Rewrite, Scripting, or Replica, and do not run reload or restart without asking me first.
 ```
 
 Codex should do four things:
@@ -26,7 +26,7 @@ Codex should do four things:
 If you prefer doing it yourself in Terminal, run:
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-guardian-assistant/main/install.sh)" -- --setup
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-sentry/main/install.sh)" -- --setup
 ```
 
 The project installs to `~/.surge-sentry`.

@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-REPO_URL="${SURGE_SENTRY_REPO_URL:-${SGA_REPO_URL:-https://github.com/rexchen2024/surge-guardian-assistant.git}}"
+REPO_URL="${SURGE_SENTRY_REPO_URL:-${SGA_REPO_URL:-https://github.com/rexchen2024/surge-sentry.git}}"
 INSTALL_DIR="${SURGE_SENTRY_HOME:-${SGA_HOME:-$HOME/.surge-sentry}}"
 RUN_SETUP=0
 

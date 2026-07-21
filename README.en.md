@@ -1,9 +1,9 @@
 # Surge Sentry
 
-[![Release](https://img.shields.io/badge/release-v0.2.0-blue.svg)](https://github.com/rexchen2024/surge-guardian-assistant/releases/tag/v0.2.0)
+[![Release](https://img.shields.io/badge/release-v0.2.0-blue.svg)](https://github.com/rexchen2024/surge-sentry/releases/tag/v0.2.0)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-[简体中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.md) | [繁體中文](https://github.com/rexchen2024/surge-guardian-assistant/blob/main/README.zh-TW.md)
+[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/README.md) | [繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/README.zh-TW.md)
 
 A Cron guard branch under the broader Surge Assistant framework for quiet Surge monitoring and self-healing. It uses Surge's official runtime capabilities and `surge-cli` to check startup health, logs, events, policies, config sync, and traffic risk. Healthy checks stay silent; incidents are handled with low-risk actions first; only important cases are handed to Hermes, Codex, or chat delivery.
 
@@ -18,7 +18,6 @@ This project is still in early testing. Trial use and feedback are welcome, and 
 - [Install Options](#install-options)
 - [Docs](#docs)
 - [Project Info](#project-info)
-- [My Recommendation](#my-recommendation)
 
 
 ---
@@ -102,7 +101,3 @@ The scripts call Surge's `surge-cli` directly. Installation, automatic updates, 
 
 
 ---
-
-## My Recommendation
-
-<img src="assets/brand/cmynetwork-icon.png" alt="CMYNetwork" width="18" align="absmiddle"> [CMYNetwork](https://cmy.homes/register?aff=4MMK4C): a proxy provider I have used for years; highly available even during sensitive periods, and friendly to Clash rule setups.
