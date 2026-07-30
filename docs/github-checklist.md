@@ -1,6 +1,6 @@
 # GitHub Release Checklist
 
-[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/github-checklist.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/github-checklist.zh-TW.md)
+[简体中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/github-checklist.zh-CN.md) | [繁體中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/github-checklist.zh-TW.md)
 
 Use this checklist before publishing a release or making the repository public.
 
@@ -42,7 +42,7 @@ Then check:
 ```bash
 git status --short
 git tag --list
-gh release list --repo rexchen2024/surge-sentry --limit 5
+gh release list --repo rexchen1803/surge-sentry --limit 5
 ```
 
 ## Messaging

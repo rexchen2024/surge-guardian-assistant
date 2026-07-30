@@ -1,6 +1,6 @@
 # GitHub 发布检查清单
 
-[繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/github-checklist.zh-TW.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/docs/github-checklist.md)
+[繁體中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/github-checklist.zh-TW.md) | [English](https://github.com/rexchen1803/surge-sentry/blob/main/docs/github-checklist.md)
 
 发布 release 或把仓库设为公开前，按这份清单快速检查。
 
@@ -42,7 +42,7 @@ scripts/surge-sentry feedback --print
 ```bash
 git status --short
 git tag --list
-gh release list --repo rexchen2024/surge-sentry --limit 5
+gh release list --repo rexchen1803/surge-sentry --limit 5
 ```
 
 ## 对外描述

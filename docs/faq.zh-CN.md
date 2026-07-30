@@ -1,6 +1,6 @@
 # 常见问题
 
-[繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/faq.zh-TW.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/docs/faq.md)
+[繁體中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/faq.zh-TW.md) | [English](https://github.com/rexchen1803/surge-sentry/blob/main/docs/faq.md)
 
 ## 这是 Surge 配置仓库吗？
 

@@ -1,6 +1,6 @@
 # GitHub 發布檢查清單
 
-[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/github-checklist.zh-CN.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/docs/github-checklist.md)
+[简体中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/github-checklist.zh-CN.md) | [English](https://github.com/rexchen1803/surge-sentry/blob/main/docs/github-checklist.md)
 
 發布 release 或把儲存庫設為公開前，按這份清單快速檢查。
 
@@ -42,7 +42,7 @@ scripts/surge-sentry feedback --print
 ```bash
 git status --short
 git tag --list
-gh release list --repo rexchen2024/surge-sentry --limit 5
+gh release list --repo rexchen1803/surge-sentry --limit 5
 ```
 
 ## 對外描述

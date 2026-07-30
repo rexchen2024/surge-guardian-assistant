@@ -1,6 +1,6 @@
 # 隱私說明
 
-[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/privacy.zh-CN.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/docs/privacy.md)
+[简体中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/privacy.zh-CN.md) | [English](https://github.com/rexchen1803/surge-sentry/blob/main/docs/privacy.md)
 
 請把以下內容視為敏感資訊：
 

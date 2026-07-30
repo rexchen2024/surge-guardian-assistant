@@ -1,6 +1,6 @@
 # Hermes 版本
 
-[繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/hermes-edition.zh-TW.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/docs/hermes-edition.md)
+[繁體中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/hermes-edition.zh-TW.md) | [English](https://github.com/rexchen1803/surge-sentry/blob/main/docs/hermes-edition.md)
 
 Hermes Agent 是推荐用法。它适合常驻巡检：健康时不吵你，出问题时再通知。
 
@@ -9,7 +9,7 @@ Hermes Agent 是推荐用法。它适合常驻巡检：健康时不吵你，出�
 如果你已经在用 Hermes，把下面这段发给 Hermes：
 
 ```text
-请从 https://github.com/rexchen2024/surge-sentry 安装 Surge Sentry，运行 setup，检查 Surge 环境，并显示生成的 Hermes cron 命令。确认命令前不要创建任务；未得到我确认前不要编辑 Surge profile、证书、DNS、服务器、MITM、Rewrite、Scripting、Replica，也不要执行 reload 或 restart。
+请从 https://github.com/rexchen1803/surge-sentry 安装 Surge Sentry，运行 setup，检查 Surge 环境，并显示生成的 Hermes cron 命令。确认命令前不要创建任务；未得到我确认前不要编辑 Surge profile、证书、DNS、服务器、MITM、Rewrite、Scripting、Replica，也不要执行 reload 或 restart。
 ```
 
 Hermes 应该做三件事：
@@ -25,7 +25,7 @@ Hermes 应该做三件事：
 如果你想自己在终端安装，运行：
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-sentry/main/install.sh)" -- --setup
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen1803/surge-sentry/main/install.sh)" -- --setup
 ```
 
 安装会把项目放到 `~/.surge-sentry`。setup 会查找 Surge 命令、日志目录、profile 和策略组；它只写本地 `.env`，不会改 Surge profile。

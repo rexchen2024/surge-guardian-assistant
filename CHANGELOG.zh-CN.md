@@ -1,6 +1,6 @@
 # 更新日志
 
-[繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/CHANGELOG.zh-TW.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/CHANGELOG.md)
+[繁體中文](https://github.com/rexchen1803/surge-sentry/blob/main/CHANGELOG.zh-TW.md) | [English](https://github.com/rexchen1803/surge-sentry/blob/main/CHANGELOG.md)
 
 ## 0.2.0
 

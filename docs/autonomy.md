@@ -1,6 +1,6 @@
 # Autonomy Model
 
-[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/autonomy.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/autonomy.zh-TW.md)
+[简体中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/autonomy.zh-CN.md) | [繁體中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/autonomy.zh-TW.md)
 
 Surge Sentry uses layered autonomy.
 

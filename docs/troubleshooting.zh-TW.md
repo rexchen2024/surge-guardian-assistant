@@ -1,6 +1,6 @@
 # 故障排查
 
-[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/troubleshooting.zh-CN.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/docs/troubleshooting.md)
+[简体中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/troubleshooting.zh-CN.md) | [English](https://github.com/rexchen1803/surge-sentry/blob/main/docs/troubleshooting.md)
 
 先執行：
 

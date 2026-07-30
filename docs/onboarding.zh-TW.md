@@ -1,6 +1,6 @@
 # 快速上手
 
-[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/onboarding.zh-CN.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/docs/onboarding.md)
+[简体中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/onboarding.zh-CN.md) | [English](https://github.com/rexchen1803/surge-sentry/blob/main/docs/onboarding.md)
 
 本指南假設你已經安裝 Surge for macOS。Hermes 是推薦的定時模型輔助執行方式，
 但本機 `doctor` 和 `tick` 指令不依賴 Hermes，也可以單獨執行。
@@ -8,7 +8,7 @@
 ## 1. 取得專案
 
 ```bash
-git clone https://github.com/rexchen2024/surge-sentry.git ~/.surge-sentry
+git clone https://github.com/rexchen1803/surge-sentry.git ~/.surge-sentry
 cd ~/.surge-sentry
 ```
 

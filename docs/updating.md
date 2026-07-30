@@ -1,6 +1,6 @@
 # Updating
 
-[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/updating.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/updating.zh-TW.md)
+[简体中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/updating.zh-CN.md) | [繁體中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/updating.zh-TW.md)
 
 Updates come from GitHub.
 

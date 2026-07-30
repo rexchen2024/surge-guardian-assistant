@@ -1,6 +1,6 @@
 # 同步流程
 
-[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/sync-workflow.zh-CN.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/docs/sync-workflow.md)
+[简体中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/sync-workflow.zh-CN.md) | [English](https://github.com/rexchen1803/surge-sentry/blob/main/docs/sync-workflow.md)
 
 當本機 Surge 腳本繼續演進，並且 GitHub 專案需要吸收這些能力時，使用這個流程。
 

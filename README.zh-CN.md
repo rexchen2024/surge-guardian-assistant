@@ -1,9 +1,9 @@
 # Surge Sentry
 
-[![Release](https://img.shields.io/badge/release-v0.2.0-blue.svg)](https://github.com/rexchen2024/surge-sentry/releases/tag/v0.2.0)
+[![Release](https://img.shields.io/badge/release-v0.2.0-blue.svg)](https://github.com/rexchen1803/surge-sentry/releases/tag/v0.2.0)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-[繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/README.zh-TW.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/README.en.md)
+[繁體中文](https://github.com/rexchen1803/surge-sentry/blob/main/README.zh-TW.md) | [English](https://github.com/rexchen1803/surge-sentry/blob/main/README.en.md)
 
 Surge Assistant 大框架下的 Cron 守护分支，面向 Surge 用户做静默巡检和自愈。它基于 Surge 官方运行时能力和 `surge-cli`，持续检查启动情况、日志、事件、策略、配置同步和流量风险；健康时不打扰，异常时先自愈，只有重要问题才交给 Hermes、Codex 或聊天工具继续处理。
 

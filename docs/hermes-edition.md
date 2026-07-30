@@ -1,6 +1,6 @@
 # Hermes Edition
 
-[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/hermes-edition.zh-CN.md) | [繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/hermes-edition.zh-TW.md)
+[简体中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/hermes-edition.zh-CN.md) | [繁體中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/hermes-edition.zh-TW.md)
 
 Hermes Edition is the recommended setup. It is for always-on monitoring: quiet when healthy, noisy only when something needs attention.
 
@@ -9,7 +9,7 @@ Hermes Edition is the recommended setup. It is for always-on monitoring: quiet w
 If you already use Hermes, send it this prompt:
 
 ```text
-Install Surge Sentry from https://github.com/rexchen2024/surge-sentry, run setup, check the Surge environment, and show me the generated Hermes cron command. Do not create the job until I confirm it. Do not edit Surge profiles, certificates, DNS, servers, MITM, Rewrite, Scripting, or Replica, and do not run reload or restart without asking me first.
+Install Surge Sentry from https://github.com/rexchen1803/surge-sentry, run setup, check the Surge environment, and show me the generated Hermes cron command. Do not create the job until I confirm it. Do not edit Surge profiles, certificates, DNS, servers, MITM, Rewrite, Scripting, or Replica, and do not run reload or restart without asking me first.
 ```
 
 Hermes should do three things:
@@ -25,7 +25,7 @@ Before confirmation, it should not create the job or make permanent Surge change
 If you prefer doing it yourself in Terminal, run:
 
 ```bash
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen2024/surge-sentry/main/install.sh)" -- --setup
+bash -c "$(curl -fsSL https://raw.githubusercontent.com/rexchen1803/surge-sentry/main/install.sh)" -- --setup
 ```
 
 The project installs to `~/.surge-sentry`. Setup finds the Surge command, log directory, profiles, and policy groups. It writes only local `.env`; it does not edit Surge profiles.

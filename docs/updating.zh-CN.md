@@ -1,6 +1,6 @@
 # 升级
 
-[繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/docs/updating.zh-TW.md) | [English](https://github.com/rexchen2024/surge-sentry/blob/main/docs/updating.md)
+[繁體中文](https://github.com/rexchen1803/surge-sentry/blob/main/docs/updating.zh-TW.md) | [English](https://github.com/rexchen1803/surge-sentry/blob/main/docs/updating.md)
 
 更新来自 GitHub。
 

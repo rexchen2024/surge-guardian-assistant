@@ -1,9 +1,9 @@
 # Surge Sentry
 
-[![Release](https://img.shields.io/badge/release-v0.2.0-blue.svg)](https://github.com/rexchen2024/surge-sentry/releases/tag/v0.2.0)
+[![Release](https://img.shields.io/badge/release-v0.2.0-blue.svg)](https://github.com/rexchen1803/surge-sentry/releases/tag/v0.2.0)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-[简体中文](https://github.com/rexchen2024/surge-sentry/blob/main/README.md) | [繁體中文](https://github.com/rexchen2024/surge-sentry/blob/main/README.zh-TW.md)
+[简体中文](https://github.com/rexchen1803/surge-sentry/blob/main/README.md) | [繁體中文](https://github.com/rexchen1803/surge-sentry/blob/main/README.zh-TW.md)
 
 A Cron guard branch under the broader Surge Assistant framework for quiet Surge monitoring and self-healing. It uses Surge's official runtime capabilities and `surge-cli` to check startup health, logs, events, policies, config sync, and traffic risk. Healthy checks stay silent; incidents are handled with low-risk actions first; only important cases are handed to Hermes, Codex, or chat delivery.
 
